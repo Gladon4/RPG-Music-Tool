@@ -5,7 +5,11 @@ import pygame
 import random
 
 moods = {}
-paths = ["CK3/", "Pillars_of_Eternity/"]
+# paths = ["CK3/", "Pillars_of_Eternity/"]
+with open("paths.csv", "r", encoding="utf-8-sig") as csv_file:
+    list = csv.reader(csv_file, delimiter=',', quotechar='|')
+    for row in list:
+        paths = row
 
 current_mood = NONE
 song = NONE
@@ -43,7 +47,7 @@ def get_next_song(mood):
     global song_path
     global current_mood
     if not song == NONE:
-        pygame.mixer.Sound.fadeout(song, 2000)
+        pygame.mixer.Sound.stop(song)
         song_id = random.randint(0, len(moods[mood]) - 1)
         current_mood = mood
         song_path = moods[mood][song_id]
