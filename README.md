@@ -1,2 +1,2 @@
 # RPG-Music-Tool
-A small music tool for TTRPGs
+A small music tool for TTRPGs.
