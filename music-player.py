@@ -4,10 +4,12 @@ from tkinter import ttk
 import pygame
 import random
 import time
+import os
 
 moods = {}
-# paths = ["CK3/", "Pillars_of_Eternity/"]
-with open("paths.csv", "r", encoding="utf-8-sig") as csv_file:
+
+base_path = os.path.dirname(__file__)
+with open(base_path+"/paths.csv", "r", encoding="utf-8-sig") as csv_file:
     list = csv.reader(csv_file, delimiter=',', quotechar='|')
     for row in list:
         paths = row
@@ -140,7 +142,7 @@ for path in paths:
 # print(moods)
 
 root = Tk()
-root.title("RPG Mood Song Player")
+root.title("RPG Music Tool")
 root.geometry("800x600")
 
 root.grid_rowconfigure(0, weight=0)
