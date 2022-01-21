@@ -29,16 +29,15 @@ def update():
     global current_mood
 
     if not song == NONE:
-        song_progress['value'] = int(
-            (song_timer - time_left) / song_timer * 100)
+        song_progress['value'] = (song_timer - time_left) / song_timer * 100
         pygame.mixer.Sound.set_volume(song, volume.get() / 100)
 
     if not paused and not song == NONE:
         time_left -= 10
-        if time_left <= 3000:
+        if time_left <= 100:
             get_next_song(current_mood)
 
-    if time_left > 3000:
+    if time_left > 100:
         label_current_song.after(10, update)
 
 
@@ -47,11 +46,11 @@ def get_next_song(mood):
     global song_path
     global current_mood
     if not song == NONE:
-        pygame.mixer.Sound.stop(song)
+        pygame.mixer.stop()
         song_id = random.randint(0, len(moods[mood]) - 1)
         current_mood = mood
         song_path = moods[mood][song_id]
-        label_current_song.after(2200, play)
+        play()
 
     else:
         song_id = random.randint(0, len(moods[mood]) - 1)
@@ -101,7 +100,7 @@ for path in paths:
                     else:
                         moods[mood] = [path + row[0]]
 
-print(moods)
+# print(moods)
 
 root = Tk()
 root.title("RPG Mood Song Player")
