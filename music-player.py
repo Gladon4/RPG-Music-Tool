@@ -7,15 +7,17 @@ import pygame
 from tkinter import ttk
 from tkinter import *
 import csv
+from options import color_settings
 
 
 # --- CONSTANTS --- #
 BASE_PATH = os.path.dirname(__file__)
 
-BACKGROUND_COLOR = "#e4e4e4"
+BACKGROUND_COLOR = color_settings["BACKGROUND_COLOR"]
 
-BUTTON_BG = "#d3d3d3"
-BUTTON_HOVER = "#999999"
+BUTTON_BG = color_settings["BUTTON_BG"]
+BUTTON_HOVER = color_settings["BUTTON_HOVER"]
+
 
 # --- Variables --- #
 global theme
@@ -175,7 +177,7 @@ label_duration_song.grid(row=0, column=4, padx=5)
 song_progress = ttk.Progressbar(status, orient=HORIZONTAL, length=300, mode='determinate')
 song_progress.grid(row=0, column=3, padx=5)
 
-label_volume = Label(volume_frame, text="3",font = ("Helvetica",10), bg=BACKGROUND_COLOR)
+label_volume = Label(volume_frame, text="3",font = ("Helvetica",10))
 label_volume.grid(row=1, column=0)
 
 # Images
