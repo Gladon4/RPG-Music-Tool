@@ -12,6 +12,11 @@ import csv
 # --- CONSTANTS --- #
 BASE_PATH = os.path.dirname(__file__)
 
+BACKGROUND_COLOR = "#e4e4e4"
+
+BUTTON_BG = "#d3d3d3"
+BUTTON_HOVER = "#999999"
+
 # --- Variables --- #
 global theme
 global length
@@ -116,7 +121,7 @@ def skip():
 
 def volume(pos):
     pygame.mixer.music.set_volume(float(pos) / 100)
-    volume_frame.config(text=str(int(float(pos))))
+    label_volume.config(text=str(int(float(pos))))
 
 
 # --- INIT --- #
@@ -145,51 +150,58 @@ root.geometry("800x600")
 root.grid_rowconfigure(0, weight=0)
 root.grid_columnconfigure(0, weight=1)
 
+root.config(bg=BACKGROUND_COLOR)
+
 # LabelFrames
-buttons = LabelFrame(root, text="", pady=15, padx=15)
+buttons = LabelFrame(root, text="", bg=BACKGROUND_COLOR)
 buttons.grid(row=1, column=0)
-lower_frame = LabelFrame(root, text="", pady=5, padx=15)
+lower_frame = LabelFrame(root, text="", pady=5, padx=15, bg=BACKGROUND_COLOR)
 lower_frame.grid(row=3, column=0)
-status = LabelFrame(lower_frame, text="", pady=15, padx=15)
+status = LabelFrame(lower_frame, text="", pady=15, padx=15, bg=BACKGROUND_COLOR)
 status.grid(row=0, column=0, padx=5)
-volume_frame = LabelFrame(lower_frame, text="3", pady=15, padx=15)
+volume_frame = LabelFrame(lower_frame, text="", pady=15, padx=15, bg=BACKGROUND_COLOR)
 volume_frame.grid(row=0,column=1, padx=5)
 
 #Labels
-label_current_song = Label(root, text="No Song Playing")
+label_current_song = Label(root, text="No Song Playing",font = ("Helvetica",20), bg=BACKGROUND_COLOR)
 label_current_song.grid(row=2, column=0, pady=5)
 
-label_current_theme = Label(root, text="No Theme Selected")
+label_current_theme = Label(root, text="No Theme Selected",font = ("Helvetica",20), bg=BACKGROUND_COLOR)
 label_current_theme.grid(row=0, column=0, pady=5)
 
-label_duration_song = Label(status, text="00:00 / 00:00")
+label_duration_song = Label(status, text="00:00 / 00:00", bg=BACKGROUND_COLOR)
 label_duration_song.grid(row=0, column=4, padx=5)
 
 song_progress = ttk.Progressbar(status, orient=HORIZONTAL, length=300, mode='determinate')
 song_progress.grid(row=0, column=3, padx=5)
 
+label_volume = Label(volume_frame, text="3",font = ("Helvetica",10), bg=BACKGROUND_COLOR)
+label_volume.grid(row=1, column=0)
+
+# Images
 stop_image = PhotoImage(file="img/stop_img.png")
 skip_image = PhotoImage(file="img/skip_img.png")
 pause_image = PhotoImage(file="img/pause_img.png")
 play_image = PhotoImage(file="img/play_img.png")
 
+
 # Inputs
-button_stop = Button(status, text="", command=stop, pady=15, padx=15, image=stop_image)
+button_stop = Button(status, text="", command=stop, image=stop_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG)
 button_stop.grid(row=0, column=0)
 
-button_pause = Button(status, text="", command=pause, pady=15, padx=15, image=pause_image)
+button_pause = Button(status, text="", command=pause, image=pause_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG)
 button_pause.grid(row=0, column=1)
 
-button_skip = Button(status, text="", command=skip, pady=15, padx=15, image=skip_image)
+button_skip = Button(status, text="", command=skip, image=skip_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG)
 button_skip.grid(row=0, column=2)
 
 volume_changer = ttk.Scale(volume_frame, from_=100, to=0, orient=VERTICAL, value=3, command=volume, length=120)
-volume_changer.pack()
+volume_changer.grid(row=0,column=0)
 
 i = 0
 for theme in themes:
     text = theme + "\n" + str(len(themes[theme]))
-    theme_play_button = Button(buttons, text=text, command=lambda theme=theme: change_theme(theme), height=5, width=10)
+    theme_play_button = Button(buttons, text=text, command=lambda theme=theme: change_theme(theme), compound=CENTER, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG, height=5, width=10)
     theme_play_button.grid(row=i//6+1, column=i % 6)
     i += 1
 
