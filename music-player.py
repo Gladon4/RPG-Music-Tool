@@ -7,16 +7,24 @@ import pygame
 from tkinter import ttk
 from tkinter import *
 import csv
-from options import color_settings
+from configparser import ConfigParser
 
 
 # --- CONSTANTS --- #
 BASE_PATH = os.path.dirname(__file__)
 
-BACKGROUND_COLOR = color_settings["BACKGROUND_COLOR"]
 
-BUTTON_BG = color_settings["BUTTON_BG"]
-BUTTON_HOVER = color_settings["BUTTON_HOVER"]
+# --- Config --- #
+config_file = "config.ini"
+config = ConfigParser()
+config.read(config_file)
+
+# Color
+color_settings = config["color_settings"]
+
+BACKGROUND_COLOR = color_settings["bg_color"]
+BUTTON_BG = color_settings["button_color"]
+BUTTON_HOVER = color_settings["button_color_hover"]
 
 
 # --- Variables --- #
