@@ -8,6 +8,7 @@ from tkinter import ttk
 from tkinter import *
 import csv
 from configparser import ConfigParser
+from tkinter.colorchooser import askcolor
 
 
 # --- CONSTANTS --- #
@@ -35,7 +36,7 @@ global stopped
 themes = {}
 first = True
 paused = False
-stopped = False
+stopped = True
 
 
 # --- Functions --- #
@@ -129,9 +130,25 @@ def skip():
         song = get_next_song(theme)
         play(song)
 
+
 def volume(pos):
     pygame.mixer.music.set_volume(float(pos) / 100)
     label_volume.config(text=str(int(float(pos))))
+
+
+def open_color_settings():
+    os.system("python color-settings.py")
+
+    """
+    config.read(config_file)
+    color_settings = config["color_settings"]
+
+    BACKGROUND_COLOR = color_settings["bg_color"]
+    BUTTON_BG = color_settings["button_color"]
+    BUTTON_HOVER = color_settings["button_color_hover"]
+
+    root.configure(bg=BACKGROUND_COLOR)
+    """
 
 
 # --- INIT --- #
@@ -162,10 +179,17 @@ root.grid_columnconfigure(0, weight=1)
 
 root.config(bg=BACKGROUND_COLOR)
 
+menu = Menu(root)
+root.config(menu=menu)
+
+config_menu = Menu(menu)
+menu.add_cascade(label="Settings", menu=config_menu)
+config_menu.add_command(label="Color Settings", command=open_color_settings)
+
 # LabelFrames
 buttons = LabelFrame(root, text="", bg=BACKGROUND_COLOR)
 buttons.grid(row=1, column=0)
-lower_frame = LabelFrame(root, text="", pady=5, padx=15, bg=BACKGROUND_COLOR)
+lower_frame = LabelFrame(root, text="", pady=5, padx=15, bg=BACKGROUND_COLOR, borderwidth=0)
 lower_frame.grid(row=3, column=0)
 status = LabelFrame(lower_frame, text="", pady=15, padx=15, bg=BACKGROUND_COLOR)
 status.grid(row=0, column=0, padx=5)
@@ -185,7 +209,7 @@ label_duration_song.grid(row=0, column=4, padx=5)
 song_progress = ttk.Progressbar(status, orient=HORIZONTAL, length=300, mode='determinate')
 song_progress.grid(row=0, column=3, padx=5)
 
-label_volume = Label(volume_frame, text="3",font = ("Helvetica",10))
+label_volume = Label(volume_frame, text="3",font = ("Helvetica",10), bg=BACKGROUND_COLOR)
 label_volume.grid(row=1, column=0)
 
 # Images
@@ -193,7 +217,6 @@ stop_image = PhotoImage(file="img/stop_img.png")
 skip_image = PhotoImage(file="img/skip_img.png")
 pause_image = PhotoImage(file="img/pause_img.png")
 play_image = PhotoImage(file="img/play_img.png")
-
 
 # Inputs
 button_stop = Button(status, text="", command=stop, image=stop_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG)
@@ -214,6 +237,7 @@ for theme in themes:
     theme_play_button = Button(buttons, text=text, command=lambda theme=theme: change_theme(theme), compound=CENTER, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG, height=5, width=10)
     theme_play_button.grid(row=i//6+1, column=i % 6)
     i += 1
+
 
 # --- TK Mainloop --- #
 root.mainloop()
