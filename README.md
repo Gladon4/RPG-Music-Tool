@@ -1,4 +1,4 @@
-# RPG-Music-Tool (ver. 0.2.5 [Settings Update])
+# RPG-Music-Tool (ver. 0.2.6 [Customize Update])
 
 A small music tool for TTRPGs.
 
@@ -14,6 +14,8 @@ tkinter
 ttk
 
 mutagen
+
+configparser
 
 This is python, so just install python3 and libraries and it should work.
 

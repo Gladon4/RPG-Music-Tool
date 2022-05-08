@@ -20,12 +20,13 @@ color_settings = config["color_settings"]
 BACKGROUND_COLOR = color_settings["bg_color"]
 BUTTON_BG = color_settings["button_color"]
 BUTTON_HOVER = color_settings["button_color_hover"]
+TEXT_COLOR = color_settings["text_color"]
 
 # --- Variables --- #
 bg_color = BACKGROUND_COLOR
 but_col = BUTTON_BG
 but_hov_col = BUTTON_HOVER
-text_color = "black"
+text_color = TEXT_COLOR
 
 colors = {"Background Color":bg_color, "Text Color":text_color, "Primary Button Color":but_col, "Secondary Button Color":but_hov_col}
 #colors = [[bg_color, "Background Color"], [but_col, "Primary Button Color"], [but_hov_col, "Secondary Button Color"], [text_color, "Text Color (WIP)"]]
@@ -64,13 +65,13 @@ def change_color(index):
 
 def reload_colors():
     color_set.configure(bg = colors["Background Color"])
-    button_save.configure(bg = colors["Primary Button Color"], activebackground=colors["Secondary Button Color"])
-    colors_frame.configure(bg = colors["Background Color"])
+    button_save.configure(bg = colors["Primary Button Color"], activebackground=colors["Secondary Button Color"], fg = colors["Text Color"])
+    colors_frame.configure(bg = colors["Background Color"], fg = colors["Text Color"])
 
     for elem in color_elems:
-        elem[0].configure(bg = colors["Background Color"])
-        elem[1].configure(bg = colors["Background Color"])
-        elem[3].configure(bg = colors["Primary Button Color"], activebackground=colors["Secondary Button Color"])
+        elem[0].configure(bg = colors["Background Color"], fg = colors["Text Color"])
+        elem[1].configure(bg = colors["Background Color"], fg = colors["Text Color"])
+        elem[3].configure(bg = colors["Primary Button Color"], activebackground=colors["Secondary Button Color"], fg = colors["Text Color"])
 
 
 # --- INIT --- #
