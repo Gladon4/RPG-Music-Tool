@@ -265,7 +265,7 @@ get_themes()
 get_paths()
 
 root = Tk()
-root.title("RPG Music Tool v025")
+root.title("RPG Music Tool v03")
 root.geometry("800x600")
 
 root.grid_rowconfigure(0, weight=0)
