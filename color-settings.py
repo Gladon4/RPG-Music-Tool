@@ -8,7 +8,6 @@ from configparser import ConfigParser
 from tkinter.colorchooser import askcolor
 
 
-
 # --- Config --- #
 config_file = "config.ini"
 config = ConfigParser()
@@ -21,14 +20,16 @@ BACKGROUND_COLOR = color_settings["bg_color"]
 BUTTON_BG = color_settings["button_color"]
 BUTTON_HOVER = color_settings["button_color_hover"]
 TEXT_COLOR = color_settings["text_color"]
+SEC_BG_COLOR = color_settings["sec_bg_color"]
 
 # --- Variables --- #
 bg_color = BACKGROUND_COLOR
 but_col = BUTTON_BG
 but_hov_col = BUTTON_HOVER
 text_color = TEXT_COLOR
+sec_bg_col = SEC_BG_COLOR
 
-colors = {"Background Color":bg_color, "Text Color":text_color, "Primary Button Color":but_col, "Secondary Button Color":but_hov_col}
+colors = {"Background Color":bg_color, "Secondary Background Color": sec_bg_col, "Text Color":text_color, "Primary Button Color":but_col, "Secondary Button Color":but_hov_col}
 #colors = [[bg_color, "Background Color"], [but_col, "Primary Button Color"], [but_hov_col, "Secondary Button Color"], [text_color, "Text Color (WIP)"]]
 color_elems = [] #[Elem, Elem, ...] Elem = [LabelFrame, ColorLabelFrame, ColorLabel, PickerButton, ColorName]
 
@@ -38,15 +39,16 @@ color_elems = [] #[Elem, Elem, ...] Elem = [LabelFrame, ColorLabelFrame, ColorLa
 # --- Functions --- #
 def save():
     global color_set
-    color_set.destroy()
+    # color_set.destroy()
 
     config = ConfigParser()
     config["color_settings"] = {"bg_color" : colors["Background Color"],
+                                "sec_bg_color" : colors["Secondary Background Color"],
                                 "button_color" : colors["Primary Button Color"],
                                 "button_color_hover" : colors["Secondary Button Color"],
                                 "text_color" : colors["Text Color"]}
     with open('config.ini', 'w') as configfile:
-      config.write(configfile)
+        config.write(configfile)
 
 
 def change_color(index):
@@ -69,7 +71,7 @@ def reload_colors():
     colors_frame.configure(bg = colors["Background Color"], fg = colors["Text Color"])
 
     for elem in color_elems:
-        elem[0].configure(bg = colors["Background Color"], fg = colors["Text Color"])
+        elem[0].configure(bg = colors["Secondary Background Color"], fg = colors["Text Color"])
         elem[1].configure(bg = colors["Background Color"], fg = colors["Text Color"])
         elem[3].configure(bg = colors["Primary Button Color"], activebackground=colors["Secondary Button Color"], fg = colors["Text Color"])
 
@@ -77,7 +79,7 @@ def reload_colors():
 # --- INIT --- #
 color_set = Tk()
 color_set.title("Color Settings")
-color_set.geometry("800x800")
+color_set.geometry("800x900")
 color_set.configure(bg=BACKGROUND_COLOR)
 color_set.grid_rowconfigure(0, weight=0)
 color_set.grid_columnconfigure(0, weight=1)
@@ -87,7 +89,7 @@ colors_frame.pack(pady=10)
 
 i = 0
 for color in colors:
-    label_frame = LabelFrame(colors_frame, bg=BACKGROUND_COLOR, text=color)
+    label_frame = LabelFrame(colors_frame, bg=SEC_BG_COLOR, text=color)
     label_frame.grid(row=i//2+1, column=i % 2, padx=15, pady=15)
     color_label_frame = LabelFrame(label_frame, bg=BACKGROUND_COLOR, borderwidth=3)
     color_label_frame.grid(row=0, column=0)
@@ -104,13 +106,6 @@ for color in colors:
 button_save = Button(color_set, text="Save", command=save, bg=BUTTON_BG, activebackground=BUTTON_HOVER)
 button_save.pack(pady=10)
 
-"""
-dict = {}
-dict[0] = but_color_label
-dict[1] = but_hov_color_label
-dict[0].configure(bg="green")
-dict[1].configure(fg="red")
-"""
 
 # --- TK Mainloop --- #
 color_set.mainloop()

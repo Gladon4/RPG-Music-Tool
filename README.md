@@ -1,8 +1,8 @@
-# RPG-Music-Tool (ver. 0.2.6 [Customize Update])
+# RPG-Music-Tool (ver. 0.3 [Usability Update])
 
 A small music tool for TTRPGs.
 
-This Tool allows you to play music based on the current mood or setting for your TableTop RolePlayingGames.
+This Tool allows you to play music based on the current theme or setting for your TableTop RolePlayingGames.
 This Program uses local music files, instead of for example a Spotify Playlist. So you can always use it as long as you have your music with you.
 
 ## Python Dependencies (Use pip to install):
@@ -19,6 +19,7 @@ configparser
 
 This is python, so just install python3 and libraries and it should work.
 
+
 ## How to set up:
 ### 1.
 
@@ -28,33 +29,21 @@ Download the repository, either as a zip and unzip it, or with git clone.
 
 ### 2.
 
-In the directory of your songs create a songs.csv, which lists all songs (with file ending) you want to include.
-Separate them by line breaks and add the fitting moods after like this:
-
-Combat A.mp3,Combat;Tense\
-Combat B.mp3,Combat;War\
-Combat C.mp3,Combat\
-Tavern A.mp3,Tavern;Festive
+Start the program and open the Path Settings in the Settings Menu. There you can add the paths to the directories of your music. Separate different paths by line breaks.
 
 ### 3.
 
-Create a paths.csv (or rename the example_paths.csv) in the directory of the program, and put in the paths to the music directories, separate with comma (,).
+Then you can open the Song Settings. All mp3 files in your set directories are listed there and you can add themes to them there. Separate multiple themes by semicolon ";". Press the Update Themes Button at the bottom.
 
-Example for Linux:
+### 4. (Optional)
 
-/home/[user]/Music/RPG/,/home/[user]/Documents/music/
-
-Example for Windows:
-
-C:\Users\[user]\Music\RPG\,C:\Users\[user]\Documents\music\
-
-That's it.
+Customize the colours of the Program! The Color Settings Menu allows you to costomize the look of the Program.
 
 
 ## How to Use it:
 
-The Programm should display all created moods and how many songs are associated with that mood.
-Just click on the mood you currently need and it should start playing a random sequence of songs with the chosen mood.
+The Program should display all created themes and how many songs are associated with that theme.
+Just click on the theme you currently need and it should start playing a random sequence of songs with the chosen theme.
 (This is suited well for touch displays, if you have one)
 
 ![image](https://user-images.githubusercontent.com/58821835/150589364-aa6d69b8-9553-4cf4-a975-2c6a8ad0c77c.png)
