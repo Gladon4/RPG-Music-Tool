@@ -8,7 +8,6 @@ from tkinter import ttk
 from tkinter import *
 import csv
 from configparser import ConfigParser
-from tkinter.colorchooser import askcolor
 import sys
 
 
@@ -21,12 +20,15 @@ global length
 global stopped
 
 themes = {}
+paths = []
 first = True
 paused = False
 stopped = True
 
 tkinter_labels = []
+sec_tkinter_labels = []
 tkinter_buttons = []
+theme_buttons = []
 
 
 # --- Functions --- #
@@ -136,6 +138,7 @@ def get_settings():
     global BUTTON_BG
     global BUTTON_HOVER
     global TEXT_COLOR
+    global SEC_BG_COLOR
 
     try:
         with open("config.ini") as file:
@@ -143,7 +146,7 @@ def get_settings():
 
     except:
         settings = open("config.ini", 'a')
-        settings.write("[color_settings]\nbg_color = #91a3c4\nbutton_color = #7b8cb3\nbutton_color_hover = #868890\ntext_color = #323232")
+        settings.write("[color_settings]\nbg_color = #91a3c4\nsec_bg_color = #9baecb\nbutton_color = #7b8cb3\nbutton_color_hover = #868890\ntext_color = #323232")
         settings.close()
 
     # --- Config --- #
@@ -158,39 +161,108 @@ def get_settings():
     BUTTON_BG = color_settings["button_color"]
     BUTTON_HOVER = color_settings["button_color_hover"]
     TEXT_COLOR = color_settings["text_color"]
+    SEC_BG_COLOR = color_settings["sec_bg_color"]
+
+
+def get_paths():
+    global paths
+    paths = []
+
+    try:
+        with open(BASE_PATH+"/paths.csv", "r", encoding="utf-8-sig") as csv_file:
+            list = csv.reader(csv_file, delimiter=',', quotechar='|')
+            for row in list:
+                paths = row
+
+    except:
+        paths = open("paths.csv", 'a')
+        paths.close()
+
+        with open(BASE_PATH+"/paths.csv", "r", encoding="utf-8-sig") as csv_file:
+            list = csv.reader(csv_file, delimiter=',', quotechar='|')
+            for row in list:
+                paths = row
+
+
+def get_themes():
+    global themes
+    themes = {}
+
+    try:
+        for path in paths:
+            with open(path + "/songs.csv", "r", encoding="utf-8-sig") as csv_file:
+                list = csv.reader(csv_file, delimiter='\\', quotechar='|')
+                for row in list:
+                    if not len(row) < 2:
+                        for theme in row[1].split(";"):
+                            if not theme == "":
+                                if theme in themes:
+                                    themes[theme] += [path + row[0]]
+                                else:
+                                    themes[theme] = [path + row[0]]
+    except:
+        pass
 
 
 def update_elements():
     get_settings()
 
+    root.config(bg=BACKGROUND_COLOR)
+    menu.config(bg=SEC_BG_COLOR, activebackground=BUTTON_HOVER)
+    config_menu.config(bg=BACKGROUND_COLOR, activebackground=BUTTON_HOVER)
+
     for element in tkinter_labels:
-        root.config(bg=BACKGROUND_COLOR)
         element.configure(bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
+
+    for element in sec_tkinter_labels:
+        element.configure(bg=SEC_BG_COLOR, fg=TEXT_COLOR)
 
     for button in tkinter_buttons:
         button.configure(bg=BUTTON_BG, activebackground=BUTTON_HOVER, fg=TEXT_COLOR)
 
+    for button in theme_buttons:
+        button.configure(bg=BUTTON_BG, activebackground=BUTTON_HOVER, fg=TEXT_COLOR)
+
+
+def create_theme_buttons():
+    global theme_buttons
+
+    get_paths()
+    get_themes()
+
+    i = 0
+    for theme in themes:
+        text = theme + "\n" + str(len(themes[theme]))
+        theme_play_button = Button(buttons, text=text, command=lambda theme=theme: change_theme(theme), compound=CENTER, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG, fg=TEXT_COLOR, height=5, width=10)
+        theme_play_button.grid(row=i//6+1, column=i % 6)
+        i += 1
+
+        theme_buttons += [theme_play_button]
+
+
+def open_song_settings():
+    os.system("python3 song-settings.py")
+    for button in theme_buttons:
+        button.destroy()
+
+    create_theme_buttons()
+
+
+def open_path_settings():
+    os.system("python3 path-settings.py")
+    for button in theme_buttons:
+        button.destroy()
+
+    create_theme_buttons()
+
 
 # --- INIT --- #
-with open(BASE_PATH+"/paths.csv", "r", encoding="utf-8-sig") as csv_file:
-    list = csv.reader(csv_file, delimiter=',', quotechar='|')
-    for row in list:
-        paths = row
-
-for path in paths:
-    with open(path + "/songs.csv", "r", encoding="utf-8-sig") as csv_file:
-        list = csv.reader(csv_file, delimiter=',', quotechar='|')
-        for row in list:
-            for theme in row[1].split(";"):
-                if not theme == "":
-                    if theme in themes:
-                        themes[theme] += [path + row[0]]
-                    else:
-                        themes[theme] = [path + row[0]]
 pygame.mixer.init()
 pygame.mixer.music.set_volume(0.05)
 
 get_settings()
+get_themes()
+get_paths()
 
 root = Tk()
 root.title("RPG Music Tool v025")
@@ -201,12 +273,15 @@ root.grid_columnconfigure(0, weight=1)
 
 root.config(bg=BACKGROUND_COLOR)
 
-menu = Menu(root)
+menu = Menu(root, bg=SEC_BG_COLOR, activebackground=BUTTON_HOVER)
 root.config(menu=menu)
 
-config_menu = Menu(menu)
+config_menu = Menu(menu, bg=BACKGROUND_COLOR, activebackground=BUTTON_HOVER)
 menu.add_cascade(label="Settings", menu=config_menu)
 config_menu.add_command(label="Color Settings", command=open_color_settings)
+config_menu.add_command(label="Path Settings", command=open_path_settings)
+config_menu.add_command(label="Song Settings", command=open_song_settings)
+
 
 # LabelFrames
 buttons = LabelFrame(root, text="", bg=BACKGROUND_COLOR)
@@ -215,13 +290,14 @@ buttons.grid(row=1, column=0)
 lower_frame = LabelFrame(root, text="", pady=5, padx=15, bg=BACKGROUND_COLOR, borderwidth=0)
 lower_frame.grid(row=3, column=0)
 
-status = LabelFrame(lower_frame, text="", pady=15, padx=15, bg=BACKGROUND_COLOR)
+status = LabelFrame(lower_frame, text="", pady=15, padx=15, bg=SEC_BG_COLOR)
 status.grid(row=0, column=0, padx=5)
 
-volume_frame = LabelFrame(lower_frame, text="", pady=15, padx=15, bg=BACKGROUND_COLOR)
+volume_frame = LabelFrame(lower_frame, text="", pady=15, padx=15, bg=SEC_BG_COLOR)
 volume_frame.grid(row=0,column=1, padx=5)
 
-tkinter_labels += [buttons, lower_frame, status, volume_frame]
+tkinter_labels += [buttons, lower_frame]
+sec_tkinter_labels += [status, volume_frame]
 
 #Labels
 label_current_song = Label(root, text="No Song Playing",font = ("Helvetica",20), bg=BACKGROUND_COLOR)
@@ -248,13 +324,13 @@ pause_image = PhotoImage(file="img/pause_img.png")
 play_image = PhotoImage(file="img/play_img.png")
 
 # Inputs
-button_stop = Button(status, text="", command=stop, image=stop_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG)
+button_stop = Button(status, command=stop, image=stop_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG)
 button_stop.grid(row=0, column=0)
 
-button_pause = Button(status, text="", command=pause, image=pause_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG)
+button_pause = Button(status, command=pause, image=pause_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG)
 button_pause.grid(row=0, column=1)
 
-button_skip = Button(status, text="", command=skip, image=skip_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG)
+button_skip = Button(status, command=skip, image=skip_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG)
 button_skip.grid(row=0, column=2)
 
 volume_changer = ttk.Scale(volume_frame, from_=100, to=0, orient=VERTICAL, value=3, command=volume, length=120)
@@ -262,14 +338,7 @@ volume_changer.grid(row=0,column=0)
 
 tkinter_buttons += [button_stop, button_pause, button_skip]
 
-i = 0
-for theme in themes:
-    text = theme + "\n" + str(len(themes[theme]))
-    theme_play_button = Button(buttons, text=text, command=lambda theme=theme: change_theme(theme), compound=CENTER, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG, fg=TEXT_COLOR, height=5, width=10)
-    theme_play_button.grid(row=i//6+1, column=i % 6)
-    i += 1
-
-    tkinter_buttons += [theme_play_button]
+create_theme_buttons()
 
 # --- TK Mainloop --- #
 root.mainloop()
