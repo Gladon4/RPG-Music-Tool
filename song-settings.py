@@ -20,6 +20,7 @@ paths = []
 songs = {}
 text_boxes = []
 path_buttons = {}
+current_path = ""
 
 play_buttons = []
 current_song = []
@@ -147,24 +148,21 @@ def update_song_list():
 
 def update_themes():
     global inverse_themes
+    global current_path
 
-    new_inverse_themes = {}
+    rows = []
+    for i, box in enumerate(text_boxes):
+        song = songs[current_path][i]
+        themes = box.get(1.0, 'end')[:len(box.get(1.0, 'end')) - 2]
 
-    for path in text_boxes:
-        rows = []
-        for i, box in enumerate(text_boxes[path]):
-            song = songs[path][i]
-            themes = box.get(1.0, 'end')[:len(box.get(1.0, 'end')) - 2]
+        row = [song, themes]
+        inverse_themes[song] = [themes] if themes != '' else []
+        rows += [row]
 
-            row = [song, themes]
-            new_inverse_themes[song] = themes
-            rows += [row]
+    with open(current_path + "songs.csv", 'w') as csvfile:
+        csvwriter = csv.writer(csvfile, delimiter='\\')
+        csvwriter.writerows(rows)
 
-        with open(path + "songs.csv", 'w') as csvfile:
-            csvwriter = csv.writer(csvfile, delimiter='\\')
-            csvwriter.writerows(rows)
-
-    inverse_themes = new_inverse_themes
 
 
 def play_song(path, song):
@@ -177,7 +175,7 @@ def play_song(path, song):
         pygame.mixer.music.play(loops=0)
 
         if current_song != []:
-            play_buttons[current_song[0]][current_song[1]].config(image=play_image)
+            play_buttons[current_song[1]].config(image=play_image)
         play_buttons[song].config(image=stop_image)
 
         current_song = [path, song]
@@ -189,15 +187,23 @@ def play_song(path, song):
 
 
 def display_song_list(path):
+    global current_path
     global x    
     global play_buttons
-    global text_boxes
     global path_label_frame
     global button_update
+    global text_boxes
+    
+    if current_path != "":
+        update_themes()
+    
+    current_path = path
 
     if path_label_frame != None:
-        button_update.destroy()
         path_label_frame.destroy()
+        
+    if button_update != None:
+        button_update.destroy()
 
     path_label_frame = LabelFrame(second_frame, font=("Helvetica", 15), bg=BACKGROUND_COLOR, borderwidth=1, fg=TEXT_COLOR, pady=15, padx=15)
     path_label_frame.pack(expand=1, fill=X)
@@ -220,6 +226,7 @@ def display_song_list(path):
         themes_text_box = Text(path_label_frame, height=2, width=40, bg=color, fg=TEXT_COLOR, borderwidth=0)
         themes_text_box.grid(row=i, column=2)
         text_boxes += [themes_text_box]
+        
         for theme in inverse_themes[song]:
             themes_text_box.insert('end', theme + ";")
 
