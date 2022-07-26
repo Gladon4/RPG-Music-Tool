@@ -18,6 +18,7 @@ BASE_PATH = os.path.dirname(__file__)
 global theme
 global length
 global stopped
+global volume
 
 themes = {}
 paths = []
@@ -123,9 +124,27 @@ def skip():
         play(song)
 
 
-def volume(pos):
-    pygame.mixer.music.set_volume(float(pos) / 100)
-    label_volume.config(text=str(int(float(pos))))
+def change_volume(pos):
+    global volume
+    volume = float(pos)
+    pygame.mixer.music.set_volume(volume / 100)
+    label_volume.config(text=str(int(volume)))
+
+
+def volume_up():
+    global volume
+    volume += 1
+    pygame.mixer.music.set_volume(volume / 100)
+    label_volume.config(text=str(int(volume)))
+    volume_changer.config(value=volume)
+
+
+def volume_down():
+    global volume
+    volume -= 1
+    pygame.mixer.music.set_volume(volume / 100)
+    label_volume.config(text=str(int(volume)))
+    volume_changer.config(value=volume)
 
 
 def open_color_settings():
@@ -258,7 +277,8 @@ def open_path_settings():
 
 # --- INIT --- #
 pygame.mixer.init()
-pygame.mixer.music.set_volume(0.05)
+volume = 5
+pygame.mixer.music.set_volume(volume / 100)
 
 get_settings()
 get_themes()
@@ -294,16 +314,19 @@ status = LabelFrame(lower_frame, text="", pady=15, padx=15, bg=SEC_BG_COLOR)
 status.grid(row=0, column=0, padx=5)
 
 volume_frame = LabelFrame(lower_frame, text="", pady=15, padx=15, bg=SEC_BG_COLOR)
-volume_frame.grid(row=0,column=1, padx=5)
+volume_frame.grid(row=0, column=1, padx=5)
+
+volume_plus_minus_frame = LabelFrame(lower_frame, text="", pady=2, padx=2, bg=SEC_BG_COLOR)
+volume_plus_minus_frame.grid(row=0, column=2, padx=5)
 
 tkinter_labels += [buttons, lower_frame]
-sec_tkinter_labels += [status, volume_frame]
+sec_tkinter_labels += [status, volume_frame, volume_plus_minus_frame]
 
-#Labels
+# Labels
 label_current_song = Label(root, text="No Song Playing",font = ("Helvetica",20), bg=BACKGROUND_COLOR)
 label_current_song.grid(row=2, column=0, pady=5)
 
-label_current_theme = Label(root, text="No Theme Selected",font = ("Helvetica",20), bg=BACKGROUND_COLOR)
+label_current_theme = Label(root, text="No Theme Selected", font = ("Helvetica",20), bg=BACKGROUND_COLOR)
 label_current_theme.grid(row=0, column=0, pady=5)
 
 label_duration_song = Label(status, text="00:00 / 00:00", bg=BACKGROUND_COLOR)
@@ -312,7 +335,7 @@ label_duration_song.grid(row=0, column=4, padx=5)
 song_progress = ttk.Progressbar(status, orient=HORIZONTAL, length=300, mode='determinate')
 song_progress.grid(row=0, column=3, padx=5)
 
-label_volume = Label(volume_frame, text="3",font = ("Helvetica",10), bg=BACKGROUND_COLOR)
+label_volume = Label(volume_frame, text=str(volume),font = ("Helvetica",10), bg=BACKGROUND_COLOR)
 label_volume.grid(row=1, column=0)
 
 tkinter_labels += [label_current_song, label_current_theme, label_duration_song, label_volume]
@@ -322,6 +345,8 @@ stop_image = PhotoImage(file="img/stop_img.png")
 skip_image = PhotoImage(file="img/skip_img.png")
 pause_image = PhotoImage(file="img/pause_img.png")
 play_image = PhotoImage(file="img/play_img.png")
+plus_image = PhotoImage(file="img/plus_img.png")
+minus_image = PhotoImage(file="img/minus_img.png")
 
 # Inputs
 button_stop = Button(status, command=stop, image=stop_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG)
@@ -333,10 +358,15 @@ button_pause.grid(row=0, column=1)
 button_skip = Button(status, command=skip, image=skip_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG)
 button_skip.grid(row=0, column=2)
 
-volume_changer = ttk.Scale(volume_frame, from_=100, to=0, orient=VERTICAL, value=3, command=volume, length=120)
-volume_changer.grid(row=0,column=0)
+volume_changer = ttk.Scale(volume_frame, from_=100, to=0, orient=VERTICAL, value=volume, command=change_volume, length=120)
+volume_changer.grid(row=0, column=0)
 
-tkinter_buttons += [button_stop, button_pause, button_skip]
+volume_up_button = Button(volume_plus_minus_frame, command=volume_up, image=plus_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG)
+volume_up_button.grid(row=0, column=1, pady=5)
+volume_down_button = Button(volume_plus_minus_frame, command=volume_down, image=minus_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG)
+volume_down_button.grid(row=1, column=1, pady=5)
+
+tkinter_buttons += [button_stop, button_pause, button_skip, volume_up_button, volume_down_button]
 
 create_theme_buttons()
 
