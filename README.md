@@ -1,4 +1,4 @@
-# RPG-Music-Tool (ver. 0.3 [Usability Update])
+# RPG-Music-Tool (ver. 0.3.1 [Usability Update])
 
 A small music tool for TTRPGs.
 
