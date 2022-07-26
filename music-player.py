@@ -1,3 +1,5 @@
+#!/bin/python
+
 # --- IMPORT --- #
 from mutagen.mp3 import MP3
 import os
