@@ -1,4 +1,5 @@
 # --- IMPORT --- #
+from ast import Delete
 import os
 import time
 import random
@@ -17,10 +18,16 @@ themes = {}
 inverse_themes = {}
 paths = []
 songs = {}
-text_boxes = {}
+text_boxes = []
+path_buttons = {}
 
-play_buttons = {}
+play_buttons = []
 current_song = []
+
+path_label_frame = None
+button_update = None
+
+x = 1
 
 # --- Config --- #
 config_file = "config.ini"
@@ -171,52 +178,79 @@ def play_song(path, song):
 
         if current_song != []:
             play_buttons[current_song[0]][current_song[1]].config(image=play_image)
-        play_buttons[path][song].config(image=stop_image)
+        play_buttons[song].config(image=stop_image)
 
         current_song = [path, song]
 
     else:
         pygame.mixer.music.stop()
-        play_buttons[path][song].config(image=play_image)
+        current_song = []
+        play_buttons[song].config(image=play_image)
 
 
-def display_song_list():
+def display_song_list(path):
+    global x    
     global play_buttons
     global text_boxes
+    global path_label_frame
+    global button_update
 
+    if path_label_frame != None:
+        button_update.destroy()
+        path_label_frame.destroy()
+
+    path_label_frame = LabelFrame(second_frame, font=("Helvetica", 15), bg=BACKGROUND_COLOR, borderwidth=1, fg=TEXT_COLOR, pady=15, padx=15)
+    path_label_frame.pack(expand=1, fill=X)
+
+    play_buttons = []
+    text_boxes = []
+
+    color = BACKGROUND_COLOR
+
+    for i, song in enumerate(songs[path]):
+        button_play = Button(path_label_frame, command=lambda in_=(path, i): play_song(*in_), image=play_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG, width=25, height=25)
+        button_play.grid(row=i, column=0)
+        play_buttons += [button_play]
+
+        color = BACKGROUND_COLOR if i % 2 == 0 else SEC_BG_COLOR
+
+        song_label = Label(path_label_frame, text=song, font=("Helvetica", 10), bg=color, fg=TEXT_COLOR, width=55, height=2, borderwidth=0)
+        song_label.grid(row=i, column=1)
+
+        themes_text_box = Text(path_label_frame, height=2, width=40, bg=color, fg=TEXT_COLOR, borderwidth=0)
+        themes_text_box.grid(row=i, column=2)
+        text_boxes += [themes_text_box]
+        for theme in inverse_themes[song]:
+            themes_text_box.insert('end', theme + ";")
+
+    button_update = Button(second_frame, command=update_themes, text="Update Themes", font=("Helvetica", 12), activebackground=BUTTON_HOVER, bg=BUTTON_BG, width=12, height=3)
+    button_update.pack(pady=15)
+    
+    
+    height =  song_set.winfo_height() + x
+    song_set.geometry("800x" + str(height))
+    x *= -1
+    
+
+def display_paths():
+    global path_buttons
+    
+    frame = LabelFrame(second_frame, bg=BACKGROUND_COLOR, pady=15, padx=15)
+    frame.pack(expand=1, fill=X)
+    
     for j, path in enumerate(paths):
-        play_buttons[path] = []
-        text_boxes[path] = []
-
         if BASE_PATH[1] == ":":  # Windows
             directory = path.split("\\")[len(path.split("\\")) - 2]
 
         else:  # Linux
             directory = path.split("/")[len(path.split("/")) - 2]
+        
+        path_button = Button(frame, text=directory, command=lambda path=path: display_song_list(path), compound=CENTER, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG, fg=TEXT_COLOR, height=3, width=12)
+        path_button.grid(row=j//6+1, column=j % 6)
+        path_buttons[path] = path_button
+    
 
-        color = BACKGROUND_COLOR if j % 2 == 0 else SEC_BG_COLOR
 
-        path_label_frame = LabelFrame(second_frame, text=directory, font=("Helvetica", 15), bg=color, borderwidth=1, fg=TEXT_COLOR, pady=15, padx=15)
-        path_label_frame.pack(expand=1, fill=X)
-
-        for i, song in enumerate(songs[path]):
-            button_play = Button(path_label_frame, command=lambda in_=(path, i): play_song(*in_), image=play_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG, width=25, height=25)
-            button_play.grid(row=i, column=0)
-            play_buttons[path] += [button_play]
-
-            color = BACKGROUND_COLOR if i % 2 == 0 else SEC_BG_COLOR
-
-            song_label = Label(path_label_frame, text=song, font=("Helvetica", 10), bg=color, fg=TEXT_COLOR, width=55, height=2, borderwidth=0)
-            song_label.grid(row=i, column=1)
-
-            themes_text_box = Text(path_label_frame, height=2, width=40, bg=color, fg=TEXT_COLOR, borderwidth=0)
-            themes_text_box.grid(row=i, column=2)
-            text_boxes[path] += [themes_text_box]
-            for theme in inverse_themes[song]:
-                themes_text_box.insert('end', theme + ";")
-
-    button_update = Button(second_frame, command=update_themes, text="Update Themes", font=("Helvetica", 12), activebackground=BUTTON_HOVER, bg=BUTTON_BG, width=12, height=3)
-    button_update.pack(pady=15)
 
 
 # --- INIT --- #
@@ -254,7 +288,6 @@ top_label.pack(fill=X)
 play_image = PhotoImage(file="img/play_img.png").subsample(3, 3)
 stop_image = PhotoImage(file="img/stop_img.png").subsample(3, 3)
 
-display_song_list()
-
+display_paths()
 
 song_set.mainloop()
