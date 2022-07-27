@@ -194,6 +194,12 @@ def display_song_list(path):
     global button_update
     global text_boxes
     
+    if current_song != []:
+        play_song(*current_song)
+    # pygame.mixer.music.stop()
+    
+    update_song_list()
+    
     if current_path != "":
         update_themes()
     
@@ -204,6 +210,18 @@ def display_song_list(path):
         
     if button_update != None:
         button_update.destroy()
+        
+
+    if BASE_PATH[1] == ":":  # Windows
+        directory = path.split("\\")[len(path.split("\\")) - 2]
+
+    else:  # Linux
+        directory = path.split("/")[len(path.split("/")) - 2]
+    
+
+    path_label.configure(text=directory)
+
+
 
     path_label_frame = LabelFrame(second_frame, font=("Helvetica", 15), bg=BACKGROUND_COLOR, borderwidth=1, fg=TEXT_COLOR, pady=15, padx=15)
     path_label_frame.pack(expand=1, fill=X)
@@ -215,16 +233,16 @@ def display_song_list(path):
 
     for i, song in enumerate(songs[path]):
         button_play = Button(path_label_frame, command=lambda in_=(path, i): play_song(*in_), image=play_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG, width=25, height=25)
-        button_play.grid(row=i, column=0)
+        button_play.grid(row=i+1, column=0)
         play_buttons += [button_play]
 
         color = BACKGROUND_COLOR if i % 2 == 0 else SEC_BG_COLOR
 
         song_label = Label(path_label_frame, text=song, font=("Helvetica", 10), bg=color, fg=TEXT_COLOR, width=55, height=2, borderwidth=0)
-        song_label.grid(row=i, column=1)
+        song_label.grid(row=i+1, column=1)
 
         themes_text_box = Text(path_label_frame, height=2, width=40, bg=color, fg=TEXT_COLOR, borderwidth=0)
-        themes_text_box.grid(row=i, column=2)
+        themes_text_box.grid(row=i+1, column=2)
         text_boxes += [themes_text_box]
         
         for theme in inverse_themes[song]:
@@ -296,5 +314,8 @@ play_image = PhotoImage(file="img/play_img.png").subsample(3, 3)
 stop_image = PhotoImage(file="img/stop_img.png").subsample(3, 3)
 
 display_paths()
+
+path_label = Label(second_frame, text="No Path Selected", font=("Helvetica", 15), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
+path_label.pack(fill=X)
 
 song_set.mainloop()
