@@ -6,7 +6,11 @@ This Tool allows you to play music based on the current theme or setting for you
 This Program uses local music files, instead of for example a Spotify Playlist. So you can always use it as long as you have your music with you.
 
 ## Install
+For Linux:
 Download the executable for your system.
+
+For Windows:
+You will need to use the python file itself at the moment, still working on exe file.
 
 ## How to set up songs and themes:
 ### 1.
