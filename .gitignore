@@ -1,2 +1,4 @@
-paths.csv
-config.ini
+color-settings.py
+song-settings.py
+songs.csv
+*.spec
