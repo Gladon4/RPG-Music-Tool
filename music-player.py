@@ -1,8 +1,6 @@
 #!/bin/python
 
 # --- IMPORT --- #
-from cmath import exp
-from turtle import bgcolor
 from mutagen.mp3 import MP3
 import os
 import time
@@ -31,6 +29,8 @@ paths = []
 first = True
 paused = False
 stopped = True
+
+current_tab = 0
 
 tkinter_labels = []
 sec_tkinter_labels = []
@@ -174,10 +174,20 @@ def volume_down():
 def create_config_path():
     path = user_config_dir("rpg-mt", "Gladon")
 
-    try:
-        os.mkdir(path)
-    except:
-        pass
+    if sys.platform.startswith('linux'):
+        try:
+            os.mkdir(path)
+        except:
+            pass
+        
+    elif sys.platform.startswith('wis32'):
+        try:
+            path2 = ""
+            for p in path.split("\\")[:-1]: path2 += p + "\\"
+        except:
+            pass
+            
+            
 
 
 def get_settings():
@@ -711,14 +721,16 @@ def reload_colors():
 
 def on_tab_change(e):
     global current_path
+    global current_tab
     
     tab = notebook.index(notebook.select())
-    save_paths()
-    get_paths()
     update_themes()
     save()
     update_elements()
     
+    if current_tab == 1:
+        save_paths()
+        get_paths()
     
     current_path = ""
     
@@ -736,6 +748,8 @@ def on_tab_change(e):
             path_buttons[path].destroy()
         
         create_song_settings_frame()
+        
+    current_tab = tab
 
 
 
