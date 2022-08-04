@@ -180,7 +180,7 @@ def create_config_path():
         except:
             pass
         
-    elif sys.platform.startswith('wis32'):
+    elif sys.platform.startswith('win32'):
         try:
             path2 = ""
             for p in path.split("\\")[:-1]: path2 += p + "\\"
@@ -235,7 +235,8 @@ def get_paths():
         with open(path + "/paths.csv", "r", encoding="utf-8-sig") as csv_file:
             list = csv.reader(csv_file, delimiter=',', quotechar='|')
             for row in list:
-                paths = row
+                if row != []:
+                    paths = row
 
     except:
         paths = open(path + "/paths.csv", 'a')
@@ -307,7 +308,7 @@ def update_elements():
 def create_theme_buttons():
     global theme_buttons
 
-    get_paths()
+    # get_paths()
     get_themes()
     
     theme_buttons = []
@@ -505,7 +506,7 @@ def update_themes():
             inverse_themes[song] = [themes] if themes != '' else []
             rows += [row]
 
-        with open(current_path + "songs.csv", 'w') as csvfile:
+        with open(current_path + "songs.csv", 'w', newline="") as csvfile:
             csvwriter = csv.writer(csvfile, delimiter='\\')
             csvwriter.writerows(rows)
 
@@ -533,7 +534,8 @@ def update_song_list():
                 else:
                     row += []
                 rows += [row]
-            with open(path + "songs.csv", 'w') as csvfile:
+
+            with open(path + "songs.csv", 'w', newline="") as csvfile:
                 csvwriter = csv.writer(csvfile, delimiter='\\')
                 csvwriter.writerows(rows)
 
@@ -734,6 +736,7 @@ def on_tab_change(e):
         save_paths()
         get_paths()
     
+    
     current_path = ""
     
     if tab == 0:
@@ -762,8 +765,9 @@ pygame.mixer.music.set_volume(volume / 100)
 
 create_config_path()
 get_settings()
-get_themes()
 get_paths()
+get_themes()
+update_song_list()
 
 root = Tk()
 root.title("RPG Music Tool v04")
