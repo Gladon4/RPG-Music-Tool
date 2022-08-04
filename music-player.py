@@ -184,6 +184,8 @@ def create_config_path():
         try:
             path2 = ""
             for p in path.split("\\")[:-1]: path2 += p + "\\"
+            os.mkdir(path2)
+            os.mkdir(path)
         except:
             pass
             
