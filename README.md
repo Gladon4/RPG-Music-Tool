@@ -1,7 +1,5 @@
 # RPG-Music-Tool (ver. 0.4.0 [First Release])
 
-**Linux Only at the moment, major bugs when used on windows**
-
 A small music tool for TTRPGs.
 
 This Tool allows you to play music based on the current theme or setting for your TableTop RolePlayingGames.
