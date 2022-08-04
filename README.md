@@ -1,4 +1,4 @@
-# RPG-Music-Tool (ver. 0.4.0 [First Release])
+# RPG-Music-Tool (ver. 0.4.1 [First Release])
 
 A small music tool for TTRPGs.
 
@@ -6,11 +6,7 @@ This Tool allows you to play music based on the current theme or setting for you
 This Program uses local music files, instead of for example a Spotify Playlist. So you can always use it as long as you have your music with you.
 
 ## Install
-For Linux:
-Download the executable for your system.
-
-(For Windows:
-You will need to use the python file itself at the moment, still working on exe file.)
+Download the executable for your system from the Release section.
 
 ## How to set up songs and themes:
 ### 1.
