@@ -16,7 +16,6 @@ from tkinter.colorchooser import askcolor
 
 
 # --- CONSTANTS --- #
-BASE_PATH = os.path.dirname(__file__)
 
 # --- Variables --- #
 global theme
@@ -53,9 +52,6 @@ button_update = None
 
 song_setting_objects = []
 
-x = 1
-
-
 # --- Functions --- #
 def change_theme(next_theme):
     global theme
@@ -83,12 +79,15 @@ def play(song):
     length = song_mut.info.length
 
     if sys.platform.startswith('win32'): # Windows
+        path = song.split("\\")[len(song.split("\\")) - 2]
         song_name = song.split("\\")[len(song.split("\\")) - 1].split(".mp3")[0]
-        label_current_song.config(text=song_name)
 
     elif sys.platform.startswith('linux'): # Linux
+        path = song.split("/")[len(song.split("/")) - 2]
         song_name = song.split("/")[len(song.split("/")) - 1].split(".mp3")[0]
-        label_current_song.config(text=song_name)
+    
+    label_current_song.config(text=song_name)
+    label_current_song_path.config(text=path)
 
     if first:
         first = False
@@ -137,6 +136,7 @@ def stop():
     pygame.mixer.music.stop()
 
     label_current_song.config(text="No Song Playing")
+    label_current_song_path.config(text="No Song Playing")
     label_current_theme.config(text="No Theme Selected")
     song_time = "00:00 / 00:00"
     label_duration_song.config(text=song_time)
@@ -182,16 +182,13 @@ def create_config_path():
         
     elif sys.platform.startswith('win32'):
         try:
-            path2 = ""
-            for p in path.split("\\")[:-1]: path2 += p + "\\"
+            path2 = "\\".join(path.split("\\")[:-1])
             os.mkdir(path2)
             os.mkdir(path)
         except:
             pass
             
             
-
-
 def get_settings():
     global BACKGROUND_COLOR
     global BUTTON_BG
@@ -323,14 +320,6 @@ def create_theme_buttons():
         theme_buttons += [theme_play_button]
 
 
-def open_song_settings():
-    os.system("python3 song-settings.py")
-    for button in theme_buttons:
-        button.destroy()
-
-    create_theme_buttons()
-
-
 def create_theme_frame():
     global tkinter_labels
     global sec_tkinter_labels
@@ -343,13 +332,14 @@ def create_theme_frame():
     global song_progress
     global label_volume
     global volume_changer
+    global label_current_song_path
 
     # LabelFrames
     buttons = LabelFrame(theme_frame, text="", bg=BACKGROUND_COLOR)
     buttons.grid(row=1, column=0)
 
     lower_frame = LabelFrame(theme_frame, text="", pady=5, padx=15, bg=BACKGROUND_COLOR, borderwidth=0)
-    lower_frame.grid(row=3, column=0)
+    lower_frame.grid(row=4, column=0)
 
     status = LabelFrame(lower_frame, text="", pady=15, padx=15, bg=SEC_BG_COLOR)
     status.grid(row=0, column=0, padx=5)
@@ -365,7 +355,10 @@ def create_theme_frame():
 
     # Labels
     label_current_song = Label(theme_frame, text="No Song Playing",font = ("Helvetica",20), bg=BACKGROUND_COLOR)
-    label_current_song.grid(row=2, column=0, pady=5)
+    label_current_song.grid(row=2, column=0)
+    
+    label_current_song_path = Label(theme_frame, text="No Song Playing",font = ("Helvetica",12), bg=BACKGROUND_COLOR)
+    label_current_song_path.grid(row=3, column=0)
 
     label_current_theme = Label(theme_frame, text="No Theme Selected", font = ("Helvetica",20), bg=BACKGROUND_COLOR)
     label_current_theme.grid(row=0, column=0, pady=5)
@@ -465,6 +458,7 @@ def create_song_settings_frame():
     global second_frame
     global path_label
     global song_setting_objects
+    global my_canvas
     
     main_frame = Frame(song_settings_frame, bg=BACKGROUND_COLOR)
     main_frame.pack(fill=BOTH, expand=1)
@@ -559,7 +553,7 @@ def play_song(path, song):
         pygame.mixer.music.stop()
         current_song = []
         play_buttons[song].config(image=play_image_small)
-            
+   
 
 def display_song_list(path):
     global current_path
@@ -573,7 +567,6 @@ def display_song_list(path):
     
     if current_song != []:
         play_song(*current_song)
-    # pygame.mixer.music.stop()
     
     update_song_list()
     
@@ -599,6 +592,7 @@ def display_song_list(path):
     path_label.configure(text=directory)
 
     path_label_frame = LabelFrame(second_frame, font=("Helvetica", 15), bg=BACKGROUND_COLOR, borderwidth=1, fg=TEXT_COLOR, pady=15, padx=15)
+    path_label_frame.after(200, lambda : adjust_scrollregion())
     path_label_frame.pack(expand=1, fill=X)
 
     play_buttons = []
@@ -622,15 +616,12 @@ def display_song_list(path):
         
         for theme in inverse_themes[song]:
             themes_text_box.insert('end', theme + ";")
+            
 
-    # button_update = Button(second_frame, command=update_themes, text="Update Themes", font=("Helvetica", 12), activebackground=BUTTON_HOVER, bg=BUTTON_BG, width=12, height=3)
-    # button_update.pack(pady=15)
-    
-    
-    width = root.winfo_width() + x
-    root.geometry(str(width) + "x800")
-    x *= -1
-    
+def adjust_scrollregion():
+    global my_canvas
+    my_canvas.configure(scrollregion=my_canvas.bbox("all"))
+   
     
 def display_paths():
     global path_buttons
@@ -722,6 +713,7 @@ def reload_colors():
         elem[0].configure(bg = colors["Secondary Background Color"], fg = colors["Text Color"])
         elem[1].configure(bg = colors["Background Color"], fg = colors["Text Color"])
         elem[3].configure(bg = colors["Primary Button Color"], activebackground=colors["Secondary Button Color"], fg = colors["Text Color"])
+
 
 def on_tab_change(e):
     global current_path
