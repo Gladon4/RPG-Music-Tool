@@ -2,3 +2,7 @@ color-settings.py
 song-settings.py
 songs.csv
 *.spec
+__pycache__/
+img/fire_img.png
+img/rainy_img.png
+img/thunderstorm_img.png
