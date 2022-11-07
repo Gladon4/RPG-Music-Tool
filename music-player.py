@@ -18,10 +18,10 @@ from tkinter.colorchooser import askcolor
 # --- CONSTANTS --- #
 
 # --- Variables --- #
-global theme
-global length
-global stopped
-global volume
+theme = None
+length = None
+stopped = None
+volume = None
 
 themes = {}
 paths = []
@@ -34,7 +34,7 @@ current_tab = 0
 tkinter_labels = []
 sec_tkinter_labels = []
 tkinter_buttons = []
-theme_buttons = []
+theme_buttons = {}
 
 themes = {}
 inverse_themes = {}
@@ -57,9 +57,16 @@ def change_theme(next_theme):
     global theme
     global stopped
     global paused
+    global theme_buttons
 
     stopped = False
     paused = False
+    
+    if theme != None:
+        theme_buttons[theme].config(bg=BUTTON_BG, relief=RAISED)
+    
+    theme_buttons[next_theme].config(bg=BUTTON_HOVER, relief=SUNKEN)
+    
     theme = next_theme
     next_song = get_next_song(next_theme)
 
@@ -131,9 +138,14 @@ def pause():
 
 def stop():
     global stopped
+    global theme_buttons
+    global theme
 
     stopped = True
     pygame.mixer.music.stop()
+    
+    if theme != None:
+        theme_buttons[theme].config(relief=RAISED, bg=BUTTON_BG)
 
     label_current_song.config(text="No Song Playing")
     label_current_song_path.config(text="No Song Playing")
@@ -204,7 +216,7 @@ def get_settings():
 
     except:
         settings = open(path + "/color-config.ini", 'a')
-        settings.write("[color_settings]\nbg_color = #91a3c4\nsec_bg_color = #9baecb\nbutton_color = #7b8cb3\nbutton_color_hover = #868890\ntext_color = #323232")
+        settings.write("[color_settings]\nbg_color = #91a3c4\nsec_bg_color = #9baecb\nbutton_color = #7b8cb3\nbutton_color_hover = #668b0\ntext_color = #323232")
         settings.close()
 
     # --- Config --- #
@@ -298,26 +310,30 @@ def update_elements():
     for button in tkinter_buttons:
         button.configure(bg=BUTTON_BG, activebackground=BUTTON_HOVER, fg=TEXT_COLOR)
 
-    for button in theme_buttons:
-        button.configure(bg=BUTTON_BG, activebackground=BUTTON_HOVER, fg=TEXT_COLOR)
+    for theme in theme_buttons:
+        theme_buttons[theme].configure(bg=BUTTON_BG, activebackground=BUTTON_HOVER, fg=TEXT_COLOR)
 
 
 def create_theme_buttons():
     global theme_buttons
+    global theme
 
-    # get_paths()
     get_themes()
     
-    theme_buttons = []
+    theme_buttons = {}
 
     i = 0
-    for theme in themes:
-        text = theme + "\n" + str(len(themes[theme]))
-        theme_play_button = Button(buttons, text=text, command=lambda theme=theme: change_theme(theme), compound=CENTER, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG, fg=TEXT_COLOR, height=5, width=10)
+    for _theme in themes:
+        text = _theme + "\n" + str(len(themes[_theme]))
+        theme_play_button = Button(theme_buttons_frame, text=text, command=lambda _theme=_theme: change_theme(_theme), compound=CENTER, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG, fg=TEXT_COLOR, height=5, width=10)
         theme_play_button.grid(row=i//6+1, column=i % 6)
+        
+        if theme == _theme:
+            theme_play_button.config(bg=BUTTON_HOVER, relief=SUNKEN)
+        
         i += 1
 
-        theme_buttons += [theme_play_button]
+        theme_buttons[_theme] = theme_play_button
 
 
 def create_theme_frame():
@@ -333,25 +349,29 @@ def create_theme_frame():
     global label_volume
     global volume_changer
     global label_current_song_path
+    global theme_buttons_frame
 
     # LabelFrames
-    buttons = LabelFrame(theme_frame, text="", bg=BACKGROUND_COLOR)
+    buttons = LabelFrame(theme_frame, text="", bg=BACKGROUND_COLOR, borderwidth=0)
     buttons.grid(row=1, column=0)
-
+    
+    theme_buttons_frame = LabelFrame(buttons, text="", bg=BACKGROUND_COLOR, padx=25, borderwidth=0, pady=10)
+    theme_buttons_frame.grid(row=0, column=0)
+    
     lower_frame = LabelFrame(theme_frame, text="", pady=5, padx=15, bg=BACKGROUND_COLOR, borderwidth=0)
     lower_frame.grid(row=4, column=0)
 
-    status = LabelFrame(lower_frame, text="", pady=15, padx=15, bg=SEC_BG_COLOR)
+    status = LabelFrame(lower_frame, text="", pady=15, padx=15, bg=SEC_BG_COLOR, borderwidth=1)
     status.grid(row=0, column=0, padx=5)
 
-    volume_frame = LabelFrame(lower_frame, text="", pady=15, padx=15, bg=SEC_BG_COLOR)
+    volume_frame = LabelFrame(lower_frame, text="", pady=15, padx=15, bg=SEC_BG_COLOR,)
     volume_frame.grid(row=0, column=1, padx=5)
 
-    volume_plus_minus_frame = LabelFrame(lower_frame, text="", pady=2, padx=2, bg=SEC_BG_COLOR)
+    volume_plus_minus_frame = LabelFrame(lower_frame, text="", pady=2, padx=2, bg=BACKGROUND_COLOR, borderwidth=0)
     volume_plus_minus_frame.grid(row=0, column=2, padx=5)
 
-    tkinter_labels += [buttons, lower_frame]
-    sec_tkinter_labels += [status, volume_frame, volume_plus_minus_frame]
+    tkinter_labels += [buttons, lower_frame, theme_buttons_frame, volume_plus_minus_frame]
+    sec_tkinter_labels += [status, volume_frame]
 
     # Labels
     label_current_song = Label(theme_frame, text="No Song Playing",font = ("Helvetica",20), bg=BACKGROUND_COLOR)
@@ -374,7 +394,7 @@ def create_theme_frame():
 
     tkinter_labels += [label_current_song, label_current_theme, label_duration_song, label_volume]
 
-    # Inputs
+    # Inputs    
     button_stop = Button(status, command=stop, image=stop_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG)
     button_stop.grid(row=0, column=0)
 
@@ -405,20 +425,20 @@ def create_path_settings_frame():
     for p in paths:
         paths_text += p + "\n"
 
-    label_title = Label(path_settings_frame, text="Configure Paths",font=("Helvetica",18), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
+    label_title = Label(path_settings_frame, text="Configure",font=("Helvetica",20), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
     label_title.pack()
+    
+    label_subtitle = Label(path_settings_frame, text="Song Paths",font=("Helvetica",12), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
+    label_subtitle.pack()
 
-    text_box = Text(path_settings_frame, height=25, width=90, bg=BACKGROUND_COLOR, fg=TEXT_COLOR,borderwidth=0)
+    text_box = Text(path_settings_frame, height=20, width=90, bg=BACKGROUND_COLOR, fg=TEXT_COLOR,borderwidth=0)
     text_box.pack()
     text_box.insert('end', paths_text)
     text_box.config(state='normal')
     text_box.tag_configure("warning", foreground="red")
-
-
-    # save_button = Button(path_settings_frame, text="Save Paths", command=save_paths, borderwidth=0,activebackground=BUTTON_HOVER, bg=BUTTON_BG, fg=TEXT_COLOR, height=2, width=8)
-    # save_button.pack()
     
-    tkinter_labels += [label_title, text_box]
+    
+    tkinter_labels += [label_title, text_box, label_subtitle]
 
 
 def save_paths():
@@ -581,7 +601,6 @@ def display_song_list(path):
     if button_update != None:
         button_update.destroy()
         
-
     if sys.platform.startswith('win32'):  # Windows
         directory = path.split("\\")[len(path.split("\\")) - 2]
 
@@ -616,7 +635,7 @@ def display_song_list(path):
         
         for theme in inverse_themes[song]:
             themes_text_box.insert('end', theme + ";")
-            
+
 
 def adjust_scrollregion():
     global my_canvas
@@ -732,8 +751,8 @@ def on_tab_change(e):
     current_path = ""
     
     if tab == 0:
-        for button in theme_buttons:
-            button.destroy()
+        for theme in theme_buttons:
+            theme_buttons[theme].destroy()
         create_theme_buttons()        
         update_song_list()
         
@@ -749,9 +768,8 @@ def on_tab_change(e):
     current_tab = tab
 
 
-
 # --- INIT --- #
-pygame.mixer.init()
+pygame.mixer.init(frequency=44100)
 volume = 5
 pygame.mixer.music.set_volume(volume / 100)
 
@@ -762,7 +780,7 @@ get_themes()
 update_song_list()
 
 root = Tk()
-root.title("RPG Music Tool v04")
+root.title("RPG Music Tool v042")
 root.geometry("800x800")
 
 notebook = ttk.Notebook(root)
@@ -782,7 +800,7 @@ color_settings_frame.pack()
 
 notebook.add(theme_frame, text="Themes")
 notebook.add(path_settings_frame, text="Paths")
-notebook.add(song_settings_frame, text="Song Settings")
+notebook.add(song_settings_frame, text="Song Themes")
 notebook.add(color_settings_frame, text="Color Settings")
 
 notebook.bind('<<NotebookTabChanged>>', on_tab_change)
