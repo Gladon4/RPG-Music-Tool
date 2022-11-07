@@ -216,7 +216,7 @@ def get_settings():
 
     except:
         settings = open(path + "/color-config.ini", 'a')
-        settings.write("[color_settings]\nbg_color = #91a3c4\nsec_bg_color = #9baecb\nbutton_color = #7b8cb3\nbutton_color_hover = #668b0\ntext_color = #323232")
+        settings.write("[color_settings]\nbg_color = #91a3c4\nsec_bg_color = #9baecb\nbutton_color = #7b8cb3\nbutton_color_hover = #668bb0\ntext_color = #323232")
         settings.close()
 
     # --- Config --- #
