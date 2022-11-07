@@ -7,6 +7,7 @@ This Program uses local music files, instead of for example a Spotify Playlist. 
 
 ## Install
 Download the executable for your system from the Release section.
+(Windows executables are only put up with "major" updates.)
 
 ## How to set up songs and themes:
 ### 1.
