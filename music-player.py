@@ -162,25 +162,19 @@ def skip():
 
 def change_volume(pos):
     global volume
+
     volume = float(pos)
     pygame.mixer.music.set_volume(volume / 100)
     label_volume.config(text=str(int(volume)))
+    volume_changer.config(value=volume)
+    save()
 
 
 def volume_up():
-    global volume
-    volume += 1
-    pygame.mixer.music.set_volume(volume / 100)
-    label_volume.config(text=str(int(volume)))
-    volume_changer.config(value=volume)
-
+    change_volume(volume+1)
 
 def volume_down():
-    global volume
-    volume -= 1
-    pygame.mixer.music.set_volume(volume / 100)
-    label_volume.config(text=str(int(volume)))
-    volume_changer.config(value=volume)
+    change_volume(volume-1)
 
 
 def create_config_path():
@@ -208,19 +202,21 @@ def get_settings():
     global TEXT_COLOR
     global SEC_BG_COLOR
 
+    global UI_SCALE
+    global ROW_LENGTH
+    global volume
+
     path = user_config_dir("rpg-mt", "Gladon")
 
     try:
-        with open(path + "/color-config.ini") as file:
+        with open(path + "/config.ini") as file:
             pass
 
     except:
-        settings = open(path + "/color-config.ini", 'a')
-        settings.write("[color_settings]\nbg_color = #91a3c4\nsec_bg_color = #9baecb\nbutton_color = #7b8cb3\nbutton_color_hover = #668bb0\ntext_color = #323232")
-        settings.close()
+        write_default_settings()
 
     # --- Config --- #
-    config_file = path + "/color-config.ini"
+    config_file = path + "/config.ini"
     config = ConfigParser()
     config.read(config_file)
 
@@ -232,6 +228,12 @@ def get_settings():
     BUTTON_HOVER = color_settings["button_color_hover"]
     TEXT_COLOR = color_settings["text_color"]
     SEC_BG_COLOR = color_settings["sec_bg_color"]
+
+    # App Settings
+    app_settings = config["app_settings"]
+    UI_SCALE = int(app_settings["ui_scale"])
+    ROW_LENGTH = int(app_settings["row_length"])
+    volume = int(float(app_settings["volume"]))
 
 
 def get_paths():
@@ -299,7 +301,7 @@ def update_elements():
     theme_frame.config(bg=BACKGROUND_COLOR)
     song_settings_frame.config(bg=BACKGROUND_COLOR)
     path_settings_frame.config(bg=BACKGROUND_COLOR)
-    color_settings_frame.config(bg=BACKGROUND_COLOR)
+    settings_frame.config(bg=BACKGROUND_COLOR)
 
     for element in tkinter_labels:
         element.configure(bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
@@ -325,8 +327,8 @@ def create_theme_buttons():
     i = 0
     for _theme in themes:
         text = _theme + "\n" + str(len(themes[_theme]))
-        theme_play_button = Button(theme_buttons_frame, text=text, command=lambda _theme=_theme: change_theme(_theme), compound=CENTER, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG, fg=TEXT_COLOR, height=5, width=10)
-        theme_play_button.grid(row=i//6+1, column=i % 6)
+        theme_play_button = Button(theme_buttons_frame, text=text, command=lambda _theme=_theme: change_theme(_theme), compound=CENTER, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG, fg=TEXT_COLOR, height=int(2.5*UI_SCALE), width=int(5*UI_SCALE))
+        theme_play_button.grid(row=i//ROW_LENGTH+1, column=i % ROW_LENGTH)
         
         if theme == _theme:
             theme_play_button.config(bg=BUTTON_HOVER, relief=SUNKEN)
@@ -425,11 +427,8 @@ def create_path_settings_frame():
     for p in paths:
         paths_text += p + "\n"
 
-    label_title = Label(path_settings_frame, text="Configure",font=("Helvetica",20), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
+    label_title = Label(path_settings_frame, text="Configure Song Paths",font=("Helvetica",20), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
     label_title.pack()
-    
-    label_subtitle = Label(path_settings_frame, text="Song Paths",font=("Helvetica",12), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
-    label_subtitle.pack()
 
     text_box = Text(path_settings_frame, height=20, width=90, bg=BACKGROUND_COLOR, fg=TEXT_COLOR,borderwidth=0)
     text_box.pack()
@@ -438,7 +437,7 @@ def create_path_settings_frame():
     text_box.tag_configure("warning", foreground="red")
     
     
-    tkinter_labels += [label_title, text_box, label_subtitle]
+    tkinter_labels += [label_title, text_box]
 
 
 def save_paths():
@@ -661,11 +660,55 @@ def display_paths():
         path_buttons[path] = path_button
 
 
-def create_color_sttings_frame():
+def create_settings_frame():
+    global tkinter_labels
+    global sec_tkinter_labels
+
+    global ui_scale_label
+    global ui_scale_slider
+    global row_length_label
+    global row_length_slider
+
     global colors
     global color_elems
     global colors_frame
+    global tkinter_labels
+
+    # -- App Settings -- #
+
+    label_title_app_settings = Label(settings_frame, text="Application Settings",font=("Helvetica",20), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
+    label_title_app_settings.pack()
+
+    ui_setting_frame = LabelFrame(settings_frame, text="UI Settings", font=("Helvetica",15), pady=15, padx=15, bg=SEC_BG_COLOR, borderwidth=0)
+    ui_setting_frame.pack(pady=15)
+
+    label_subtitle_ui_scale = Label(ui_setting_frame, text="UI Scale",font=("Helvetica",12), padx=15, bg=SEC_BG_COLOR, fg=TEXT_COLOR)
+    label_subtitle_ui_scale.grid(row=0, column=0)
+
+    ui_scale_slider = ttk.Scale(ui_setting_frame, from_=1, to=5, value=UI_SCALE, command=change_ui_scale, length=200)
+    ui_scale_slider.grid(row=0, column=1)
+
+    ui_scale_label = Label(ui_setting_frame, text=UI_SCALE, font=("Helvetica",12), padx=10, bg=SEC_BG_COLOR, fg=TEXT_COLOR)
+    ui_scale_label.grid(row=0, column=2)
+
+    ui_scale_sublabel = Label(ui_setting_frame, text="For Theme Buttons", font=("Helvetica",12), padx=10, bg=SEC_BG_COLOR, fg=TEXT_COLOR)
+    ui_scale_sublabel.grid(row=1, column=1)
+
+
+    label_subtitle_row_lenght = Label(ui_setting_frame, text="Themes per Row",font=("Helvetica",12), padx=15, bg=SEC_BG_COLOR, fg=TEXT_COLOR)
+    label_subtitle_row_lenght.grid(row=2, column=0)
+
+    row_length_slider = ttk.Scale(ui_setting_frame, from_=3, to=10, value=ROW_LENGTH, command=change_row_length, length=200)
+    row_length_slider.grid(row=2, column=1)
+
+    row_length_label = Label(ui_setting_frame, text=ROW_LENGTH, font=("Helvetica",12), padx=10, bg=SEC_BG_COLOR, fg=TEXT_COLOR)
+    row_length_label.grid(row=2, column=2)
     
+    tkinter_labels += [label_title_app_settings]
+    sec_tkinter_labels += [ui_setting_frame, label_subtitle_ui_scale, ui_scale_label, ui_scale_sublabel, label_subtitle_row_lenght, row_length_label]
+    
+    # -- Color Settings -- #
+
     bg_color = BACKGROUND_COLOR
     but_col = BUTTON_BG
     but_hov_col = BUTTON_HOVER
@@ -673,26 +716,72 @@ def create_color_sttings_frame():
     sec_bg_col = SEC_BG_COLOR
     
     colors = {"Background Color":bg_color, "Secondary Background Color": sec_bg_col, "Text Color":text_color, "Primary Button Color":but_col, "Secondary Button Color":but_hov_col}
-    #colors = [[bg_color, "Background Color"], [but_col, "Primary Button Color"], [but_hov_col, "Secondary Button Color"], [text_color, "Text Color (WIP)"]]
     color_elems = [] 
     
-    colors_frame = LabelFrame(color_settings_frame, bg=BACKGROUND_COLOR, borderwidth=0)
-    colors_frame.pack(pady=10)
+    label_title_color_settings = Label(settings_frame, text="Color Settings",font=("Helvetica",20), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
+    label_title_color_settings.pack(pady=15)
+
+    colors_frame = LabelFrame(settings_frame, bg=BACKGROUND_COLOR, borderwidth=0)
+    colors_frame.pack()
 
     i = 0
     for color in colors:
         label_frame = LabelFrame(colors_frame, bg=SEC_BG_COLOR, text=color)
-        label_frame.grid(row=i//2+1, column=i % 2, padx=12, pady=12)
+        label_frame.grid(row=i//3+1, column=i % 3, padx=6, pady=6)
         color_label_frame = LabelFrame(label_frame, bg=BACKGROUND_COLOR, borderwidth=3)
         color_label_frame.grid(row=0, column=0)
-        color_label = Label(color_label_frame, width=22, height=11, bg=colors[color])
+        color_label = Label(color_label_frame, width=18, height=9, bg=colors[color])
         color_label.pack()
-        picker_button = Button(label_frame, text="Pick Color", command=lambda i=i: change_color(i), activebackground=BUTTON_HOVER, bg=BUTTON_BG, height= 5, width=10)
-        picker_button.grid(row=0, column=1, padx=15)
+        picker_button = Button(label_frame, text="Pick Color", command=lambda i=i: change_color(i), activebackground=BUTTON_HOVER, bg=BUTTON_BG, height=4, width=6)
+        picker_button.grid(row=0, column=1, padx=5)
 
         color_elems += [[label_frame, color_label_frame, color_label, picker_button, color]]
 
         i += 1
+
+    tkinter_labels += [label_title_color_settings]
+
+    # -- Reset Settings -- #
+    reset_button = Button(settings_frame, text="Reset Settings", command=reset_settings, activebackground=BUTTON_HOVER, bg=BUTTON_BG, height=3, width=12)
+    reset_button.pack(pady=15)
+
+
+def reset_settings():
+    global colors
+
+    write_default_settings()
+    get_settings()
+
+    ui_scale_slider.config(value=UI_SCALE)
+    ui_scale_label.config(text=UI_SCALE)
+    row_length_slider.config(value=ROW_LENGTH)
+    row_length_label.config(text=ROW_LENGTH)
+
+    bg_color = BACKGROUND_COLOR
+    but_col = BUTTON_BG
+    but_hov_col = BUTTON_HOVER
+    text_color = TEXT_COLOR
+    sec_bg_col = SEC_BG_COLOR
+    
+    colors = {"Background Color":bg_color, "Secondary Background Color": sec_bg_col, "Text Color":text_color, "Primary Button Color":but_col, "Secondary Button Color":but_hov_col}
+  
+    reload_colors()
+
+
+def change_ui_scale(pos):
+    global UI_SCALE
+
+    UI_SCALE = int(float(pos))
+    ui_scale_label.config(text=UI_SCALE)
+    ui_scale_slider.config(value=UI_SCALE)
+
+
+def change_row_length(pos):
+    global ROW_LENGTH
+
+    ROW_LENGTH = int(float(pos))
+    row_length_label.config(text=ROW_LENGTH)
+    row_length_slider.config(value=ROW_LENGTH)
 
 
 def save():
@@ -704,7 +793,43 @@ def save():
                                 "button_color" : colors["Primary Button Color"],
                                 "button_color_hover" : colors["Secondary Button Color"],
                                 "text_color" : colors["Text Color"]}
-    with open(path + '/color-config.ini', 'w') as configfile:
+
+    config["app_settings"] =   {"ui_scale" : UI_SCALE,
+                                "row_length": ROW_LENGTH,
+                                "volume" : volume}
+
+    with open(path + '/config.ini', 'w') as configfile:
+        config.write(configfile)
+
+
+def write_default_settings():
+    # --- Defaults --- #
+    # Color
+    bg_col =      "#91a3c4"
+    sec_bg_col =    "#9baecb"
+    but_col =       "#7b8cb3"
+    sec_but_col =   "#668bb0"
+    text_col =      "#323232"
+
+    # App Settings
+    ui_scale =      2
+    row_length =    6
+    def_vol =       15
+
+    path = user_config_dir("rpg-mt", "Gladon")
+
+    config = ConfigParser()
+    config["color_settings"] = {"bg_color" : bg_col,
+                                "sec_bg_color" : sec_bg_col,
+                                "button_color" : but_col,
+                                "button_color_hover" : sec_but_col,
+                                "text_color" : text_col}
+
+    config["app_settings"] = {"ui_scale" : ui_scale,
+                                "row_length": row_length,
+                                "volume" : def_vol}
+
+    with open(path + '/config.ini', 'w') as configfile:
         config.write(configfile)
 
 
@@ -720,18 +845,21 @@ def change_color(index):
     colors[color_elems[index][4]] = color[1]
 
     reload_colors()
+    update_elements()
 
 
 def reload_colors():
     global colors_frame
     
-    color_settings_frame.configure(bg = colors["Background Color"])
+    settings_frame.configure(bg = colors["Background Color"])
     colors_frame.configure(bg = colors["Background Color"], fg = colors["Text Color"])
 
-    for elem in color_elems:
-        elem[0].configure(bg = colors["Secondary Background Color"], fg = colors["Text Color"])
-        elem[1].configure(bg = colors["Background Color"], fg = colors["Text Color"])
-        elem[3].configure(bg = colors["Primary Button Color"], activebackground=colors["Secondary Button Color"], fg = colors["Text Color"])
+    color_index = ["Background Color", "Secondary Background Color", "Text Color", "Primary Button Color","Secondary Button Color"]
+    for i in range(len(color_elems)):
+        color_elems[i][0].configure(bg = colors["Secondary Background Color"], fg = colors["Text Color"])
+        color_elems[i][1].configure(bg = colors["Background Color"], fg = colors["Text Color"])
+        color_elems[i][2].configure(bg = colors[color_index[i]])
+        color_elems[i][3].configure(bg = colors["Primary Button Color"], activebackground=colors["Secondary Button Color"], fg = colors["Text Color"])
 
 
 def on_tab_change(e):
@@ -780,7 +908,7 @@ get_themes()
 update_song_list()
 
 root = Tk()
-root.title("RPG Music Tool v042")
+root.title("RPG Music Tool v05_dev")
 root.geometry("800x800")
 
 notebook = ttk.Notebook(root)
@@ -795,13 +923,13 @@ path_settings_frame.pack()
 song_settings_frame = Frame(notebook, width=800, height=800, bg=BACKGROUND_COLOR)
 song_settings_frame.pack()
 
-color_settings_frame = Frame(notebook, width=800, height=800, bg=BACKGROUND_COLOR)
-color_settings_frame.pack()
+settings_frame = Frame(notebook, width=800, height=800, bg=BACKGROUND_COLOR)
+settings_frame.pack()
 
 notebook.add(theme_frame, text="Themes")
 notebook.add(path_settings_frame, text="Paths")
 notebook.add(song_settings_frame, text="Song Themes")
-notebook.add(color_settings_frame, text="Color Settings")
+notebook.add(settings_frame, text="Settings")
 
 notebook.bind('<<NotebookTabChanged>>', on_tab_change)
 
@@ -831,7 +959,7 @@ stop_image_small = stop_image.subsample(3, 3)
 create_theme_frame()
 create_path_settings_frame()
 create_song_settings_frame()
-create_color_sttings_frame()
+create_settings_frame()
 
 
 # --- TK Mainloop --- #
