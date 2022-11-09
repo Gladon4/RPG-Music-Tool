@@ -326,7 +326,7 @@ def create_theme_buttons():
 
     i = 0
     for _theme in themes:
-        text = _theme + "\n" + str(len(themes[_theme]))
+        text = _theme
         theme_play_button = Button(theme_buttons_frame, text=text, command=lambda _theme=_theme: change_theme(_theme), compound=CENTER, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG, fg=TEXT_COLOR, height=int(2.5*UI_SCALE), width=int(5*UI_SCALE))
         theme_play_button.grid(row=i//ROW_LENGTH+1, column=i % ROW_LENGTH)
         
@@ -898,14 +898,14 @@ def on_tab_change(e):
 
 # --- INIT --- #
 pygame.mixer.init(frequency=44100)
-volume = 5
-pygame.mixer.music.set_volume(volume / 100)
 
 create_config_path()
 get_settings()
 get_paths()
 get_themes()
 update_song_list()
+
+pygame.mixer.music.set_volume(volume / 100)
 
 root = Tk()
 root.title("RPG Music Tool v05_dev")
