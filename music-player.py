@@ -175,6 +175,7 @@ def change_volume(pos):
 def volume_up():
     change_volume(volume+1)
 
+
 def volume_down():
     change_volume(volume-1)
 
@@ -207,6 +208,7 @@ def get_settings():
     global UI_SCALE
     global ROW_LENGTH
     global volume
+    global SFX_ON_THEMES
 
     path = user_config_dir("rpg-mt", "Gladon")
 
@@ -214,28 +216,31 @@ def get_settings():
         with open(path + "/config.ini") as file:
             pass
 
+        # --- Config --- #
+        config_file = path + "/config.ini"
+        config = ConfigParser()
+        config.read(config_file)
+
+        # Color
+        color_settings = config["color_settings"]
+
+        BACKGROUND_COLOR = color_settings["bg_color"]
+        BUTTON_BG = color_settings["button_color"]
+        BUTTON_HOVER = color_settings["button_color_hover"]
+        TEXT_COLOR = color_settings["text_color"]
+        SEC_BG_COLOR = color_settings["sec_bg_color"]
+
+        # App Settings
+        app_settings = config["app_settings"]
+        UI_SCALE = int(app_settings["ui_scale"])
+        ROW_LENGTH = int(app_settings["row_length"])
+        volume = int(float(app_settings["volume"]))
+        SFX_ON_THEMES = int(app_settings["sfx_on_themes"])
+
     except:
         write_default_settings()
+        get_settings()    
 
-    # --- Config --- #
-    config_file = path + "/config.ini"
-    config = ConfigParser()
-    config.read(config_file)
-
-    # Color
-    color_settings = config["color_settings"]
-
-    BACKGROUND_COLOR = color_settings["bg_color"]
-    BUTTON_BG = color_settings["button_color"]
-    BUTTON_HOVER = color_settings["button_color_hover"]
-    TEXT_COLOR = color_settings["text_color"]
-    SEC_BG_COLOR = color_settings["sec_bg_color"]
-
-    # App Settings
-    app_settings = config["app_settings"]
-    UI_SCALE = int(app_settings["ui_scale"])
-    ROW_LENGTH = int(app_settings["row_length"])
-    volume = int(float(app_settings["volume"]))
 
 
 def get_paths():
@@ -246,6 +251,7 @@ def get_paths():
     
     path = user_config_dir("rpg-mt", "Gladon")
 
+    # Songs
     try:
         with open(path + "/paths.csv", "r", encoding="utf-8-sig") as csv_file:
             list = csv.reader(csv_file, delimiter=',', quotechar='|')
@@ -262,6 +268,8 @@ def get_paths():
             for row in list:
                 paths = row
 
+
+    # SFX
     try:
         with open(path + "/sfx-paths.csv", "r", encoding="utf-8-sig") as csv_file:
             list = csv.reader(csv_file, delimiter=',', quotechar='|')
@@ -306,6 +314,24 @@ def get_themes():
                                     themes[theme] += [path + row[0]]
                                 else:
                                     themes[theme] = [path + row[0]]
+    except:
+        pass
+    
+
+def get_sfx():
+    global sfxs
+    global sfx_paths
+
+    sfxs = {}
+
+    try:
+        for path in sfx_paths:
+            sfxs[path] = []
+            with open(path + "/sfx.csv", "r", encoding="utf-8-sig") as csv_file:
+                list = csv.reader(csv_file, delimiter='\\', quotechar='|')
+                for row in list:
+                    if not row[0] == '':
+                        sfxs[path] += [row[0]]
     except:
         pass
     
@@ -358,6 +384,43 @@ def create_theme_buttons():
         theme_buttons[_theme] = theme_play_button
 
 
+def create_sfx_buttons():
+    global sfx_buttons
+
+    temp_sfx_list = []
+
+    for path in sfxs:
+        for sfx in sfxs[path]:
+            temp_sfx_list += [path + sfx]
+
+
+    sfx_buttons = {}
+
+    i = 0
+    for sfx in temp_sfx_list:
+        if sys.platform.startswith('win32'):
+            text = sfx.split("\\")
+            text = text[-1].split(".mp3")[0]
+
+        elif sys.platform.startswith('linux'):
+            text = sfx.split("/")
+            text = text[-1].split(".mp3")[0]
+
+        theme_play_button = Button(sfx_buttons_frame, text=text, command=lambda sfx=sfx: play_sfx(sfx), compound=CENTER, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG, fg=TEXT_COLOR, height=int(2.5*UI_SCALE), width=int(5*UI_SCALE))
+        theme_play_button.grid(row=i//ROW_LENGTH+1, column=i % ROW_LENGTH)
+        
+        i += 1
+
+        sfx_buttons[sfx] = theme_play_button
+
+    
+
+def play_sfx(sfx_path):
+    sfx = pygame.mixer.Sound(sfx_path)
+    pygame.mixer.Sound.set_volume(sfx, 4 * (volume / 100))
+    pygame.mixer.Sound.play(sfx)
+
+
 def create_theme_frame():
     global tkinter_labels
     global sec_tkinter_labels
@@ -372,13 +435,15 @@ def create_theme_frame():
     global volume_changer
     global label_current_song_path
     global theme_buttons_frame
+    global sfx_buttons_frame
 
     # LabelFrames
-    buttons = LabelFrame(theme_frame, text="", bg=BACKGROUND_COLOR, borderwidth=0)
-    buttons.grid(row=1, column=0)
     
-    theme_buttons_frame = LabelFrame(buttons, text="", bg=BACKGROUND_COLOR, padx=25, borderwidth=0, pady=10)
-    theme_buttons_frame.grid(row=0, column=0)
+    theme_buttons_frame = LabelFrame(theme_frame, text="", bg=BACKGROUND_COLOR, padx=25, borderwidth=0, pady=10)
+    theme_buttons_frame.grid(row=1, column=0)
+
+    sfx_buttons_frame = LabelFrame(theme_frame, text="", bg=BACKGROUND_COLOR, padx=25, borderwidth=0, pady=10)
+    sfx_buttons_frame.grid(row=5, column=0)
     
     lower_frame = LabelFrame(theme_frame, text="", pady=5, padx=15, bg=BACKGROUND_COLOR, borderwidth=0)
     lower_frame.grid(row=4, column=0)
@@ -392,7 +457,7 @@ def create_theme_frame():
     volume_plus_minus_frame = LabelFrame(lower_frame, text="", pady=2, padx=2, bg=BACKGROUND_COLOR, borderwidth=0)
     volume_plus_minus_frame.grid(row=0, column=2, padx=5)
 
-    tkinter_labels += [buttons, lower_frame, theme_buttons_frame, volume_plus_minus_frame]
+    tkinter_labels += [lower_frame, theme_buttons_frame, volume_plus_minus_frame]
     sec_tkinter_labels += [status, volume_frame]
 
     # Labels
@@ -438,18 +503,21 @@ def create_theme_frame():
 
     create_theme_buttons()
 
+    if SFX_ON_THEMES: create_sfx_buttons()
+
 
 def create_path_settings_frame():
     global text_box_song_paths
     global text_box_sfx_paths
     global tkinter_labels
+    global tkinter_buttons
     
     paths_text = ""
     for p in paths:
         paths_text += p + "\n"
 
     song_path_label_title = Label(path_settings_frame, text="Configure Song Paths",font=("Helvetica",20), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
-    song_path_label_title.pack()
+    song_path_label_title.pack(pady=10)
 
     text_box_song_paths = Text(path_settings_frame, height=20, width=90, bg=BACKGROUND_COLOR, fg=TEXT_COLOR,borderwidth=0)
     text_box_song_paths.pack()
@@ -462,15 +530,24 @@ def create_path_settings_frame():
         paths_text += p + "\n"
 
     sfx_path_label_title = Label(path_settings_frame, text="Configure Sound Effect Paths",font=("Helvetica",20), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
-    sfx_path_label_title.pack()
+    sfx_path_label_title.pack(pady=10)
 
     text_box_sfx_paths = Text(path_settings_frame, height=10, width=90, bg=BACKGROUND_COLOR, fg=TEXT_COLOR,borderwidth=0)
     text_box_sfx_paths.pack()
     text_box_sfx_paths.insert('end', paths_text)
     text_box_sfx_paths.config(state='normal')
     text_box_sfx_paths.tag_configure("warning", foreground="red")
-    
+
+    save_paths_button = Button(path_settings_frame, command=update_paths, text="Save Paths", borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG, pady=10)
+    save_paths_button.pack(pady=10)
+
     tkinter_labels += [song_path_label_title, sfx_path_label_title, text_box_song_paths, text_box_sfx_paths]
+    tkinter_buttons += [save_paths_button]
+
+
+def update_paths():
+    save_paths()
+    get_paths()
 
 
 def save_paths():
@@ -481,6 +558,7 @@ def save_paths():
 
     set_path = user_config_dir("rpg-mt", "Gladon")
 
+    # Songs
     new_text = []
 
     for path in new_song_paths:
@@ -508,6 +586,7 @@ def save_paths():
         write.writerow(new_song_paths)
 
 
+    # SFX
     new_text = []
 
     for path in new_sfx_paths:
@@ -542,10 +621,10 @@ def create_song_settings_frame():
     global my_canvas
     
     main_frame = Frame(song_settings_frame, bg=BACKGROUND_COLOR)
-    main_frame.pack(fill=BOTH, expand=1)
+    main_frame.pack(fill="both", expand=1)
 
     my_canvas = Canvas(main_frame)
-    my_canvas.pack(side=LEFT, fill=BOTH, expand=1)
+    my_canvas.pack(side=LEFT, fill="both", expand=1)
 
     my_scrollbar = ttk.Scrollbar(main_frame, orient=VERTICAL, command=my_canvas.yview)
     my_scrollbar.pack(side=RIGHT, fill=Y)
@@ -614,6 +693,28 @@ def update_song_list():
                 rows += [row]
 
             with open(path + "songs.csv", 'w', newline="") as csvfile:
+                csvwriter = csv.writer(csvfile, delimiter='\\')
+                csvwriter.writerows(rows)
+
+    for path in sfx_paths:
+        sfx_in_path = []
+        try:
+            for x in os.listdir(path):
+                if x.endswith(".mp3"):
+                    sfx_in_path += [x]
+
+            sfx_in_path = sorted(sfx_in_path)
+        except:
+            sfx_in_path = []
+
+        if not sfxs[path] == sfx_in_path:
+            rows = []
+            for sfx in sfx_in_path:
+                row = []
+                row += [sfx]
+                rows += [row]
+
+            with open(path + "sfx.csv", 'w', newline="") as csvfile:
                 csvwriter = csv.writer(csvfile, delimiter='\\')
                 csvwriter.writerows(rows)
 
@@ -734,10 +835,13 @@ def create_settings_frame():
     global row_length_label
     global row_length_slider
 
+    global sfx_on_themes_checkbox
+
     global colors
     global color_elems
     global colors_frame
     global tkinter_labels
+    global tkinter_buttons
 
     # -- App Settings -- #
 
@@ -745,32 +849,42 @@ def create_settings_frame():
     label_title_app_settings.pack()
 
     ui_setting_frame = LabelFrame(settings_frame, text="UI Settings", font=("Helvetica",15), pady=15, padx=15, bg=SEC_BG_COLOR, borderwidth=0)
-    ui_setting_frame.pack(pady=15)
+    ui_setting_frame.pack(pady=10)
 
-    label_subtitle_ui_scale = Label(ui_setting_frame, text="UI Scale",font=("Helvetica",12), padx=15, bg=SEC_BG_COLOR, fg=TEXT_COLOR)
+    label_subtitle_ui_scale = Label(ui_setting_frame, text="Theme Button Scale",font=("Helvetica",12), padx=15, bg=SEC_BG_COLOR, fg=TEXT_COLOR)
     label_subtitle_ui_scale.grid(row=0, column=0)
 
     ui_scale_slider = ttk.Scale(ui_setting_frame, from_=1, to=5, value=UI_SCALE, command=change_ui_scale, length=200)
-    ui_scale_slider.grid(row=0, column=1)
+    ui_scale_slider.grid(row=0, column=1, pady=10)
 
     ui_scale_label = Label(ui_setting_frame, text=UI_SCALE, font=("Helvetica",12), padx=10, bg=SEC_BG_COLOR, fg=TEXT_COLOR)
     ui_scale_label.grid(row=0, column=2)
 
-    ui_scale_sublabel = Label(ui_setting_frame, text="For Theme Buttons", font=("Helvetica",12), padx=10, bg=SEC_BG_COLOR, fg=TEXT_COLOR)
-    ui_scale_sublabel.grid(row=1, column=1)
 
-
-    label_subtitle_row_lenght = Label(ui_setting_frame, text="Themes per Row",font=("Helvetica",12), padx=15, bg=SEC_BG_COLOR, fg=TEXT_COLOR)
+    label_subtitle_row_lenght = Label(ui_setting_frame, text="Themes Buttons per Row",font=("Helvetica",12), padx=15, bg=SEC_BG_COLOR, fg=TEXT_COLOR)
     label_subtitle_row_lenght.grid(row=2, column=0)
 
     row_length_slider = ttk.Scale(ui_setting_frame, from_=3, to=10, value=ROW_LENGTH, command=change_row_length, length=200)
-    row_length_slider.grid(row=2, column=1)
+    row_length_slider.grid(row=2, column=1, pady=10)
 
     row_length_label = Label(ui_setting_frame, text=ROW_LENGTH, font=("Helvetica",12), padx=10, bg=SEC_BG_COLOR, fg=TEXT_COLOR)
     row_length_label.grid(row=2, column=2)
+
+
+    sfx_on_themes_label = Label(ui_setting_frame, text="Display SFX on Themes Tab", font=("Helvetica",12), padx=10, bg=SEC_BG_COLOR, fg=TEXT_COLOR)
+    sfx_on_themes_label.grid(row=3, column=0, pady=10)
+
+    var1 = True
+
+    sfx_on_themes_checkbox = Checkbutton(ui_setting_frame, text="  (Requires Restart)  ", command=change_sfx_on_themes, height=2, bg=BUTTON_BG, activebackground=BUTTON_HOVER)
+    sfx_on_themes_checkbox.grid(row=3, column=1)
+
+    if SFX_ON_THEMES: sfx_on_themes_checkbox.select()
     
+
     tkinter_labels += [label_title_app_settings]
-    sec_tkinter_labels += [ui_setting_frame, label_subtitle_ui_scale, ui_scale_label, ui_scale_sublabel, label_subtitle_row_lenght, row_length_label]
+    tkinter_buttons += [sfx_on_themes_checkbox]
+    sec_tkinter_labels += [ui_setting_frame, label_subtitle_ui_scale, ui_scale_label, label_subtitle_row_lenght, row_length_label, sfx_on_themes_label]
     
     # -- Color Settings -- #
 
@@ -849,6 +963,15 @@ def change_row_length(pos):
     row_length_slider.config(value=ROW_LENGTH)
 
 
+def change_sfx_on_themes():
+    global SFX_ON_THEMES
+
+    SFX_ON_THEMES = 0 if SFX_ON_THEMES else 1
+
+    save()
+    get_settings()
+
+
 def save():
     path = user_config_dir("rpg-mt", "Gladon")
 
@@ -861,7 +984,9 @@ def save():
 
     config["app_settings"] =   {"ui_scale" : UI_SCALE,
                                 "row_length": ROW_LENGTH,
-                                "volume" : volume}
+                                "volume" : volume,
+                                "sfx_on_themes" : SFX_ON_THEMES}
+
 
     with open(path + '/config.ini', 'w') as configfile:
         config.write(configfile)
@@ -880,6 +1005,7 @@ def write_default_settings():
     ui_scale =      2
     row_length =    6
     def_vol =       15
+    def_sfx_pos =   1
 
     path = user_config_dir("rpg-mt", "Gladon")
 
@@ -892,7 +1018,8 @@ def write_default_settings():
 
     config["app_settings"] = {"ui_scale" : ui_scale,
                                 "row_length": row_length,
-                                "volume" : def_vol}
+                                "volume" : def_vol,
+                                "sfx_on_themes" : def_sfx_pos}
 
     with open(path + '/config.ini', 'w') as configfile:
         config.write(configfile)
@@ -936,20 +1063,19 @@ def on_tab_change(e):
     save()
     update_elements()
     
-    if current_tab == 1:
-        save_paths()
-        get_paths()
+    if current_tab == notebook.index(path_settings_frame):
+        update_paths()
     
     
     current_path = ""
     
-    if tab == 0:
+    if tab == notebook.index(theme_frame):
         for theme in theme_buttons:
             theme_buttons[theme].destroy()
         create_theme_buttons()        
         update_song_list()
         
-    if tab == 2:
+    if tab == notebook.index(song_settings_frame):
         for o in song_setting_objects:
             o.destroy()
             
@@ -968,7 +1094,10 @@ create_config_path()
 get_settings()
 get_paths()
 get_themes()
+get_sfx()
 update_song_list()
+
+
 
 pygame.mixer.music.set_volume(volume / 100)
 
@@ -976,25 +1105,26 @@ root = Tk()
 root.title("RPG Music Tool v05_dev")
 root.geometry("800x800")
 
+style = ttk.Style()
+# style.layout('TNotebook.Tab', [])
+
 notebook = ttk.Notebook(root)
 notebook.pack(fill="both", expand=1)
 
 theme_frame = Frame(notebook, width=0, height=0, bg=BACKGROUND_COLOR)
-theme_frame.pack()
 
 path_settings_frame = Frame(notebook, width=800, height=800, bg=BACKGROUND_COLOR)
-path_settings_frame.pack()
 
 song_settings_frame = Frame(notebook, width=800, height=800, bg=BACKGROUND_COLOR)
-song_settings_frame.pack()
 
 settings_frame = Frame(notebook, width=800, height=800, bg=BACKGROUND_COLOR)
-settings_frame.pack()
 
 notebook.add(theme_frame, text="Themes")
 notebook.add(path_settings_frame, text="Paths")
 notebook.add(song_settings_frame, text="Song Themes")
 notebook.add(settings_frame, text="Settings")
+
+notebook.enable_traversal() 
 
 notebook.bind('<<NotebookTabChanged>>', on_tab_change)
 
@@ -1026,6 +1156,17 @@ create_path_settings_frame()
 create_song_settings_frame()
 create_settings_frame()
 
+"""
+notebook.select(theme_frame)
+
+notebook.hide(settings_frame)
+
+def test():
+    notebook.select(settings_frame)
+
+b = Button(theme_frame, text= "test", command=test)
+b.grid(row=10, column=0)
+"""
 
 # --- TK Mainloop --- #
 root.mainloop()
