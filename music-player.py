@@ -40,7 +40,9 @@ themes = {}
 inverse_themes = {}
 paths = []
 songs = {}
-text_boxes = []
+sfx_paths = []
+sfxs = {}
+text_box_song_paths_list = []
 path_buttons = {}
 current_path = ""
 
@@ -238,7 +240,9 @@ def get_settings():
 
 def get_paths():
     global paths
+    global sfx_paths
     paths = []
+    sfx_paths = []
     
     path = user_config_dir("rpg-mt", "Gladon")
 
@@ -257,6 +261,22 @@ def get_paths():
             list = csv.reader(csv_file, delimiter=',', quotechar='|')
             for row in list:
                 paths = row
+
+    try:
+        with open(path + "/sfx-paths.csv", "r", encoding="utf-8-sig") as csv_file:
+            list = csv.reader(csv_file, delimiter=',', quotechar='|')
+            for row in list:
+                if row != []:
+                    sfx_paths = row
+
+    except:
+        sfx_paths = open(path + "/sfx-paths.csv", 'a')
+        sfx_paths.close()
+
+        with open(path + "/sfx-paths.csv", "r", encoding="utf-8-sig") as csv_file:
+            list = csv.reader(csv_file, delimiter=',', quotechar='|')
+            for row in list:
+                sfx_paths = row
 
 
 def get_themes():
@@ -420,35 +440,50 @@ def create_theme_frame():
 
 
 def create_path_settings_frame():
-    global text_box
+    global text_box_song_paths
+    global text_box_sfx_paths
     global tkinter_labels
     
     paths_text = ""
     for p in paths:
         paths_text += p + "\n"
 
-    label_title = Label(path_settings_frame, text="Configure Song Paths",font=("Helvetica",20), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
-    label_title.pack()
+    song_path_label_title = Label(path_settings_frame, text="Configure Song Paths",font=("Helvetica",20), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
+    song_path_label_title.pack()
 
-    text_box = Text(path_settings_frame, height=20, width=90, bg=BACKGROUND_COLOR, fg=TEXT_COLOR,borderwidth=0)
-    text_box.pack()
-    text_box.insert('end', paths_text)
-    text_box.config(state='normal')
-    text_box.tag_configure("warning", foreground="red")
+    text_box_song_paths = Text(path_settings_frame, height=20, width=90, bg=BACKGROUND_COLOR, fg=TEXT_COLOR,borderwidth=0)
+    text_box_song_paths.pack()
+    text_box_song_paths.insert('end', paths_text)
+    text_box_song_paths.config(state='normal')
+    text_box_song_paths.tag_configure("warning", foreground="red")
     
+    paths_text = ""
+    for p in sfx_paths:
+        paths_text += p + "\n"
+
+    sfx_path_label_title = Label(path_settings_frame, text="Configure Sound Effect Paths",font=("Helvetica",20), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
+    sfx_path_label_title.pack()
+
+    text_box_sfx_paths = Text(path_settings_frame, height=10, width=90, bg=BACKGROUND_COLOR, fg=TEXT_COLOR,borderwidth=0)
+    text_box_sfx_paths.pack()
+    text_box_sfx_paths.insert('end', paths_text)
+    text_box_sfx_paths.config(state='normal')
+    text_box_sfx_paths.tag_configure("warning", foreground="red")
     
-    tkinter_labels += [label_title, text_box]
+    tkinter_labels += [song_path_label_title, sfx_path_label_title, text_box_song_paths, text_box_sfx_paths]
 
 
 def save_paths():
-    new_paths = text_box.get(1.0, 'end').split()
-    text_box.delete(1.0, 'end')
+    new_song_paths = text_box_song_paths.get(1.0, 'end').split()
+    new_sfx_paths = text_box_sfx_paths.get(1.0, 'end').split()
+    text_box_song_paths.delete(1.0, 'end')
+    text_box_sfx_paths.delete(1.0, 'end')
 
     set_path = user_config_dir("rpg-mt", "Gladon")
 
     new_text = []
 
-    for path in new_paths:
+    for path in new_song_paths:
         try:
             with open(path + "/songs.csv") as file:
                 new_text += [(path, True)]
@@ -464,13 +499,40 @@ def save_paths():
 
     for i in new_text:
         if i[1]:
-            text_box.insert('end', i[0] + "\n", None)
+            text_box_song_paths.insert('end', i[0] + "\n", None)
         else:
-            text_box.insert('end', i[0] + "\n", "warning")
+            text_box_song_paths.insert('end', i[0] + "\n", "warning")
 
     with open(set_path + "/paths.csv", "w") as csv_file:
         write = csv.writer(csv_file)
-        write.writerow(new_paths)
+        write.writerow(new_song_paths)
+
+
+    new_text = []
+
+    for path in new_sfx_paths:
+        try:
+            with open(path + "/sfx.csv") as file:
+                new_text += [(path, True)]
+
+        except:
+            try:
+                sfx = open(path + "/sfx.csv", 'a')
+                sfx.close()
+                new_text += [(path, True)]
+
+            except:
+                new_text += [(path, False)]
+
+    for i in new_text:
+        if i[1]:
+            text_box_sfx_paths.insert('end', i[0] + "\n", None)
+        else:
+            text_box_sfx_paths.insert('end', i[0] + "\n", "warning")
+
+    with open(set_path + "/sfx-paths.csv", "w") as csv_file:
+        write = csv.writer(csv_file)
+        write.writerow(new_sfx_paths)
 
 
 def create_song_settings_frame():
@@ -511,7 +573,7 @@ def update_themes():
 
     rows = []
     if current_path != "":
-        for i, box in enumerate(text_boxes):
+        for i, box in enumerate(text_box_song_paths_list):
             song = songs[current_path][i]
             themes = box.get(1.0, 'end')[:len(box.get(1.0, 'end')) - 2]
 
@@ -527,11 +589,14 @@ def update_themes():
 def update_song_list():
     for path in paths:
         songs_in_path = []
-        for x in os.listdir(path):
-            if x.endswith(".mp3"):
-                songs_in_path += [x]
+        try:
+            for x in os.listdir(path):
+                if x.endswith(".mp3"):
+                    songs_in_path += [x]
 
-        songs_in_path = sorted(songs_in_path)
+            songs_in_path = sorted(songs_in_path)
+        except:
+            songs_in_path = []
 
         if not songs[path] == songs_in_path:
             rows = []
@@ -580,7 +645,7 @@ def display_song_list(path):
     global play_buttons
     global path_label_frame
     global button_update
-    global text_boxes
+    global text_box_song_paths_list
     global path_label
     global inverse_themes
     
@@ -614,7 +679,7 @@ def display_song_list(path):
     path_label_frame.pack(expand=1, fill=X)
 
     play_buttons = []
-    text_boxes = []
+    text_box_song_paths_list = []
 
     color = BACKGROUND_COLOR
 
@@ -628,12 +693,12 @@ def display_song_list(path):
         song_label = Label(path_label_frame, text=song, font=("Helvetica", 10), bg=color, fg=TEXT_COLOR, width=55, height=2, borderwidth=0)
         song_label.grid(row=i+1, column=1)
 
-        themes_text_box = Text(path_label_frame, height=2, width=40, bg=color, fg=TEXT_COLOR, borderwidth=0)
-        themes_text_box.grid(row=i+1, column=2)
-        text_boxes += [themes_text_box]
+        themes_text_box_song_paths = Text(path_label_frame, height=2, width=40, bg=color, fg=TEXT_COLOR, borderwidth=0)
+        themes_text_box_song_paths.grid(row=i+1, column=2)
+        text_box_song_paths_list += [themes_text_box_song_paths]
         
         for theme in inverse_themes[song]:
-            themes_text_box.insert('end', theme + ";")
+            themes_text_box_song_paths.insert('end', theme + ";")
 
 
 def adjust_scrollregion():
