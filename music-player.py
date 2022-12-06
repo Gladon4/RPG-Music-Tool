@@ -957,6 +957,8 @@ def reset_settings():
     row_length_slider.config(value=ROW_LENGTH)
     row_length_label.config(text=ROW_LENGTH)
 
+    if SFX_ON_THEMES: sfx_on_themes_checkbox.select()
+
     bg_color = BACKGROUND_COLOR
     but_col = BUTTON_BG
     but_hov_col = BUTTON_HOVER
