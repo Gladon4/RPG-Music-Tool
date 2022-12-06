@@ -442,8 +442,8 @@ def create_theme_frame():
     theme_buttons_frame = LabelFrame(theme_frame, text="", bg=BACKGROUND_COLOR, padx=25, borderwidth=0, pady=10)
     theme_buttons_frame.grid(row=1, column=0)
 
-    sfx_buttons_frame = LabelFrame(theme_frame, text="", bg=BACKGROUND_COLOR, padx=25, borderwidth=0, pady=10)
-    sfx_buttons_frame.grid(row=5, column=0)
+    sfx_buttons_frame = LabelFrame(theme_frame, text="", bg=BACKGROUND_COLOR, padx=25, borderwidth=0, pady=5)
+    sfx_buttons_frame.grid(row=6, column=0)
     
     lower_frame = LabelFrame(theme_frame, text="", pady=5, padx=15, bg=BACKGROUND_COLOR, borderwidth=0)
     lower_frame.grid(row=4, column=0)
@@ -470,6 +470,9 @@ def create_theme_frame():
     label_current_theme = Label(theme_frame, text="No Theme Selected", font = ("Helvetica",20), bg=BACKGROUND_COLOR)
     label_current_theme.grid(row=0, column=0, pady=5)
 
+    label_sfx = Label(theme_frame, text="Sound Effects", font = ("Helvetica",20), bg=BACKGROUND_COLOR)
+    label_sfx.grid(row=5, column=0, pady=5)
+
     label_duration_song = Label(status, text="00:00 / 00:00", bg=BACKGROUND_COLOR)
     label_duration_song.grid(row=0, column=4, padx=5)
 
@@ -479,7 +482,7 @@ def create_theme_frame():
     label_volume = Label(volume_frame, text=str(volume),font = ("Helvetica",10), bg=BACKGROUND_COLOR)
     label_volume.grid(row=1, column=0)
 
-    tkinter_labels += [label_current_song, label_current_theme, label_duration_song, label_volume]
+    tkinter_labels += [label_current_song, label_current_theme, label_duration_song, label_volume, label_sfx]
 
     # Inputs    
     button_stop = Button(status, command=stop, image=stop_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG)
