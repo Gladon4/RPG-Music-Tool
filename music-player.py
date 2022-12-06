@@ -441,9 +441,6 @@ def create_theme_frame():
     
     theme_buttons_frame = LabelFrame(theme_frame, text="", bg=BACKGROUND_COLOR, padx=25, borderwidth=0, pady=10)
     theme_buttons_frame.grid(row=1, column=0)
-
-    sfx_buttons_frame = LabelFrame(theme_frame, text="", bg=BACKGROUND_COLOR, padx=25, borderwidth=0, pady=5)
-    sfx_buttons_frame.grid(row=6, column=0)
     
     lower_frame = LabelFrame(theme_frame, text="", pady=5, padx=15, bg=BACKGROUND_COLOR, borderwidth=0)
     lower_frame.grid(row=4, column=0)
@@ -470,9 +467,6 @@ def create_theme_frame():
     label_current_theme = Label(theme_frame, text="No Theme Selected", font = ("Helvetica",20), bg=BACKGROUND_COLOR)
     label_current_theme.grid(row=0, column=0, pady=5)
 
-    label_sfx = Label(theme_frame, text="Sound Effects", font = ("Helvetica",20), bg=BACKGROUND_COLOR)
-    label_sfx.grid(row=5, column=0, pady=5)
-
     label_duration_song = Label(status, text="00:00 / 00:00", bg=BACKGROUND_COLOR)
     label_duration_song.grid(row=0, column=4, padx=5)
 
@@ -482,7 +476,7 @@ def create_theme_frame():
     label_volume = Label(volume_frame, text=str(volume),font = ("Helvetica",10), bg=BACKGROUND_COLOR)
     label_volume.grid(row=1, column=0)
 
-    tkinter_labels += [label_current_song, label_current_theme, label_duration_song, label_volume, label_sfx]
+    tkinter_labels += [label_current_song, label_current_theme, label_duration_song, label_volume]
 
     # Inputs    
     button_stop = Button(status, command=stop, image=stop_image, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG)
@@ -506,7 +500,31 @@ def create_theme_frame():
 
     create_theme_buttons()
 
-    if SFX_ON_THEMES: create_sfx_buttons()
+    if SFX_ON_THEMES: 
+        sfx_buttons_frame = LabelFrame(theme_frame, text="", bg=BACKGROUND_COLOR, padx=25, borderwidth=0, pady=5)
+        sfx_buttons_frame.grid(row=6, column=0)
+
+        label_sfx = Label(theme_frame, text="Sound Effects", font = ("Helvetica",20), bg=BACKGROUND_COLOR)
+        label_sfx.grid(row=5, column=0, pady=5)
+        tkinter_labels += [label_sfx]
+
+        create_sfx_buttons()
+
+
+def create_sfx_frame():
+    global sfx_buttons_frame
+    global tkinter_labels
+
+
+    label_sfx = Label(sfx_frame, text="Sound Effects", font = ("Helvetica",20), bg=BACKGROUND_COLOR)
+    label_sfx.grid(row=0, column=0, pady=5)
+
+    sfx_buttons_frame = LabelFrame(sfx_frame, text="", bg=BACKGROUND_COLOR, padx=25, borderwidth=0, pady=5)
+    sfx_buttons_frame.grid(row=1, column=0)
+
+    tkinter_labels += [label_sfx]
+
+    create_sfx_buttons()
 
 
 def create_path_settings_frame():
@@ -957,6 +975,9 @@ def change_ui_scale(pos):
     ui_scale_label.config(text=UI_SCALE)
     ui_scale_slider.config(value=UI_SCALE)
 
+    save()
+    get_settings()
+
 
 def change_row_length(pos):
     global ROW_LENGTH
@@ -965,6 +986,8 @@ def change_row_length(pos):
     row_length_label.config(text=ROW_LENGTH)
     row_length_slider.config(value=ROW_LENGTH)
 
+    save()
+    get_settings()
 
 def change_sfx_on_themes():
     global SFX_ON_THEMES
@@ -1122,7 +1145,10 @@ song_settings_frame = Frame(notebook, width=800, height=800, bg=BACKGROUND_COLOR
 
 settings_frame = Frame(notebook, width=800, height=800, bg=BACKGROUND_COLOR)
 
+sfx_frame = Frame(notebook, width=800, height=800, bg=BACKGROUND_COLOR)
+
 notebook.add(theme_frame, text="Themes")
+if not SFX_ON_THEMES: notebook.add(sfx_frame, text="Sound Effects")
 notebook.add(path_settings_frame, text="Paths")
 notebook.add(song_settings_frame, text="Song Themes")
 notebook.add(settings_frame, text="Settings")
@@ -1133,6 +1159,9 @@ notebook.bind('<<NotebookTabChanged>>', on_tab_change)
 
 theme_frame.grid_rowconfigure(0, weight=0)
 theme_frame.grid_columnconfigure(0, weight=1)
+
+sfx_frame.grid_rowconfigure(0, weight=0)
+sfx_frame.grid_columnconfigure(0, weight=1)
 
 # Images
 if getattr(sys, 'frozen', False):
@@ -1155,6 +1184,7 @@ play_image_small = play_image.subsample(3, 3)
 stop_image_small = stop_image.subsample(3, 3)
 
 create_theme_frame()
+if not SFX_ON_THEMES: create_sfx_frame()
 create_path_settings_frame()
 create_song_settings_frame()
 create_settings_frame()
