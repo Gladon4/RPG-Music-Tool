@@ -1,6 +1,7 @@
-# RPG-Music-Tool (ver. 0.4.2 [First Release])
+# RPG-Music-Tool (ver. 0.5.dev [SFX Update]])
 
 ==Dev Branch==
+
 
 A small music tool for TTRPGs.
 
