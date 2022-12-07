@@ -62,7 +62,12 @@ If you later select a theme to be played, the app will select songs assigned to 
 
 ### 3 Start using
 Go back to the main tab and start using the app.
+![Screenshot from 2022-12-07 23-24-33](https://user-images.githubusercontent.com/58821835/206310072-63aadbe7-1e9e-4bd2-9f9f-a94319011e1e.png)
+
+
 
 ## Settings and Customisation
-You can change a few things about the app in the "Settings" Tab.
+You can change a few things about the app in the "Settings" Tab\
+![Screenshot from 2022-12-07 23-25-00](https://user-images.githubusercontent.com/58821835/206310022-97a702fd-ec88-4230-8bab-e6c4f6909336.png)
+
 
