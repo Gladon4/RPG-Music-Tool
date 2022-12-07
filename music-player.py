@@ -537,7 +537,7 @@ def create_path_settings_frame():
     for p in paths:
         paths_text += p + "\n"
 
-    song_path_label_title = Label(path_settings_frame, text="Configure Song Paths",font=("Helvetica",20), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
+    song_path_label_title = Label(path_settings_frame, text="Configure Music Paths",font=("Helvetica",20), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
     song_path_label_title.pack(pady=10)
 
     text_box_song_paths = Text(path_settings_frame, height=20, width=90, bg=BACKGROUND_COLOR, fg=TEXT_COLOR,borderwidth=0)
@@ -1149,7 +1149,7 @@ settings_frame = Frame(notebook, width=800, height=800, bg=BACKGROUND_COLOR)
 
 sfx_frame = Frame(notebook, width=800, height=800, bg=BACKGROUND_COLOR)
 
-notebook.add(theme_frame, text="Themes")
+notebook.add(theme_frame, text="Main")
 if not SFX_ON_THEMES: notebook.add(sfx_frame, text="Sound Effects")
 notebook.add(path_settings_frame, text="Paths")
 notebook.add(song_settings_frame, text="Song Themes")
