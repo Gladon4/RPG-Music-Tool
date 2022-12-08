@@ -1130,7 +1130,7 @@ update_song_list()
 pygame.mixer.music.set_volume(volume / 100)
 
 root = Tk()
-root.title("RPG Music Tool v05_dev")
+root.title("RPG Music Tool v05")
 root.geometry("800x800")
 
 style = ttk.Style()
