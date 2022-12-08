@@ -1,4 +1,4 @@
-# RPG-Music-Tool (ver. 0.5.dev [SFX Update]])
+# RPG-Music-Tool (ver. 0.5.0 [SFX Update]])
 
 - **[Installation](#installation)**
 	- [Windows and Linux](#windows-and-linux)
