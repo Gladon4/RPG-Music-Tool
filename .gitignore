@@ -3,6 +3,10 @@ song-settings.py
 songs.csv
 *.spec
 __pycache__/
+dist/
+build/
 img/fire_img.png
 img/rainy_img.png
 img/thunderstorm_img.png
+build.sh
+*.AppImage
