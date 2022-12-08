@@ -1,7 +1,5 @@
 # RPG-Music-Tool (ver. 0.5.dev [SFX Update]])
 
-==Dev Branch==
-
 - **[Installation](#installation)**
 	- [Windows and Linux](#windows-and-linux)
 	- [Mac (not supported for now)](#mac)
