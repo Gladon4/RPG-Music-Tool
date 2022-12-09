@@ -1133,7 +1133,7 @@ root = Tk()
 root.title("RPG Music Tool v05")
 root.geometry("800x800")
 
-style = ttk.Style()
+# style = ttk.Style()
 # style.layout('TNotebook.Tab', [])
 
 notebook = ttk.Notebook(root)
