@@ -19,9 +19,12 @@ Classes:
 
 from player import Player
 from settings_manager import Set_Manager
+from sound_manager import Sound_Manager
+from main_tab import Main_Tab
 
 
 from tkinter import *
+from tkinter import ttk
 
 
 # --- Constants --- #
@@ -33,23 +36,38 @@ START_SIZE = "800x800"
 
 # --- Objects--- #
 set_manager = Set_Manager()
-
-player = Player(set_manager)
+sound_manager = Sound_Manager(set_manager)
+player = Player(set_manager, sound_manager)
 
 root = Tk()
-# style = ttk.Style()
+
+style = ttk.Style()
+notebook = ttk.Notebook(root)
+
+main_tab = Main_Tab(set_manager, sound_manager, notebook, player)
 
 
 # Load settings and create the tab classes
 def setup():
 	set_manager.load_settings()
+	set_manager.load_paths()
+
+	sound_manager.load_themes()
+	sound_manager.load_sfx()
 
 	player.set_volume()
 
 
 	root.title(APP_NAME)
 	root.geometry(START_SIZE)
+
 	# style.layout('TNotebook.Tab', [])
+	notebook.pack(fill="both", expand=1)
+
+	main_tab.create()
+	notebook.add(main_tab.frame, text="Main")
+
+
 
 
 # Run the app
