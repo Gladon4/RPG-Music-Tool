@@ -111,38 +111,22 @@ class Set_Manager():
 		self.music_paths = []
 		self.sfx_paths = []
 		
-
 		# --- Music --- #
-		try:
-			with open(self.path + "/paths.csv", "r", encoding="utf-8-sig") as csv_file:
-				list = csv.reader(csv_file, delimiter=',', quotechar='|')
-				for row in list:
-					if row != []:
-						self.music_paths = row
-
-		except:
+		if not isfile(self.path + "/paths.csv"):
 			open(self.path + "/paths.csv", 'a').close()
-
-			with open(self.path + "/paths.csv", "r", encoding="utf-8-sig") as csv_file:
-				list = csv.reader(csv_file, delimiter=',', quotechar='|')
-				for row in list:
+		with open(self.path + "/paths.csv", "r", encoding="utf-8-sig") as csv_file:
+			list = csv.reader(csv_file, delimiter=',', quotechar='|')
+			for row in list:
+				if row != []:
 					self.music_paths = row
 
-
 		# --- SFX --- #
-		try:
-			with open(self.path + "/sfx-paths.csv", "r", encoding="utf-8-sig") as csv_file:
-				list = csv.reader(csv_file, delimiter=',', quotechar='|')
-				for row in list:
-					if row != []:
-						self.sfx_paths = row
-
-		except:
+		if not isfile(self.path + "/sfx-paths.csv"):
 			open(self.path + "/sfx-paths.csv", 'a').close()
-
-			with open(self.path + "/sfx-paths.csv", "r", encoding="utf-8-sig") as csv_file:
-				list = csv.reader(csv_file, delimiter=',', quotechar='|')
-				for row in list:
+		with open(self.path + "/sfx-paths.csv", "r", encoding="utf-8-sig") as csv_file:
+			list = csv.reader(csv_file, delimiter=',', quotechar='|')
+			for row in list:
+				if row != []:
 					self.sfx_paths = row
 
 	def store_paths(self):

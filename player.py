@@ -37,18 +37,23 @@ class Player():
 		self.play()
 		
 
-	def play(self):
-		song_id = randint(0, len(self.sound_manager.themes[self.theme]) - 1)
-		song_path = self.sound_manager.themes[self.theme][song_id]
-		
-		mixer.music.load(song_path)
-		mixer.music.play(loops=0)
+	def play(self, song=None):
+		if song == None:
+			song_id = randint(0, len(self.sound_manager.themes[self.theme]) - 1)
+			song_path = self.sound_manager.themes[self.theme][song_id]
+			
+			mixer.music.load(song_path)
+			mixer.music.play(loops=0)
 
-		self.length = MP3(song_path).info.length
-		self.paused = False
-		self.song = song_path
+			self.length = MP3(song_path).info.length
+			self.paused = False
+			self.song = song_path
 
-		print(f'Next Song: {song_path}')
+			print(f'Next Song: {song_path}')
+
+		else:
+			mixer.music.load(song)
+			mixer.music.play(loops=0)
 
 	def stop(self):
 		self.paused = True
@@ -65,12 +70,17 @@ class Player():
 
 		self.paused = not self.paused
 
-
 	def skip(self):
 		if not self.theme == None:
 			self.play()
 
-	def play_sfx(self, sfx):
+
+	def play_sfx(self, sfx_path):
+		sfx = mixer.Sound(sfx_path)
+
+		mixer.Sound.set_volume(sfx, 4 * (self.set_manager.settings["volume"] / 100))
+		mixer.Sound.play(sfx)
+
 		print(f'\nSFX: {sfx}')
 
 
