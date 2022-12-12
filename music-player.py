@@ -242,7 +242,6 @@ def get_settings():
         get_settings()    
 
 
-
 def get_paths():
     global paths
     global sfx_paths
@@ -412,7 +411,6 @@ def create_sfx_buttons():
         i += 1
 
         sfx_buttons[sfx] = theme_play_button
-
     
 
 def play_sfx(sfx_path):
@@ -990,6 +988,7 @@ def change_row_length(pos):
 
     save()
     get_settings()
+
 
 def change_sfx_on_themes():
     global SFX_ON_THEMES

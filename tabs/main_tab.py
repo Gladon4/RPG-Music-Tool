@@ -15,9 +15,10 @@ import sys
 import time
 
 class Main_Tab():
-	def __init__(self, set_manager, sound_manager, notebook, player):
+	def __init__(self, set_manager, sound_manager, tab_manager, notebook, player):
 		self.set_manager = set_manager
 		self.sound_manager = sound_manager
+		self.tab_manager = tab_manager
 		self.notebook = notebook
 		self.player = player
 		self.objects = {"labels" 	: [],
@@ -35,25 +36,29 @@ class Main_Tab():
 		self.frame.grid_columnconfigure(0, weight=1)
 
 
+
 		# --- Frames --- #
 
 		self.theme_buttons_frame = LabelFrame(self.frame, text="", bg=settings["bg_color"], padx=25, borderwidth=0, pady=10)
 		self.theme_buttons_frame.grid(row=1, column=0)
+
+		self.settings_buttons_frame = LabelFrame(self.frame, bg=settings["bg_color"], padx=0, borderwidth=0)
+		self.settings_buttons_frame.grid(row=0, column=1, rowspan=2, sticky="ne")
 		
 		self.lower_frame = LabelFrame(self.frame, text="", pady=5, padx=15, bg=settings["bg_color"], borderwidth=0)
 		self.lower_frame.grid(row=4, column=0)
 
 		self.status = LabelFrame(self.lower_frame, text="", pady=15, padx=15, bg=settings["sec_bg_color"], borderwidth=1)
-		self.status.grid(row=0, column=0, padx=5)
+		self.status.grid(row=0, column=0, padx=2)
 
 		self.volume_frame = LabelFrame(self.lower_frame, text="", pady=15, padx=15, bg=settings["sec_bg_color"],)
-		self.volume_frame.grid(row=0, column=1, padx=5)
+		self.volume_frame.grid(row=0, column=1, padx=2)
 
 		self.volume_plus_minus_frame = LabelFrame(self.lower_frame, text="", pady=2, padx=2, bg=settings["bg_color"], borderwidth=0)
-		self.volume_plus_minus_frame.grid(row=0, column=2, padx=5)
+		self.volume_plus_minus_frame.grid(row=0, column=2, padx=2)
 
 
-		self.objects["labels"] 		+= [self.theme_buttons_frame, self.lower_frame, self.volume_plus_minus_frame]
+		self.objects["labels"] 		+= [self.theme_buttons_frame, self.lower_frame, self.volume_plus_minus_frame, self.settings_buttons_frame]
 		self.objects["sec_labels"] 	+= [self.status, self.volume_frame]
 
 
@@ -102,9 +107,12 @@ class Main_Tab():
 		self.volume_down_button = Button(self.volume_plus_minus_frame, command=lambda x=self: Main_Tab.__volume_down(self), image=self.minus_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.volume_down_button.grid(row=1, column=1, pady=5)
 
+		self.settings_button = Button(self.settings_buttons_frame, command=lambda x=self: self.tab_manager.select("settings"), image=self.settings_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
+		self.settings_button.pack(side="bottom")
+
 
 		self.objects["buttons"]		+= [self.button_stop, self.button_pause, self.button_skip, self.volume_down_button,
-										self.volume_up_button]
+										self.volume_up_button, self.settings_button]
 
 
 		self.__create_theme_buttons()
@@ -128,6 +136,9 @@ class Main_Tab():
 	def update_elements(self):
 		pass
 
+	def __select_settings(self):
+		self.tab_manager.select("settings")
+
 
 	# Media Methods
 	def __play(self, theme):
@@ -148,6 +159,7 @@ class Main_Tab():
 		self.player.pause()
 
 	def __stop(self):
+		self.theme_buttons[self.player.theme].config(bg=self.set_manager.settings["button_bg_color"], relief=RAISED)
 		self.player.stop()
 		self.__update_music_labels()
 
@@ -298,6 +310,7 @@ class Main_Tab():
 			self.play_image 	= PhotoImage(file=os.path.join(sys._MEIPASS, "img/play_img.png"))
 			self.plus_image 	= PhotoImage(file=os.path.join(sys._MEIPASS, "img/plus_img.png"))
 			self.minus_image 	= PhotoImage(file=os.path.join(sys._MEIPASS, "img/minus_img.png"))
+			self.settings_image = PhotoImage(file=os.path.join(sys._MEIPASS, "img/settings_img.png"))
 			
 		else:
 			self.stop_image 	= PhotoImage(file="img/stop_img.png")
@@ -306,3 +319,4 @@ class Main_Tab():
 			self.play_image 	= PhotoImage(file="img/play_img.png")
 			self.plus_image 	= PhotoImage(file="img/plus_img.png")
 			self.minus_image 	= PhotoImage(file="img/minus_img.png")
+			self.settings_image = PhotoImage(file="img/settings_img.png")
