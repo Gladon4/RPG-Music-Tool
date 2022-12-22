@@ -42,8 +42,8 @@ class Main_Tab():
 		self.theme_buttons_frame = LabelFrame(self.frame, text="", bg=settings["bg_color"], padx=25, borderwidth=0, pady=10)
 		self.theme_buttons_frame.grid(row=1, column=0)
 
-		self.settings_buttons_frame = LabelFrame(self.frame, bg=settings["bg_color"], padx=0, borderwidth=0)
-		self.settings_buttons_frame.grid(row=0, column=1, rowspan=2, sticky="ne")
+		self.navigation_buttons_frame = LabelFrame(self.frame, bg=settings["bg_color"], padx=0, borderwidth=0)
+		self.navigation_buttons_frame.grid(row=0, column=1, rowspan=2, sticky="ne")
 		
 		self.lower_frame = LabelFrame(self.frame, text="", pady=5, padx=15, bg=settings["bg_color"], borderwidth=0)
 		self.lower_frame.grid(row=4, column=0)
@@ -58,7 +58,7 @@ class Main_Tab():
 		self.volume_plus_minus_frame.grid(row=0, column=2, padx=2)
 
 
-		self.objects["labels"] 		+= [self.theme_buttons_frame, self.lower_frame, self.volume_plus_minus_frame, self.settings_buttons_frame]
+		self.objects["labels"] 		+= [self.theme_buttons_frame, self.lower_frame, self.volume_plus_minus_frame, self.navigation_buttons_frame]
 		self.objects["sec_labels"] 	+= [self.status, self.volume_frame]
 
 
@@ -107,7 +107,7 @@ class Main_Tab():
 		self.volume_down_button = Button(self.volume_plus_minus_frame, command=lambda x=self: Main_Tab.__volume_down(self), image=self.minus_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.volume_down_button.grid(row=1, column=1, pady=5)
 
-		self.settings_button = Button(self.settings_buttons_frame, command=lambda x=self: self.tab_manager.select("settings"), image=self.settings_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
+		self.settings_button = Button(self.navigation_buttons_frame, command=lambda x=self: self.tab_manager.select("settings"), image=self.settings_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.settings_button.pack(side="bottom")
 
 

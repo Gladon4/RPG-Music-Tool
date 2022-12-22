@@ -83,7 +83,7 @@ def setup():
 
 # Run the app
 def main():
-	print("\n ---RPG MUSIC TOOL--- \n")
+	print("\n ---RPG MUSIC TOOL v06dev--- \n")
 
 	root.mainloop()
 
