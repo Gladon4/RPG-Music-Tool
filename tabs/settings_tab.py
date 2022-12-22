@@ -24,63 +24,57 @@ class Settings_Tab():
 
 		# --- Main Frame --- #
 		self.frame = Frame(self.notebook, width=0, height=0, bg=settings["bg_color"])
+		self.frame.grid_rowconfigure(0, weight=0)
+		self.frame.grid_columnconfigure(0, weight=1)
 
 
 		# --- Frames --- #
 
-		self.settings_buttons_frame = LabelFrame(self.frame, bg=settings["bg_color"], padx=0, borderwidth=0)
-		self.settings_buttons_frame.grid(row=0, column=1, rowspan=2, sticky="ne")
+		self.navigation_buttons_frame = LabelFrame(self.frame, bg=settings["bg_color"], padx=0, borderwidth=0)
+		self.navigation_buttons_frame.grid(row=0, column=1, rowspan=2, sticky="nw")
+
+		self.ui_setting_frame = LabelFrame(self.frame, text="UI Settings", font=("Helvetica",15), pady=15, padx=15, bg=settings["sec_bg_color"], borderwidth=0)
+		self.ui_setting_frame.grid(row=2, column=0)
 		
 
 		# --- Labels --- #
 
+		self.label_title_app_settings = Label(self.frame, text="Application Settings",font=("Helvetica",20), bg=settings["bg_color"], fg=settings["txt_color"])
+		self.label_title_app_settings.grid(row=0, column=0)
+
+		self.label_subtitle_ui_scale = Label(self.ui_setting_frame, text="Theme Button Scale",font=("Helvetica",12), padx=15, bg=settings["sec_bg_color"], fg=settings["txt_color"])
+		self.label_subtitle_ui_scale.grid(row=0, column=0)
+
+		self.label_subtitle_ui_scale = Label(self.ui_setting_frame, text="Theme Button Scale",font=("Helvetica",12), padx=15, bg=settings["sec_bg_color"], fg=settings["txt_color"])
+		self.label_subtitle_ui_scale.grid(row=0, column=0)
+
+		self.ui_scale_label = Label(self.ui_setting_frame, text=settings["ui_scale"], font=("Helvetica",12), padx=10, bg=settings["sec_bg_color"], fg=settings["txt_color"])
+		self.ui_scale_label.grid(row=0, column=2)
+
+		self.label_subtitle_row_lenght = Label(self.ui_setting_frame, text="Themes Buttons per Row",font=("Helvetica",12), padx=15, bg=settings["sec_bg_color"], fg=settings["txt_color"])
+		self.label_subtitle_row_lenght.grid(row=2, column=0)
+
+		self.row_length_label = Label(self.ui_setting_frame, text=settings["row_length"], font=("Helvetica",12), padx=10, bg=settings["sec_bg_color"], fg=settings["txt_color"])
+		self.row_length_label.grid(row=2, column=2)
+
+		self.sfx_on_themes_label = Label(self.ui_setting_frame, text="Display SFX on Themes Tab", font=("Helvetica",12), padx=10, bg=settings["sec_bg_color"], fg=settings["txt_color"])
+		self.sfx_on_themes_label.grid(row=3, column=0, pady=10)
+
 
 		# --- Inputs --- #
 
-		self.settings_button = Button(self.settings_buttons_frame, command=lambda x=self: self.tab_manager.select("main"), image=self.back_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
+		self.settings_button = Button(self.navigation_buttons_frame, command=lambda x=self: self.tab_manager.select("main"), image=self.back_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.settings_button.pack(side="bottom")
 
-		"""
-		label_title_app_settings = Label(self.frame, text="Application Settings",font=("Helvetica",20), bg=settings["bg_color"], fg=settings["txt_color"])
-		label_title_app_settings.pack()
+		self.ui_scale_slider = ttk.Scale(self.ui_setting_frame, from_=1, to=5, value=settings["ui_scale"], length=200)
+		self.ui_scale_slider.grid(row=0, column=1, pady=10)
 
-		ui_setting_frame = LabelFrame(self.frame, text="UI Settings", font=("Helvetica",15), pady=15, padx=15, bg=settings["sec_bg_color"], borderwidth=0)
-		ui_setting_frame.pack(pady=10)
+		self.row_length_slider = ttk.Scale(self.ui_setting_frame, from_=3, to=10, value=settings["row_length"], length=200)
+		self.row_length_slider.grid(row=2, column=1, pady=10)
 
-		label_subtitle_ui_scale = Label(ui_setting_frame, text="Theme Button Scale",font=("Helvetica",12), padx=15, bg=settings["sec_bg_color"], fg=settings["txt_color"])
-		label_subtitle_ui_scale.grid(row=0, column=0)
-
-		ui_scale_slider = ttk.Scale(ui_setting_frame, from_=1, to=5, value=settings["ui_scale"], length=200)
-		ui_scale_slider.grid(row=0, column=1, pady=10)
-
-		ui_scale_label = Label(ui_setting_frame, text=settings["ui_scale"], font=("Helvetica",12), padx=10, bg=settings["sec_bg_color"], fg=settings["txt_color"])
-		ui_scale_label.grid(row=0, column=2)
-
-
-		label_subtitle_row_lenght = Label(ui_setting_frame, text="Themes Buttons per Row",font=("Helvetica",12), padx=15, bg=settings["sec_bg_color"], fg=settings["txt_color"])
-		label_subtitle_row_lenght.grid(row=2, column=0)
-
-		row_length_slider = ttk.Scale(ui_setting_frame, from_=3, to=10, value=settings["row_length"], length=200)
-		row_length_slider.grid(row=2, column=1, pady=10)
-
-		row_length_label = Label(ui_setting_frame, text=settings["row_length"], font=("Helvetica",12), padx=10, bg=settings["sec_bg_color"], fg=settings["txt_color"])
-		row_length_label.grid(row=2, column=2)
-
-
-		sfx_on_themes_label = Label(ui_setting_frame, text="Display SFX on Themes Tab", font=("Helvetica",12), padx=10, bg=settings["sec_bg_color"], fg=settings["txt_color"])
-		sfx_on_themes_label.grid(row=3, column=0, pady=10)
-
-		var1 = True
-
-		sfx_on_themes_checkbox = Checkbutton(ui_setting_frame, text="  (Requires Restart)  ", height=2, bg=settings["button_bg_color"], activebackground=settings["button_hov_color"])
-		sfx_on_themes_checkbox.grid(row=3, column=1)
-
-		"""
-		
-		
-
-
-		# if settings["sfx_on_themes"]: sfx_on_themes_checkbox.select()
+		self.sfx_on_themes_checkbox = Checkbutton(self.ui_setting_frame, text="  (Requires Restart)  ", height=2, bg=settings["button_bg_color"], activebackground=settings["button_hov_color"])
+		self.sfx_on_themes_checkbox.grid(row=3, column=1)
+		if settings["sfx_on_themes"]: self.sfx_on_themes_checkbox.select()
 		
 		# -- Color Settings -- #
 
