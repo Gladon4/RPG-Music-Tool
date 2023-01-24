@@ -13,6 +13,7 @@ from tkinter import *
 from tkinter import ttk
 import sys
 import time
+import os
 
 class Main_Tab():
 	def __init__(self, set_manager, sound_manager, tab_manager, notebook, player):
@@ -26,14 +27,15 @@ class Main_Tab():
 						"buttons"	: []}
 
 
-	def create(self):
+	def create(self, new=False):
 		settings = self.set_manager.settings
 		self.__load_imgs()
 
 		# --- Main Frame --- #
-		self.frame = Frame(self.notebook, width=0, height=0, bg=settings["bg_color"])
-		self.frame.grid_rowconfigure(0, weight=0)
-		self.frame.grid_columnconfigure(0, weight=1)
+		if (not new):
+			self.frame = Frame(self.notebook, width=0, height=0, bg=settings["bg_color"])
+			self.frame.grid_rowconfigure(0, weight=0)
+			self.frame.grid_columnconfigure(0, weight=1)
 
 
 
@@ -73,18 +75,18 @@ class Main_Tab():
 		self.label_current_theme = Label(self.frame, text="No Theme Selected", font = ("Helvetica",20), bg=settings["bg_color"], fg=settings["txt_color"])
 		self.label_current_theme.grid(row=0, column=0, pady=5)
 
-		self.label_duration_song = Label(self.status, text="00:00 / 00:00", bg=settings["bg_color"], fg=settings["txt_color"])
+		self.label_duration_song = Label(self.status, text="00:00 / 00:00", font=("Helvetica",12), bg=settings["sec_bg_color"], fg=settings["txt_color"])
 		self.label_duration_song.grid(row=0, column=4, padx=5)
 
-		self.song_progress = ttk.Progressbar(self.status, orient=HORIZONTAL, length=300, mode='determinate')
+		self.song_progress = ttk.Progressbar(self.status, orient=HORIZONTAL, length=280, mode='determinate')
 		self.song_progress.grid(row=0, column=3, padx=5)
 
-		self.label_volume = Label(self.volume_frame, text=str(settings["volume"]),font = ("Helvetica",10), bg=settings["bg_color"], fg=settings["txt_color"])
+		self.label_volume = Label(self.volume_frame, text=str(settings["volume"]),font=("Helvetica",10,'bold'), bg=settings["sec_bg_color"], fg=settings["txt_color"])
 		self.label_volume.grid(row=1, column=0)
 
 
-		self.objects["labels"] 		+= [self.label_current_song, self.label_current_song_path, self.label_current_theme, 
-										self.label_duration_song, self.label_volume]
+		self.objects["labels"] 	+= [self.label_current_song, self.label_current_song_path, self.label_current_theme, 
+									self.label_duration_song, self.label_volume]
 
 
 		# --- Inputs --- #
@@ -98,21 +100,21 @@ class Main_Tab():
 		self.button_skip = Button(self.status, command=self.__skip, image=self.skip_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.button_skip.grid(row=0, column=2)
 
-		self.volume_changer = ttk.Scale(self.volume_frame, from_=100, to=0, orient=VERTICAL, value=settings["volume"], command=lambda x=self: Main_Tab.__change_volume(self), length=120)
+		self.volume_changer = ttk.Scale(self.volume_frame, from_=100, to=0, orient=VERTICAL, value=settings["volume"], command=self.__change_volume, length=120)
 		self.volume_changer.grid(row=0, column=0)
 
-		self.volume_up_button = Button(self.volume_plus_minus_frame, command=lambda x=self: Main_Tab.__volume_up(self), image=self.plus_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
+		self.volume_up_button = Button(self.volume_plus_minus_frame, command=self.__volume_up, image=self.plus_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.volume_up_button.grid(row=0, column=1, pady=5)
 
-		self.volume_down_button = Button(self.volume_plus_minus_frame, command=lambda x=self: Main_Tab.__volume_down(self), image=self.minus_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
+		self.volume_down_button = Button(self.volume_plus_minus_frame, command=self.__volume_down, image=self.minus_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.volume_down_button.grid(row=1, column=1, pady=5)
 
 		self.settings_button = Button(self.navigation_buttons_frame, command=lambda x=self: self.tab_manager.select("settings"), image=self.settings_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.settings_button.pack(side="bottom")
 
 
-		self.objects["buttons"]		+= [self.button_stop, self.button_pause, self.button_skip, self.volume_down_button,
-										self.volume_up_button, self.settings_button]
+		self.objects["buttons"]	+= [self.button_stop, self.button_pause, self.button_skip, self.volume_down_button,
+									self.volume_up_button, self.settings_button]
 
 
 		self.__create_theme_buttons()
@@ -133,12 +135,16 @@ class Main_Tab():
 		self.__song_duration()
 
 
+	def __destroy(self):
+		for category in self.objects:
+			for object in self.objects[category]:
+				object.destroy()
+
+	
 	def update_elements(self):
-		pass
-
-	def __select_settings(self):
-		self.tab_manager.select("settings")
-
+		self.frame.config(bg=self.set_manager.settings["bg_color"])
+		self.__destroy()
+		self.create(True)
 
 	# Media Methods
 	def __play(self, theme):
@@ -220,17 +226,16 @@ class Main_Tab():
 		if button: self.volume_changer.set(volume)
 		self.player.set_volume()
 
-	def __change_volume(other):
-		volume = other.volume_changer.get()
-		other.__set_volume(volume)
+	def __change_volume(self, pos):
+		self.__set_volume(float(pos))
 
-	def __volume_up(other):
-		volume = other.set_manager.settings["volume"] + 1
-		other.__set_volume(volume, True)
+	def __volume_up(self):
+		volume = self.set_manager.settings["volume"] + 1
+		self.__set_volume(volume, True)
 
-	def __volume_down(other):
-		volume = other.set_manager.settings["volume"] - 1
-		other.__set_volume(volume, True)
+	def __volume_down(self):
+		volume = self.set_manager.settings["volume"] - 1
+		self.__set_volume(volume, True)
 
 
 
