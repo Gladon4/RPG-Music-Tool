@@ -1,4 +1,4 @@
-# RPG-Music-Tool (ver. 0.6.dev])
+# RPG-Music-Tool (ver. 0.6.dev)
 
 ==DEV BRANCH==
 
