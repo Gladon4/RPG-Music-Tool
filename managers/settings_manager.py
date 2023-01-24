@@ -75,6 +75,10 @@ class Set_Manager():
 			except:
 				pass
 
+	def reset_to_defaults(self):
+		self.__write_default_settings()
+		self.load_settings()
+
 	def __write_default_settings(self):
 		# --- Defaults --- #
 		# Color

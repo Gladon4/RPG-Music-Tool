@@ -13,4 +13,8 @@ class Tab_Manager():
 
 	def select(self, tab):
 		sel = self.tabs[tab]
-		self.notebook.select(sel)
+		self.notebook.select(sel.frame)
+
+	def update_all_tab_elements(self):
+		for tab in self.tabs:
+			self.tabs[tab].update_elements()

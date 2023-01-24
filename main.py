@@ -76,8 +76,8 @@ def setup():
 	settings_tab.create()
 	notebook.add(settings_tab.frame, text="Settings")
 
-	tab_manager.set_tabs({"main": main_tab.frame, 
-						  "settings": settings_tab.frame})
+	tab_manager.set_tabs({"main": main_tab, 
+						  "settings": settings_tab})
 
 
 
