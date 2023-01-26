@@ -134,4 +134,21 @@ class Set_Manager():
 					self.sfx_paths = row
 
 	def store_paths(self):
-		pass
+		# --- Music --- #
+		if not isfile(self.path + "/paths.csv"):
+			open(self.path + "/paths.csv", 'a').close()
+
+		for path in self.music_paths:
+			try:
+				with open(path + "/songs.csv") as file:
+					pass
+			except:
+				try:
+					songs = open(path + "/songs.csv", 'a')
+					songs.close()
+				except:
+					pass
+
+		with open(self.path + "/paths.csv", "w") as csv_file:
+			write = csv.writer(csv_file)
+			write.writerow(self.music_paths)
