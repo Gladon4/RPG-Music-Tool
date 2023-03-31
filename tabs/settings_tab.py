@@ -38,7 +38,7 @@ class Settings_Tab():
 		self.navigation_buttons_frame = LabelFrame(self.frame, bg=settings["bg_color"], padx=0, borderwidth=0)
 		self.navigation_buttons_frame.grid(row=0, column=1, rowspan=2, sticky="nw")
 
-		self.ui_setting_frame = LabelFrame(self.frame, text="UI Settings", font=("Helvetica",15), pady=15, padx=15, bg=settings["sec_bg_color"], borderwidth=0)
+		self.ui_setting_frame = LabelFrame(self.frame, font=("Helvetica",15), pady=15, padx=15, bg=settings["sec_bg_color"], borderwidth=0)
 		self.ui_setting_frame.grid(row=2, column=0)
 		
 
@@ -68,8 +68,16 @@ class Settings_Tab():
 
 		# --- Inputs --- #
 
-		self.settings_button = Button(self.navigation_buttons_frame, command=self.__select_main_tab, image=self.back_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
-		self.settings_button.pack(side="bottom")
+		self.settings_button = Button(self.navigation_buttons_frame, command=lambda tab="main": self.__select_tab(tab), image=self.back_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
+		self.settings_button.pack(side="top")
+
+		self.paths_button = Button(self.navigation_buttons_frame, command=lambda tab="paths": self.__select_tab(tab), image=self.list_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
+		self.paths_button.pack(side="top")
+
+		self.themes_button = Button(self.navigation_buttons_frame, command=lambda tab="themes": self.__select_tab(tab), image=self.themes_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
+		self.themes_button.pack(side="top")
+
+
 
 		self.ui_scale_slider = ttk.Scale(self.ui_setting_frame, from_=1, to=5, value=settings["ui_scale"], command=self.__change_ui_scale, length=200)
 		self.ui_scale_slider.grid(row=0, column=1, pady=10)
@@ -95,13 +103,13 @@ class Settings_Tab():
 		colorNames = {"bg_color": "Background Colour", "sec_bg_color": "Secondary Backgroud Colour", "button_bg_color": "Button Colour", "button_hov_color": "Hover Button Colour", "txt_color": "Text Colour"}
 
 		for i, color in enumerate(colors):
-			label_frame = LabelFrame(colors_frame, bg=settings["sec_bg_color"], text=colorNames[color], fg=settings["txt_color"])
+			label_frame = LabelFrame(colors_frame, bg=settings["sec_bg_color"], text=colorNames[color], fg=settings["txt_color"], borderwidth=0)
 			label_frame.grid(row=i//3+1, column=i % 3, padx=6, pady=6)
 			color_label_frame = LabelFrame(label_frame, bg=settings["bg_color"], borderwidth=3)
 			color_label_frame.grid(row=0, column=0)
 			color_label = Label(color_label_frame, width=18, height=9, bg=colors[color])
 			color_label.pack()
-			picker_button = Button(label_frame, text="Pick Colour", command=lambda color=color, name=colorNames[color]: self.__change_color(color, name), activebackground=settings["button_hov_color"], bg=settings["button_bg_color"], fg=settings["txt_color"], height=4, width=6)
+			picker_button = Button(label_frame, text="Pick\nColour", command=lambda color=color, name=colorNames[color]: self.__change_color(color, name), activebackground=settings["button_hov_color"], bg=settings["button_bg_color"], fg=settings["txt_color"], height=3, width=5)
 			picker_button.grid(row=0, column=1, padx=5)
 
 			self.objects["color_elems"][color] = color_label
@@ -123,25 +131,29 @@ class Settings_Tab():
 					self.objects[category][object].destroy()
 				
 
-	
 	def update_elements(self):
 		self.frame.config(bg=self.set_manager.settings["bg_color"])
 		self.__destroy()
 		self.create(True)
 
 	
-	def __select_main_tab(self):
+	def __select_tab(self, tab):
 		if (self.change):
 			self.tab_manager.update_all_tab_elements()
 			self.change = False
-		self.tab_manager.select("main")
+		self.tab_manager.select(tab)
+
 
 	def __load_imgs(self):
 		if getattr(sys, 'frozen', False):
 			self.back_image = PhotoImage(file=os.path.join(sys._MEIPASS, "img/back_img.png"))
+			self.list_image = PhotoImage(file=os.path.join(sys._MEIPASS, "img/list_img.png"))
+			self.themes_image = PhotoImage(file=os.path.join(sys._MEIPASS, "img/label.png"))
 			
 		else:
 			self.back_image = PhotoImage(file="img/back_img.png")
+			self.list_image = PhotoImage(file="img/list_img.png")
+			self.themes_image = PhotoImage(file="img/label.png")
 		
 	def __change_ui_scale(self, pos):
 		self.change = True

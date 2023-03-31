@@ -18,11 +18,15 @@ Classes:
 """
 
 from player import Player
+
 from managers.settings_manager import Set_Manager
 from managers.sound_manager import Sound_Manager
+from managers.tab_manager import Tab_Manager
+
 from tabs.main_tab import Main_Tab
 from tabs.settings_tab import Settings_Tab
-from managers.tab_manager import Tab_Manager
+from tabs.paths_tab import Paths_Tab
+from tabs.themes_tab import Themes_Tab
 
 
 from tkinter import *
@@ -51,6 +55,8 @@ tab_manager = Tab_Manager(notebook)
 
 main_tab = Main_Tab(set_manager, sound_manager, tab_manager, notebook, player)
 settings_tab = Settings_Tab(set_manager, tab_manager, notebook)
+paths_tab = Paths_Tab(set_manager, tab_manager, notebook, sound_manager)
+themse_tab = Themes_Tab(set_manager, sound_manager, tab_manager, notebook, player)
 
 
 # Load settings and create the tab classes
@@ -76,8 +82,16 @@ def setup():
 	settings_tab.create()
 	notebook.add(settings_tab.frame, text="Settings")
 
+	paths_tab.create()
+	notebook.add(paths_tab.frame, text="Paths")
+
+	themse_tab.create()
+	notebook.add(themse_tab.frame, text="Themes")
+
 	tab_manager.set_tabs({"main": main_tab, 
-						  "settings": settings_tab})
+						  "settings": settings_tab,
+						  "paths": paths_tab,
+						  "themes": themse_tab})
 
 
 
