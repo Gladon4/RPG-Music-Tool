@@ -14,8 +14,23 @@ root.geometry(START_SIZE)
 
 def picker():
 	dirs = tkfilebrowser.askopendirnames(title="Select your Music Directories", initialdir="/home/", okbuttontext="Select")
+	i = len(set_manager.music_paths)
+
 	for dir in dirs:
-		print(dir)
+		path_delete_button = Button(frame, text="del", command=lambda i=i: delete(i))
+		path_delete_button.grid(row=i, column=0)
+		path_label = Label(frame, text=dir,font=("Helvetica",12))
+		path_label.grid(row=i, column=1)
+		paths[i] = [path_delete_button, path_label]
+		set_manager.music_paths += [dir]
+		i += 1
+	
+	update()
+
+def update():
+	for path in paths:
+		paths[path][0].grid(row=path, column=0)
+		paths[path][1].grid(row=path, column=1)
 
 def delete(index):
 	global paths
@@ -45,7 +60,6 @@ paths = {}
 frame = Frame(root)
 frame.pack()
 
-paths_text = ""
 for i, path in enumerate(set_manager.music_paths):
 	path_delete_button = Button(frame, text="del", command=lambda i=i: delete(i))
 	path_delete_button.grid(row=i, column=0)

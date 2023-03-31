@@ -100,7 +100,7 @@ class Main_Tab():
 		self.button_skip = Button(self.status, command=self.__skip, image=self.skip_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.button_skip.grid(row=0, column=2)
 
-		self.volume_changer = ttk.Scale(self.volume_frame, from_=100, to=0, orient=VERTICAL, value=settings["volume"], command=self.__change_volume, length=120)
+		self.volume_changer = ttk.Scale(self.volume_frame, from_=100, to=0, orient=VERTICAL, value=int(settings["volume"]), command=self.__change_volume, length=120)
 		self.volume_changer.grid(row=0, column=0)
 
 		self.volume_up_button = Button(self.volume_plus_minus_frame, command=self.__volume_up, image=self.plus_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
@@ -227,7 +227,7 @@ class Main_Tab():
 		self.player.set_volume()
 
 	def __change_volume(self, pos):
-		self.__set_volume(float(pos))
+		self.__set_volume(int(float(pos)))
 
 	def __volume_up(self):
 		volume = self.set_manager.settings["volume"] + 1
