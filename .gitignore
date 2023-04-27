@@ -1,12 +1,12 @@
 color-settings.py
 song-settings.py
-songs.csv
+opendir_test.py
+
 *.spec
+
 __pycache__/
+
 dist/
 build/
-img/fire_img.png
-img/rainy_img.png
-img/thunderstorm_img.png
-build.sh
+
 *.AppImage
