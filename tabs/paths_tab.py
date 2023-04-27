@@ -71,7 +71,7 @@ class Paths_Tab():
 
 		self.next_page_button = Button(self.page_navigation_frame, text=">", command=self.__next_page, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.next_page_button.grid(row=0, column=2)
-		if self.page_number * self.paths_per_page >= len(self.set_manager.music_paths):
+		if (self.page_number + 1) * self.paths_per_page >= len(self.set_manager.music_paths):
 			self.next_page_button.config(state=DISABLED)
 
 
@@ -116,7 +116,8 @@ class Paths_Tab():
 		
 		if (self.page_number + 1)* self.paths_per_page >= len(self.set_manager.music_paths):
 			self.next_page_button.config(state=DISABLED)
-		self.previous_page_button.config(state=ACTIVE)
+		if not self.page_number == 0:
+			self.previous_page_button.config(state=ACTIVE)
 
 
 	
@@ -131,7 +132,8 @@ class Paths_Tab():
 
 		if self.page_number == 0:
 			self.previous_page_button.config(state=DISABLED)
-		self.next_page_button.config(state=ACTIVE)
+		if not (self.page_number + 1)* self.paths_per_page >= len(self.set_manager.music_paths):
+			self.next_page_button.config(state=ACTIVE)
 
 
 	def __pinker_music(self):
