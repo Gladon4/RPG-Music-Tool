@@ -56,23 +56,29 @@ class Player():
 			mixer.music.play(loops=0)
 
 	def stop(self):
+		if self.theme == None:
+			return
+		
 		self.paused = True
 		self.theme = None
 		self.song = ""
 		mixer.music.stop()
 
 	def pause(self):
+		if self.theme == None:
+			return
+		
 		if self.paused:
 			mixer.music.unpause()
-
 		else:
 			mixer.music.pause()
-
 		self.paused = not self.paused
 
 	def skip(self):
-		if not self.theme == None:
-			self.play()
+		if self.theme == None:
+			return
+		
+		self.play()
 
 
 	def play_sfx(self, sfx_path):

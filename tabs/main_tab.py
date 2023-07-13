@@ -165,6 +165,9 @@ class Main_Tab():
 		self.player.pause()
 
 	def __stop(self):
+		if self.player.theme == None:
+			return
+		
 		self.theme_buttons[self.player.theme].config(bg=self.set_manager.settings["button_bg_color"], relief=RAISED)
 		self.player.stop()
 		self.__update_music_labels()

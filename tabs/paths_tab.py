@@ -176,6 +176,7 @@ class Paths_Tab():
 		self.set_manager.store_paths()
 		self.sound_manager.load_themes()
 
+
 	def __load_imgs(self):
 		if getattr(sys, 'frozen', False):
 			self.back_image = PhotoImage(file=os.path.join(sys._MEIPASS, "img/back_img.png"))
@@ -190,5 +191,14 @@ class Paths_Tab():
 		self.tab_manager.tabs["main"].update_elements()
 		self.tab_manager.select(tab)
 
+
+	def __destroy(self):
+		for category in self.objects:
+			for object in self.objects[category]:
+				object.destroy()
+
+
 	def update_elements(self):
-		pass
+		self.frame.config(bg=self.set_manager.settings["bg_color"])
+		self.__destroy()
+		self.create(True)
