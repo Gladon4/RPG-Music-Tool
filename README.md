@@ -71,3 +71,24 @@ You can change a few things about the app in the "Settings" Tab\
 ![Screenshot from 2022-12-07 23-25-00](https://user-images.githubusercontent.com/58821835/206310022-97a702fd-ec88-4230-8bab-e6c4f6909336.png)
 
 
+## Building yourself
+Should you want to build the app yourself or want to run the python file directly, you need to install the dependencies first:
+```sh
+pip install -r requirements.txt
+```
+Also make sure you have tkinter installed. This should usually be bundled into your python distribution, but if not, just search the web for a solution.
+
+After the dependencies are installed, you can start the app by running:
+```sh
+python main.py
+```
+
+To make it an executable yourself, you also need to install `pyinstaller`:
+```sh
+pip install pyinstaller
+```
+After that, you can run the provided build script:
+```sh
+./build.sh -o <filename>
+```
+The executable will then compile for the platform you run the command on. Sure, you can also just run `pyinstaller` by itself, for more info on that just visit its [documentation](https://pyinstaller.org/).
