@@ -9,6 +9,8 @@ from tkinter import *
 import tkfilebrowser
 import sys
 import os
+if sys.platform.startswith('win32'):
+	import win32com
 
 class Paths_Tab():
 	def __init__(self, set_manager, tab_manager, notebook, sound_manager):
