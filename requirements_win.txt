@@ -1,0 +1,5 @@
+appdirs==1.4.4
+tkfilebrowser==2.3.2
+mutagen==1.46.0
+pygame==2.5.0
+pywin32==306
