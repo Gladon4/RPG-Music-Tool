@@ -56,7 +56,7 @@ tab_manager = Tab_Manager(notebook)
 main_tab = Main_Tab(set_manager, sound_manager, tab_manager, notebook, player)
 settings_tab = Settings_Tab(set_manager, tab_manager, notebook)
 paths_tab = Paths_Tab(set_manager, tab_manager, notebook, sound_manager)
-themse_tab = Themes_Tab(set_manager, sound_manager, tab_manager, notebook, player)
+themes_tab = Themes_Tab(set_manager, sound_manager, tab_manager, notebook, player)
 
 
 # Load settings and create the tab classes
@@ -85,13 +85,13 @@ def setup():
 	paths_tab.create()
 	notebook.add(paths_tab.frame, text="Paths")
 
-	themse_tab.create()
-	notebook.add(themse_tab.frame, text="Themes")
+	themes_tab.create()
+	notebook.add(themes_tab.frame, text="Themes")
 
 	tab_manager.set_tabs({"main": main_tab, 
 						  "settings": settings_tab,
 						  "paths": paths_tab,
-						  "themes": themse_tab})
+						  "themes": themes_tab})
 
 
 
