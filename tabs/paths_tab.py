@@ -41,7 +41,7 @@ class Paths_Tab():
 		# --- Frames --- #
 
 		self.navigation_buttons_frame = LabelFrame(self.frame, bg=settings["bg_color"], padx=0, borderwidth=0)
-		self.navigation_buttons_frame.grid(row=0, column=1, rowspan=2, sticky="nw")
+		self.navigation_buttons_frame.place(relx=1.0, rely=0, anchor=NE)
 
 		self.list_frame = Frame(self.frame, bg=settings["sec_bg_color"], width=1000)
 		self.list_frame.grid(row=1, column=0, pady=10, sticky="n")
@@ -56,7 +56,7 @@ class Paths_Tab():
 		# --- Labels --- #
 
 		self.label_title_paths = Label(self.frame, text="Music Directories", font=("Helvetica",20), bg=settings["bg_color"], fg=settings["txt_color"])
-		self.label_title_paths.grid(row=0, column=0, pady=10)
+		self.label_title_paths.grid(row=0, column=0, pady=5)
 
 
 		# --- Inputs --- #

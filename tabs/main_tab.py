@@ -45,8 +45,8 @@ class Main_Tab():
 		self.theme_buttons_frame.grid(row=1, column=0)
 
 		self.navigation_buttons_frame = LabelFrame(self.frame, bg=settings["bg_color"], padx=0, borderwidth=0)
-		self.navigation_buttons_frame.grid(row=0, column=1, rowspan=2, sticky="ne")
-		
+		self.navigation_buttons_frame.place(relx=1.0, rely=0, anchor=NE)
+
 		self.lower_frame = LabelFrame(self.frame, text="", pady=5, padx=15, bg=settings["bg_color"], borderwidth=0)
 		self.lower_frame.grid(row=4, column=0)
 

@@ -36,16 +36,16 @@ class Settings_Tab():
 		# --- Frames --- #
 
 		self.navigation_buttons_frame = LabelFrame(self.frame, bg=settings["bg_color"], padx=0, borderwidth=0)
-		self.navigation_buttons_frame.grid(row=0, column=1, rowspan=2, sticky="nw")
+		self.navigation_buttons_frame.place(relx=1.0, rely=0, anchor=NE)
 
 		self.ui_setting_frame = LabelFrame(self.frame, font=("Helvetica",15), pady=15, padx=15, bg=settings["sec_bg_color"], borderwidth=0)
-		self.ui_setting_frame.grid(row=2, column=0)
+		self.ui_setting_frame.grid(row=1, column=0)
 		
 
 		# --- Labels --- #
 
 		self.label_title_app_settings = Label(self.frame, text="Application Settings",font=("Helvetica",20), bg=settings["bg_color"], fg=settings["txt_color"])
-		self.label_title_app_settings.grid(row=0, column=0)
+		self.label_title_app_settings.grid(row=0, column=0, pady=5)
 
 		self.label_subtitle_ui_scale = Label(self.ui_setting_frame, text="Theme Button Scale",font=("Helvetica",12), padx=15, bg=settings["sec_bg_color"], fg=settings["txt_color"])
 		self.label_subtitle_ui_scale.grid(row=0, column=0)
@@ -85,9 +85,15 @@ class Settings_Tab():
 		self.row_length_slider = ttk.Scale(self.ui_setting_frame, from_=1, to=10, value=settings["row_length"], command=self.__change_row_length, length=200)
 		self.row_length_slider.grid(row=2, column=1, pady=10)
 
-		self.sfx_on_themes_checkbox = Checkbutton(self.ui_setting_frame, text="    Display SFX on Themes Tab    ", height=2, bg=settings["button_bg_color"], command=self.__change_sfx_on_themes, activebackground=settings["button_hov_color"])
-		self.sfx_on_themes_checkbox.grid(row=3, column=0, columnspan=3)
+		self.sfx_on_themes_checkbox = Checkbutton(self.ui_setting_frame, text="    Display SFX on Main Page    ", height=2, bg=settings["button_bg_color"], command=self.__change_sfx_on_themes, activebackground=settings["button_hov_color"])
+		self.sfx_on_themes_checkbox.grid(row=3, column=0, columnspan=3, pady=5)
 		if settings["sfx_on_themes"]: self.sfx_on_themes_checkbox.select()
+
+		self.full_path_on_main = Checkbutton(self.ui_setting_frame, text="    Display Full Paths on Main Page    ", height=2, bg=settings["button_bg_color"], command=self.__full_path_on_main, activebackground=settings["button_hov_color"])
+		self.full_path_on_main.grid(row=4, column=0, columnspan=3, pady=5)
+
+		self.full_path_on_main = Checkbutton(self.ui_setting_frame, text="    Display Full Paths in Settings    ", height=2, bg=settings["button_bg_color"], command=self.__full_path_in_settings, activebackground=settings["button_hov_color"])
+		self.full_path_on_main.grid(row=5, column=0, columnspan=3, pady=5)
 		
 
 
@@ -179,10 +185,14 @@ class Settings_Tab():
 	
 	def __change_sfx_on_themes(self):
 		self.change = True
-
 		self.set_manager.settings["sfx_on_themes"] = 0 if self.set_manager.settings["sfx_on_themes"] else 1
-
 		self.set_manager.store_settings()
+
+	def __full_path_on_main(self):
+		pass
+	
+	def __full_path_in_settings(self):
+		pass
 
 	def __reset_settings(self):
 		self.set_manager.reset_to_defaults()
