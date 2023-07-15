@@ -16,5 +16,7 @@ do
     esac
 done
 
+pip install -r requirements_linux.txt
+pip install pyinstaller
 pyinstaller main.py --clean -F -n "$output" --add-data img:img -w
 rm -rf build/"$output"

@@ -10,6 +10,7 @@ import tkfilebrowser
 import sys
 import os
 if sys.platform.startswith('win32'):
+	# Required on windows for tkfilebrowser
 	import win32com
 
 class Paths_Tab():
