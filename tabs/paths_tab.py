@@ -5,10 +5,9 @@ Methods:
 	- Update
 """
 
-from tkinter import *
+from tkinter import Frame, Label, LabelFrame, Button, PhotoImage
 import tkfilebrowser
-import sys
-import os
+import sys, os
 if sys.platform.startswith('win32'):
 	# Required on windows for tkfilebrowser
 	import win32com
@@ -41,7 +40,7 @@ class Paths_Tab():
 		# --- Frames --- #
 
 		self.navigation_buttons_frame = LabelFrame(self.frame, bg=settings["bg_color"], padx=0, borderwidth=0)
-		self.navigation_buttons_frame.place(relx=1.0, rely=0, anchor=NE)
+		self.navigation_buttons_frame.place(relx=1.0, rely=0, anchor="ne")
 
 		self.list_frame = Frame(self.frame, bg=settings["sec_bg_color"], width=1000)
 		self.list_frame.grid(row=1, column=0, pady=10, sticky="n")
@@ -64,30 +63,18 @@ class Paths_Tab():
 		self.settings_button = Button(self.navigation_buttons_frame, command=lambda tab="settings": self.__select_tab(tab), image=self.back_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.settings_button.pack(side="top")
 
-		self.add_button = Button(self.page_navigation_frame, text="Add Music Directory", command=self.__pinker_music, bg=settings["bg_color"], fg=settings["txt_color"], activebackground=settings["button_hov_color"])
+		self.add_button = Button(self.page_navigation_frame, text="Add Music Directory", command=self.__music_path_picker, bg=settings["bg_color"], fg=settings["txt_color"], activebackground=settings["button_hov_color"])
 		self.add_button.grid(row=0, column=1)
 		
 		self.previous_page_button = Button(self.page_navigation_frame, text="<", command=self.__previous_page, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.previous_page_button.grid(row=0, column=0)
 		if self.page_number == 0:
-			self.previous_page_button.config(state=DISABLED)
+			self.previous_page_button.config(state="disabled")
 
 		self.next_page_button = Button(self.page_navigation_frame, text=">", command=self.__next_page, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.next_page_button.grid(row=0, column=2)
 		if (self.page_number + 1) * self.paths_per_page >= len(self.set_manager.music_paths):
-			self.next_page_button.config(state=DISABLED)
-
-
-		# --- Paths list --- #
-		"""
-		# Old version
-		for i, path in enumerate(self.set_manager.music_paths):
-			path_delete_button = Button(self.list_frame, image=self.delete_image, command=lambda i=i: self.__delete(i), activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
-			path_delete_button.grid(row=i, column=0, pady=2)
-			path_label = Label(self.list_frame, text=path,font=("Helvetica",12), padx=5, bg=settings["sec_bg_color"], fg=settings["txt_color"])
-			path_label.grid(row=i, column=1)
-			self.paths[i] = [path_delete_button, path_label]
-		"""
+			self.next_page_button.config(state="disabled")
 
 		self.__create_list()
 
@@ -97,7 +84,8 @@ class Paths_Tab():
 		per_page = self.paths_per_page
 		page = self.page_number
 
-		for i in range(min(per_page, len(self.set_manager.music_paths) - per_page * page)):
+		REMAING_PATHS = len(self.set_manager.music_paths) - per_page * page
+		for i in range(min(per_page, REMAING_PATHS)):
 			index_with_offset = per_page * page + i
 			path = self.set_manager.music_paths[index_with_offset]
 
@@ -118,10 +106,9 @@ class Paths_Tab():
 		self.__create_list()
 		
 		if (self.page_number + 1)* self.paths_per_page >= len(self.set_manager.music_paths):
-			self.next_page_button.config(state=DISABLED)
+			self.next_page_button.config(state="disabled")
 		if not self.page_number == 0:
-			self.previous_page_button.config(state=ACTIVE)
-
+			self.previous_page_button.config(state="active")
 
 	
 	def __previous_page(self):
@@ -134,12 +121,12 @@ class Paths_Tab():
 		self.__create_list()
 
 		if self.page_number == 0:
-			self.previous_page_button.config(state=DISABLED)
+			self.previous_page_button.config(state="disabled")
 		if not (self.page_number + 1)* self.paths_per_page >= len(self.set_manager.music_paths):
-			self.next_page_button.config(state=ACTIVE)
+			self.next_page_button.config(state="active")
 
 
-	def __pinker_music(self):
+	def __music_path_picker(self):
 		dirs = tkfilebrowser.askopendirnames(title="Select your Music Directories", initialdir="/home/", okbuttontext="Select")
 		i = len(self.set_manager.music_paths)
 

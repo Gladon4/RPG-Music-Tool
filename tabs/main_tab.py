@@ -9,11 +9,8 @@ Methods:
 	- Update Element Settings
 """
 
-from tkinter import *
-from tkinter import ttk
-import sys
-import time
-import os
+from tkinter import Frame, Button, LabelFrame, Label, PhotoImage, ttk
+import sys, time, os
 
 class Main_Tab():
 	def __init__(self, set_manager, sound_manager, tab_manager, notebook, player):
@@ -45,7 +42,7 @@ class Main_Tab():
 		self.theme_buttons_frame.grid(row=1, column=0)
 
 		self.navigation_buttons_frame = LabelFrame(self.frame, bg=settings["bg_color"], padx=0, borderwidth=0)
-		self.navigation_buttons_frame.place(relx=1.0, rely=0, anchor=NE)
+		self.navigation_buttons_frame.place(relx=1.0, rely=0, anchor="ne")
 
 		self.lower_frame = LabelFrame(self.frame, text="", pady=5, padx=15, bg=settings["bg_color"], borderwidth=0)
 		self.lower_frame.grid(row=4, column=0)
@@ -78,7 +75,7 @@ class Main_Tab():
 		self.label_duration_song = Label(self.status, text="00:00 / 00:00", font=("Helvetica",12), bg=settings["sec_bg_color"], fg=settings["txt_color"])
 		self.label_duration_song.grid(row=0, column=4, padx=5)
 
-		self.song_progress = ttk.Progressbar(self.status, orient=HORIZONTAL, length=280, mode='determinate')
+		self.song_progress = ttk.Progressbar(self.status, orient="horizontal", length=280, mode='determinate')
 		self.song_progress.grid(row=0, column=3, padx=5)
 
 		self.label_volume = Label(self.volume_frame, text=str(settings["volume"]),font=("Helvetica",10,'bold'), bg=settings["sec_bg_color"], fg=settings["txt_color"])
@@ -100,7 +97,7 @@ class Main_Tab():
 		self.button_skip = Button(self.status, command=self.__skip, image=self.skip_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.button_skip.grid(row=0, column=2)
 
-		self.volume_changer = ttk.Scale(self.volume_frame, from_=100, to=0, orient=VERTICAL, value=int(settings["volume"]), command=self.__change_volume, length=120)
+		self.volume_changer = ttk.Scale(self.volume_frame, from_=100, to=0, orient="vertical", value=int(settings["volume"]), command=self.__change_volume, length=120)
 		self.volume_changer.grid(row=0, column=0)
 
 		self.volume_up_button = Button(self.volume_plus_minus_frame, command=self.__volume_up, image=self.plus_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
@@ -148,10 +145,10 @@ class Main_Tab():
 
 	# Media Methods
 	def __play(self, theme):
-		self.theme_buttons[theme].config(bg=self.set_manager.settings["button_hov_color"], relief=SUNKEN)
+		self.theme_buttons[theme].config(bg=self.set_manager.settings["button_hov_color"], relief="sunken")
 
 		if not self.player.theme == None and not theme == self.player.theme:
-			self.theme_buttons[self.player.theme].config(bg=self.set_manager.settings["button_bg_color"], relief=RAISED)
+			self.theme_buttons[self.player.theme].config(bg=self.set_manager.settings["button_bg_color"], relief="raised")
 
 		self.player.change_theme(theme)
 		self.__update_music_labels()
@@ -168,7 +165,7 @@ class Main_Tab():
 		if self.player.theme == None:
 			return
 		
-		self.theme_buttons[self.player.theme].config(bg=self.set_manager.settings["button_bg_color"], relief=RAISED)
+		self.theme_buttons[self.player.theme].config(bg=self.set_manager.settings["button_bg_color"], relief="raised")
 		self.player.stop()
 		self.__update_music_labels()
 
@@ -251,7 +248,7 @@ class Main_Tab():
 		for _theme in self.sound_manager.themes:
 			text = _theme
 			theme_play_button = Button(self.theme_buttons_frame,
-										text=text, compound=CENTER, borderwidth=0,
+										text=text, compound="center", borderwidth=0,
 										activebackground=settings["button_hov_color"],
 										bg=settings["button_bg_color"],
 										fg=settings["txt_color"],
@@ -263,7 +260,7 @@ class Main_Tab():
 			theme_play_button.grid(row = (i // settings["row_length"] + 1), column = (i % settings["row_length"]))
 			
 			if self.player.theme == _theme:
-				theme_play_button.config(bg=settings["button_hov_color"], relief=SUNKEN)
+				theme_play_button.config(bg=settings["button_hov_color"], relief="sunken")
 			
 			i += 1
 
@@ -293,7 +290,7 @@ class Main_Tab():
 
 			# self.sfx_play_button = Button(sfx_buttons_frame, text=text, command=lambda sfx=sfx: play_sfx(sfx), compound=CENTER, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG, fg=TEXT_COLOR, height=int(2.5*UI_SCALE), width=int(5*UI_SCALE))
 			self.sfx_play_button = Button(self.sfx_buttons_frame,
-										text=text, compound=CENTER, borderwidth=0,
+										text=text, compound="center", borderwidth=0,
 										activebackground=settings["button_hov_color"],
 										bg=settings["button_bg_color"],
 										fg=settings["txt_color"],

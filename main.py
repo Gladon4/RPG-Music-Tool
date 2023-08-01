@@ -28,9 +28,7 @@ from tabs.settings_tab import Settings_Tab
 from tabs.paths_tab import Paths_Tab
 from tabs.themes_tab import Themes_Tab
 
-
-from tkinter import *
-from tkinter import ttk
+from tkinter import Tk, ttk
 
 
 # --- Constants --- #

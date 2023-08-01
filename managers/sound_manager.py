@@ -1,5 +1,4 @@
-import csv
-import os
+import csv, os
 
 class Sound_Manager():
 	def __init__(self, set_manager):

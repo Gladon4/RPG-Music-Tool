@@ -4,11 +4,9 @@ Methods:
 	- Save Settings
 """
 
-from tkinter import *
-from tkinter import ttk
-import sys
-import os
+from tkinter import Frame, Label, LabelFrame, Button, Checkbutton, ttk, PhotoImage
 from tkinter.colorchooser import askcolor
+import sys, os
 
 class Settings_Tab():
 	def __init__(self, set_manager, tab_manager, notebook):
@@ -36,7 +34,7 @@ class Settings_Tab():
 		# --- Frames --- #
 
 		self.navigation_buttons_frame = LabelFrame(self.frame, bg=settings["bg_color"], padx=0, borderwidth=0)
-		self.navigation_buttons_frame.place(relx=1.0, rely=0, anchor=NE)
+		self.navigation_buttons_frame.place(relx=1.0, rely=0, anchor="ne")
 
 		self.ui_setting_frame = LabelFrame(self.frame, font=("Helvetica",15), pady=15, padx=15, bg=settings["sec_bg_color"], borderwidth=0)
 		self.ui_setting_frame.grid(row=1, column=0)
