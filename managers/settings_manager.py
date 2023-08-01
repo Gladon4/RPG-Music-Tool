@@ -1,9 +1,8 @@
 from appdirs import user_config_dir
 from configparser import ConfigParser
-import csv
 from os.path import isdir, isfile
 from os import mkdir
-import sys
+import sys, csv
 
 
 class Set_Manager():

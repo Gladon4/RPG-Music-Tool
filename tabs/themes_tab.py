@@ -1,10 +1,8 @@
 """
 """
 
-from tkinter import *
-from tkinter import ttk
-import sys
-import os
+from tkinter import Frame, Label, LabelFrame, Button, PhotoImage
+import sys, os
 
 class Themes_Tab():
 	def __init__(self, set_manager, sound_manager, tab_manager, notebook, player):
@@ -34,7 +32,7 @@ class Themes_Tab():
 
 		# --- Frames --- #
 		self.navigation_buttons_frame = LabelFrame(self.frame, bg=settings["bg_color"], padx=0, borderwidth=0)
-		self.navigation_buttons_frame.place(relx=1.0, rely=0, anchor=NE)
+		self.navigation_buttons_frame.place(relx=1.0, rely=0, anchor="ne")
 
 		self.top_display_frame = Frame(self.frame, bg=settings["bg_color"], padx=5, pady=5, borderwidth=0)
 		self.top_display_frame.grid(row=1, column=0)
@@ -50,31 +48,16 @@ class Themes_Tab():
 		# --- Inputs --- #
 		self.settings_button = Button(self.navigation_buttons_frame, command=lambda tab="settings": self.__select_tab(tab), image=self.back_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.settings_button.pack(side="top")
-
-		# -- Dropdown version
-		""" 
-		variable = StringVar(self.frame)
-		variable.set("COLOURS")
-
-		option_menu = OptionMenu(self.frame, variable, "Yellow",
-                         "Blue", "Green", "Purple",
-                         "Black", "White")
-		option_menu.config(bg=settings["bg_color"], fg=settings["txt_color"], activebackground=settings["button_hov_color"])
-		
-		option_menu.grid(row=2, column=0)
-		"""
-
-		# -- sliding select
 	
 		self.previous_page_button = Button(self.top_display_frame, text="<", command=self.__previous_page, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"], padx=10)
-		self.previous_page_button.grid(row=0, column=0, sticky=E, padx=5, ipadx=30)
+		self.previous_page_button.grid(row=0, column=0, sticky="e", padx=5, ipadx=30)
 		if self.current_path_index == 0:
-			self.previous_page_button.config(state=DISABLED)
+			self.previous_page_button.config(state="disabled")
 
 		self.next_page_button = Button(self.top_display_frame, text=">", command=self.__next_page, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"], padx=10)
-		self.next_page_button.grid(row=0, column=1, sticky=W, padx=5, ipadx=30)
+		self.next_page_button.grid(row=0, column=1, sticky="w", padx=5, ipadx=30)
 		if (self.current_path_index + 1) == len(self.paths):
-			self.next_page_button.config(state=DISABLED)
+			self.next_page_button.config(state="disabled")
 		
 
 	def __destroy(self):
@@ -112,17 +95,17 @@ class Themes_Tab():
 	def __previous_page(self):
 		self.current_path_index = self.current_path_index-1
 		if self.current_path_index == 0:
-			self.previous_page_button.config(state=DISABLED)
+			self.previous_page_button.config(state="disabled")
 		if not (self.current_path_index + 1) == len(self.paths):
-			self.next_page_button.config(state=ACTIVE)
+			self.next_page_button.config(state="active")
 		self.__set_directory()
 
 	def __next_page(self):
 		self.current_path_index = self.current_path_index+1
 		if (self.current_path_index + 1) == len(self.paths):
-			self.next_page_button.config(state=DISABLED)
+			self.next_page_button.config(state="disabled")
 		if not self.current_path_index == 0:
-			self.previous_page_button.config(state=ACTIVE)
+			self.previous_page_button.config(state="active")
 		self.__set_directory()
 
 	def __set_directory(self):

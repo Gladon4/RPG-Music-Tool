@@ -5,7 +5,6 @@ Methods:
 """
 
 from pygame import mixer
-from tkinter import SUNKEN, RAISED, Label
 from random import randint
 from mutagen.mp3 import MP3
 
