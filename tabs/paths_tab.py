@@ -24,7 +24,8 @@ class Paths_Tab():
 		self.objects = {"labels" 	: [],
 						"sec_labels": [],
 						"buttons"	: [],
-						"list_elems": []}
+						"list_elems": [],
+						"frames": []}
 
 	def create(self, new=False):
 		settings = self.set_manager.settings
@@ -44,6 +45,7 @@ class Paths_Tab():
 
 		self.list_frame = Frame(self.frame, bg=settings["sec_bg_color"], width=1000)
 		self.list_frame.grid(row=1, column=0, pady=10, sticky="n")
+		self.objects["frames"].append(self.list_frame)
 
 		self.page_navigation_frame = Frame(self.frame, bg=settings["bg_color"], width=1000)
 		self.page_navigation_frame.grid(row=2, column=0)
@@ -91,7 +93,18 @@ class Paths_Tab():
 
 			path_delete_button = Button(self.list_frame, image=self.delete_image, command=lambda i=index_with_offset: self.__delete(i), activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 			path_delete_button.grid(row=i, column=0, pady=2)
-			path_label = Label(self.list_frame, text=path,font=("Helvetica",12), padx=5, bg=settings["sec_bg_color"], fg=settings["txt_color"])
+
+
+			if settings["full_paths_settings"]:
+				path_text = path
+				
+			elif sys.platform.startswith('linux'):
+				path_text = path.split("/")[-2]
+				
+			elif sys.platform.startswith('win32'):
+				path_text = path.split("\\")[-2]
+			
+			path_label = Label(self.list_frame, text=path_text,font=("Helvetica",12), padx=5, bg=settings["sec_bg_color"], fg=settings["txt_color"])
 			path_label.grid(row=i, column=1)
 			self.paths[i] = [path_delete_button, path_label]
 
@@ -186,6 +199,10 @@ class Paths_Tab():
 		for category in self.objects:
 			for object in self.objects[category]:
 				object.destroy()
+
+		for path in self.paths:
+			self.paths[path][0].destroy()
+			self.paths[path][1].destroy()
 
 
 	def update_elements(self):

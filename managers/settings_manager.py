@@ -27,18 +27,25 @@ class Set_Manager():
 			color_settings = self.config["color_settings"]
 			app_settings = self.config["app_settings"]
 
-			self.settings = {# Colors
-				 "bg_color"			: color_settings["bg_color"],
-				 "sec_bg_color"		: color_settings["sec_bg_color"],
-				 "button_bg_color"	: color_settings["button_color"],
-				 "button_hov_color"	: color_settings["button_color_hover"],
-				 "txt_color"		: color_settings["text_color"],
-				 # App Settings
-				 "volume"			: int(float(app_settings["volume"])),
-				 "ui_scale"			: int(app_settings["ui_scale"]),
-				 "row_length"		: int(app_settings["row_length"]),
-				 "sfx_on_themes"	: int(app_settings["sfx_on_themes"])
-				 }
+			try:
+				self.settings = {
+					# Colors
+					"bg_color"				: color_settings["bg_color"],
+					"sec_bg_color"			: color_settings["sec_bg_color"],
+					"button_bg_color"		: color_settings["button_color"],
+					"button_hov_color"		: color_settings["button_color_hover"],
+					"txt_color"			: color_settings["text_color"],
+					# App Settings
+					"volume"				: int(app_settings["volume"]),
+					"ui_scale"				: int(app_settings["ui_scale"]),
+					"row_length"			: int(app_settings["row_length"]),
+					"sfx_on_themes"		: int(app_settings["sfx_on_themes"]),
+					"full_paths_main"		: int(app_settings["full_paths_main"]),
+					"full_paths_settings"	: int(app_settings["full_paths_settings"])
+					}
+			except KeyError:
+				self.__write_default_settings()
+				self.load_settings()
 
 		else:
 			self.__write_default_settings()
@@ -51,10 +58,12 @@ class Set_Manager():
 										 "button_color_hover" 	: self.settings["button_hov_color"],
 										 "text_color" 			: self.settings["txt_color"]}
 
-		self.config["app_settings"] = {"ui_scale" 		: self.settings["ui_scale"],
-									   "row_length"		: self.settings["row_length"],
-									   "volume" 		: self.settings["volume"],
-									   "sfx_on_themes" 	: self.settings["sfx_on_themes"]}
+		self.config["app_settings"] = {"ui_scale" 				: self.settings["ui_scale"],
+									   "row_length"				: self.settings["row_length"],
+									   "volume" 				: self.settings["volume"],
+									   "sfx_on_themes" 			: self.settings["sfx_on_themes"],
+									   "full_paths_main"		: self.settings["full_paths_main"],
+									   "full_paths_settings"	: self.settings["full_paths_settings"]}
 
 		with open(self.path + '/config.ini', 'w') as configfile:
 			self.config.write(configfile)  
@@ -88,10 +97,12 @@ class Set_Manager():
 		text_col =      "#323232"
 
 		# App Settings
-		ui_scale =      2
-		row_length =    6
-		def_vol =       15
-		def_sfx_pos =   1
+		ui_scale =      		2
+		row_length =    		6
+		def_vol =       		15
+		def_sfx_pos =   		1
+		def_paths_main =		0
+		def_paths_settings = 	1
 
 		self.config["color_settings"] = {"bg_color" 			: bg_col,
 										 "sec_bg_color" 		: sec_bg_col,
@@ -99,10 +110,12 @@ class Set_Manager():
 										 "button_color_hover" 	: sec_but_col,
 										 "text_color" 			: text_col}
 
-		self.config["app_settings"] = {"ui_scale" 		: ui_scale,
-									   "row_length"		: row_length,
-									   "volume" 		: def_vol,
-									   "sfx_on_themes" 	: def_sfx_pos}
+		self.config["app_settings"] = {"ui_scale" 				: ui_scale,
+									   "row_length"				: row_length,
+									   "volume" 				: def_vol,
+									   "sfx_on_themes" 			: def_sfx_pos,
+									   "full_paths_main"		: def_paths_main,
+									   "full_paths_settings"	: def_paths_settings}
 
 		with open(self.path + '/config.ini', 'w') as configfile:
 			self.config.write(configfile)
