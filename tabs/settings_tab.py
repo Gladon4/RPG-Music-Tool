@@ -89,9 +89,11 @@ class Settings_Tab():
 
 		self.full_path_on_main = Checkbutton(self.ui_setting_frame, text="    Display Full Paths on Main Page    ", height=2, bg=settings["button_bg_color"], command=self.__full_path_on_main, activebackground=settings["button_hov_color"])
 		self.full_path_on_main.grid(row=4, column=0, columnspan=3, pady=5)
+		if settings["full_paths_main"]: self.full_path_on_main.select()
 
 		self.full_path_on_main = Checkbutton(self.ui_setting_frame, text="    Display Full Paths in Settings    ", height=2, bg=settings["button_bg_color"], command=self.__full_path_in_settings, activebackground=settings["button_hov_color"])
 		self.full_path_on_main.grid(row=5, column=0, columnspan=3, pady=5)
+		if settings["full_paths_settings"]: self.full_path_on_main.select()
 		
 
 
@@ -187,10 +189,14 @@ class Settings_Tab():
 		self.set_manager.store_settings()
 
 	def __full_path_on_main(self):
-		pass
+		self.change = True
+		self.set_manager.settings["full_paths_main"] = 0 if self.set_manager.settings["full_paths_main"] else 1
+		self.set_manager.store_settings()
 	
 	def __full_path_in_settings(self):
-		pass
+		self.change = True
+		self.set_manager.settings["full_paths_settings"] = 0 if self.set_manager.settings["full_paths_settings"] else 1
+		self.set_manager.store_settings()
 
 	def __reset_settings(self):
 		self.set_manager.reset_to_defaults()

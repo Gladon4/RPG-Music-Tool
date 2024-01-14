@@ -44,6 +44,7 @@ class Themes_Tab():
 		directory_label_string = self.__create_directory_label_string()
 		self.label_current_directory = Label(self.top_display_frame, text=directory_label_string,font=("Helvetica",12), padx=5, pady=5, bg=settings["sec_bg_color"], fg=settings["txt_color"])
 		self.label_current_directory.grid(row=1, column=0, columnspan=2)
+		self.objects["labels"].append(self.label_current_directory)
 
 		# --- Inputs --- #
 		self.settings_button = Button(self.navigation_buttons_frame, command=lambda tab="settings": self.__select_tab(tab), image=self.back_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
@@ -84,7 +85,17 @@ class Themes_Tab():
 
 	def __create_directory_label_string(self):
 		MIN_STRING_LENGTH = 40
-		path_string = self.paths[self.current_path_index]
+
+		if self.set_manager.settings["full_paths_settings"]:
+			path_string = self.paths[self.current_path_index]
+	
+		elif sys.platform.startswith('linux'):
+			path_string = self.paths[self.current_path_index].split("/")[-2]
+				
+		elif sys.platform.startswith('win32'):
+			path_string = self.paths[self.current_path_index].split("\\")[-2]
+				
+		
 		if len(path_string) >= MIN_STRING_LENGTH:
 			return "  " + path_string + "  "
 	

@@ -212,6 +212,9 @@ class Main_Tab():
 				song = self.player.song.split("\\")[-1].split(".mp3")[0]
 				path = self.player.song.split("\\")[-2]
 
+			if self.set_manager.settings["full_paths_main"]:
+				path = self.player.song
+
 			self.label_current_theme.config(text=self.player.theme)
 			self.label_current_song.config(text=song)
 			self.label_current_song_path.config(text=path)
