@@ -1,10 +1,8 @@
-from functools import lru_cache
-
 from tkinter import *
 
 
 # --- Constants --- #
-APP_NAME = "RPG Music Tool v06_dev"
+APP_NAME = "RPG Music Tool v06_prediction"
 START_SIZE = "800x800"
 
 root = Tk()
@@ -15,44 +13,36 @@ root.geometry(START_SIZE)
 
 themes = ['Festive', 'Large', 'Tavern', 'Open', 'Combat', 'Tense', 'Calm', 'Mysterious', 'Epic', 'War', 'Hopeful', 'Hope', 'Dark', 'Quick', 'Sad', 'Sand', 'Boss', 'Bold']
 
-n = [0]
 
-@lru_cache(None)
-def editdist(w,v) :
-    n[0] = n[0] + 1
-    if len(w) == 0 :
-        return len(v)
-    elif len(v) == 0 :
-        return len(w)
-    else :
-        ed1 = editdist(w,v[:len(v)-1]) + 1               # INS
-        ed2 = editdist(w[:len(w)-1],v) + 1               # DEL
-        if w[len(w) - 1] == v[len(v) - 1] :
-            ed3 = editdist(w[:len(w)-1],v[len(v)-1])     # Nix
-        else :
-            ed3 = editdist(w[:len(w)-1],v[len(v)-1]) + 1 # REP
-        return min(ed1,ed2,ed3)
+def guess_theme(word:str) -> str:
+    best_guess = ""
+    best_score = 0
+
+    for theme in themes:
+        score = 0
+
+        for char in word:
+            if char in theme.lower():
+                score += 1
 
 
-def guess_theme(word):
-    min_dist = 10000
-    min_dist_word = ""
+        THEME_STARTS_WITH_WORD = word == theme.lower()[:len(word)]
+        THEME_CONTAINS_WORD = word in theme.lower()
 
-    for t in themes:
-        n = [0]
-        theme_start = t[:len(word)].lower()
-        if theme_start != word:
-            dist = editdist(word, theme_start)
+        if THEME_CONTAINS_WORD:
+            score = 100 - len(theme)
+        
+        if THEME_STARTS_WITH_WORD:
+            score = 200 - len(theme)
+            
 
-            if min_dist > dist:
-                min_dist_word = t
-                min_dist = dist
+        if score > best_score:
+            best_score = score
+            best_guess = theme
 
-        else:
-            min_dist = 0
-            min_dist_word = t
+        
+    return best_guess
 
-    return min_dist_word
 
 def get_all_char_pos(text, char):
     char_index_list = []
@@ -96,16 +86,12 @@ def predict(key):
     global last_guess_length
     global last_guess
 
-    # print(key)
-
     y,x = text.index(INSERT).split(".")
     t = text.get("1.0", "end-1c")
 
 
     all_tags = get_all_char_pos(t, "#")
     prev_index, next_index = get_closest_char(all_tags, text.index(INSERT))
-
-    # print(prev_index, next_index)
 
     if next_index == -1:
         prev = t[:prev_index]
@@ -125,8 +111,6 @@ def predict(key):
             text.insert('end', last_guess)
             text.insert('end', " #")
             text.insert('end', after)
-
-            # text.mark_set("insert", "%d.%d" % (int(y), int(x)))
             
             theme = ""
             last_guess = ""
@@ -154,10 +138,6 @@ def predict(key):
         text.mark_set("insert", "%d.%d" % (int(y), int(x)))
 
 
-
-
-
-
 text = Text(root)
 text.insert("0.0", "#")
 text.tag_configure("guess", foreground="gray")
@@ -168,26 +148,3 @@ text.pack()
 
 
 root.mainloop()
-
-'''
-while True:
-    word = input("Word please:")
-    min_dist = 10000
-    min_dist_word = ""
-
-    for t in themes:
-        n = [0]
-        theme_start = t[:len(word)]
-        if theme_start != word:
-            dist = editdist(word, theme_start)
-
-            if min_dist > dist:
-                min_dist_word = t
-                min_dist = dist
-
-        else:
-            min_dist = 0
-            min_dist_word = t
-
-    print(min_dist_word)
-'''
