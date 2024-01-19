@@ -54,14 +54,17 @@ class Player():
 			mixer.music.load(song)
 			mixer.music.play(loops=0)
 
+			print(f'Next Song: {song}')
+
 	def stop(self):
+		mixer.music.stop()
+
 		if self.theme == None:
 			return
 		
 		self.paused = True
 		self.theme = None
 		self.song = ""
-		mixer.music.stop()
 
 	def pause(self):
 		if self.theme == None:
