@@ -110,6 +110,7 @@ class Themes_Tab():
 
 			song_themes = Text(self.list_frame, width=45, height=3)
 			song_themes.grid(row=i, column=2, padx=10)
+			song_themes.insert('1.0', "#" + " #".join(self.sound_manager.songs[self.paths[self.current_path_index]][song]))
 
 			self.play_buttons[i] = song_play_button
 			self.theme_boxes[i] = song_themes
