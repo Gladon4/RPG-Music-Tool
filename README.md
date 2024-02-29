@@ -1,6 +1,7 @@
 # RPG-Music-Tool (ver. 0.6.dev)
 
-==DEV BRANCH==
+==DEV BRANCH==   
+Not fully working!
 
 - **[Installation](#installation)**
 	- [Windows and Linux](#windows-and-linux)
