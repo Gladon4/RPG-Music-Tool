@@ -12,7 +12,8 @@ Not fully working!
   - [2. Themes](#2-themes)
   - [3. Start using](#3-start-using)
 - **[Settings and Customisation](#settings-and-customisation)**
-- **[Roadmap](!ROADMAP.md)**
+- **[Roadmap](ROADMAP.md)**
+
 
 A small music tool for TTRPGs.
 
