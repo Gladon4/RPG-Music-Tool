@@ -1,4 +1,4 @@
-#!/bin/python
+#!/bin/python3
 
 """
 Start the App
@@ -86,7 +86,7 @@ def setup():
 	themes_tab.create()
 	notebook.add(themes_tab.frame, text="Themes")
 
-	tab_manager.set_tabs({"main": main_tab, 
+	tab_manager.set_tabs({"main": main_tab,
 						  "settings": settings_tab,
 						  "paths": paths_tab,
 						  "themes": themes_tab})
@@ -104,4 +104,3 @@ def main():
 if __name__ == "__main__":
 	setup()
 	main()
-
