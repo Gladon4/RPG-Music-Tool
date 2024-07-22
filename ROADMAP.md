@@ -12,8 +12,8 @@
 
 ## Fixes
 
--   App start crashes if paths.csv is empty
--   App start crashes if path in paths.csv doesn't exist
+- [x] App start crashes if paths.csv is empty  
+- [ ] App start crashes if path in paths.csv doesn't exist
 
 ## 0.6
 

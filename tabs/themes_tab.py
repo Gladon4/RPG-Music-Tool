@@ -22,14 +22,14 @@ class Themes_Tab():
 		settings = self.set_manager.settings
 		self.__load_imgs()
 		self.__load_directories()
-		self.current_path_index = 0	
+		self.current_path_index = 0
 
 		# --- Main Frame --- #
 		if (not new):
 			self.frame = Frame(self.notebook, width=0, height=0, bg=settings["bg_color"])
 			self.frame.grid_rowconfigure(0, weight=0)
 			self.frame.grid_columnconfigure(0, weight=1)
-			
+
 
 		# --- Frames --- #
 		self.navigation_buttons_frame = LabelFrame(self.frame, bg=settings["bg_color"], padx=0, borderwidth=0)
@@ -60,7 +60,7 @@ class Themes_Tab():
 		# --- Inputs --- #
 		self.settings_button = Button(self.navigation_buttons_frame, command=lambda tab="settings": self.__select_tab(tab), image=self.back_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.settings_button.pack(side="top")
-	
+
 		self.previous_path_button = Button(self.top_display_frame, text="<", command=self.__previous_path, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"], padx=10)
 		self.previous_path_button.grid(row=0, column=0, sticky="e", padx=5, ipadx=30)
 		if self.current_path_index == 0:
@@ -68,7 +68,7 @@ class Themes_Tab():
 
 		self.next_path_button = Button(self.top_display_frame, text=">", command=self.__next_path, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"], padx=10)
 		self.next_path_button.grid(row=0, column=1, sticky="w", padx=5, ipadx=30)
-		if (self.current_path_index + 1) == len(self.paths):
+		if len(self.paths) == 0 or (self.current_path_index + 1) == len(self.paths):
 			self.next_path_button.config(state="disabled")
 
 
@@ -79,7 +79,7 @@ class Themes_Tab():
 
 		self.next_page_button = Button(self.page_navigation_frame, text=">", command=self.__next_page, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.next_page_button.grid(row=0, column=1, sticky="w", padx=5, ipadx=30)
-		if (self.page_number + 1) * self.songs_per_page >= len(list(self.sound_manager.songs[self.paths[self.current_path_index]].keys())):
+		if len(self.paths) == 0 or (self.page_number + 1) * self.songs_per_page >= len(list(self.sound_manager.songs[self.paths[self.current_path_index]].keys())):
 			self.next_page_button.config(state="disabled")
 
 		self.__create_list()
@@ -88,6 +88,9 @@ class Themes_Tab():
 
 
 	def __create_list(self):
+		if len(self.paths) == 0:
+			return
+		
 		settings = self.set_manager.settings
 		songs = list(self.sound_manager.songs[self.paths[self.current_path_index]].keys())
 		per_page = self.songs_per_page
@@ -101,7 +104,7 @@ class Themes_Tab():
 		for i in range(min(per_page, REMAING_PATHS)):
 			index_with_offset = per_page * page + i
 			song = songs[index_with_offset]
-						
+
 			song_play_button = Button(self.list_frame, image=self.play_image_small, command=lambda i=index_with_offset: self.__play(i), activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 			song_play_button.grid(row=i, column=0, pady=2, padx=10)
 
@@ -121,7 +124,7 @@ class Themes_Tab():
 		for i in range(self.songs_per_page):
 			if self.play_buttons[i] == None:
 				continue
-		
+
 			self.play_buttons[i].destroy()
 			self.theme_boxes[i].destroy()
 			self.songs_labels[i].destroy()
@@ -147,7 +150,7 @@ class Themes_Tab():
 	def __stop(self):
 		if self.current_song_playing != None:
 			self.play_buttons[self.current_song_playing].config(image=self.play_image_small)
-		
+
 		self.current_song_playing = None
 		self.player.stop()
 
@@ -158,7 +161,7 @@ class Themes_Tab():
 					object.destroy()
 				else:
 					self.objects[category][object].destroy()
-				
+
 
 	def update_elements(self):
 		self.frame.config(bg=self.set_manager.settings["bg_color"])
@@ -170,27 +173,31 @@ class Themes_Tab():
 		self.__stop()
 		self.tab_manager.select(tab)
 
-	
+
 	def __load_directories(self):
 		self.paths = self.set_manager.music_paths
 
 
 	def __create_directory_label_string(self):
+		if len(self.paths) == 0:
+			return "No Paths added yet, go to the paths settings to do so"
+
 		MIN_STRING_LENGTH = 40
+		path_string = ""
 
 		if self.set_manager.settings["full_paths_settings"]:
 			path_string = self.paths[self.current_path_index]
-	
+
 		elif sys.platform.startswith('linux'):
 			path_string = self.paths[self.current_path_index].split("/")[-2]
-				
+
 		elif sys.platform.startswith('win32'):
 			path_string = self.paths[self.current_path_index].split("\\")[-2]
-				
-		
+
+
 		if len(path_string) >= MIN_STRING_LENGTH:
 			return "  " + path_string + "  "
-	
+
 		missing_space = MIN_STRING_LENGTH - len(path_string)
 		padding = " " * (int(missing_space / 2) + 2)
 		return padding + path_string + padding
@@ -202,7 +209,7 @@ class Themes_Tab():
 			self.previous_page_button.config(state="disabled")
 		if not (self.page_number + 1)* self.songs_per_page >= len(list(self.sound_manager.songs[self.paths[self.current_path_index]].keys())):
 			self.next_page_button.config(state="active")
-		
+
 		self.__stop()
 		self.__destroy_list()
 		self.__create_list()
@@ -214,7 +221,7 @@ class Themes_Tab():
 			self.next_page_button.config(state="disabled")
 		if not self.page_number == 0:
 			self.previous_page_button.config(state="active")
-		
+
 		self.__stop()
 		self.__destroy_list()
 		self.__create_list()
@@ -227,7 +234,7 @@ class Themes_Tab():
 			self.previous_path_button.config(state="disabled")
 		if not (self.current_path_index + 1) == len(self.paths):
 			self.next_path_button.config(state="active")
-		
+
 		self.__set_directory()
 
 	def __next_path(self):
@@ -247,7 +254,7 @@ class Themes_Tab():
 		self.next_page_button.config(state="disable")
 		if not (self.page_number + 1)* self.songs_per_page >= len(list(self.sound_manager.songs[self.paths[self.current_path_index]].keys())):
 			self.next_page_button.config(state="active")
-		
+
 		self.__stop()
 		self.__destroy_list()
 		self.__create_list()
@@ -259,7 +266,7 @@ class Themes_Tab():
 			self.back_image		= PhotoImage(file=os.path.join(sys._MEIPASS, "img/back_img.png"))
 			self.stop_image 	= PhotoImage(file=os.path.join(sys._MEIPASS, "img/stop_img.png"))
 			self.play_image 	= PhotoImage(file=os.path.join(sys._MEIPASS, "img/play_img.png"))
-			
+
 		else:
 			self.back_image 	= PhotoImage(file="img/back_img.png")
 			self.stop_image 	= PhotoImage(file="img/stop_img.png")
