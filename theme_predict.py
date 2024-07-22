@@ -1,5 +1,6 @@
-from tkinter import *
+#!/bin/python3
 
+from tkinter import *
 
 # --- Constants --- #
 APP_NAME = "RPG Music Tool v06_prediction"
@@ -25,22 +26,20 @@ def guess_theme(word:str) -> str:
             if char in theme.lower():
                 score += 1
 
-
         THEME_STARTS_WITH_WORD = word == theme.lower()[:len(word)]
         THEME_CONTAINS_WORD = word in theme.lower()
 
         if THEME_CONTAINS_WORD:
             score = 100 - len(theme)
-        
+
         if THEME_STARTS_WITH_WORD:
             score = 200 - len(theme)
-            
+
 
         if score > best_score:
             best_score = score
             best_guess = theme
 
-        
     return best_guess
 
 
@@ -58,7 +57,7 @@ def get_all_char_pos(text, char):
 
         else:
             x += 1
-    
+
     return char_index_list
 
 def get_closest_char(list, pos):
@@ -76,11 +75,50 @@ def get_closest_char(list, pos):
             return [last, i]
     return [last, -1]
 
-
-        
-
 last_guess_length = 0
 last_guess = ""
+
+def get_tags(char_index_list, text):
+    return [text[int(char_index_list[i][0])+1:int(char_index_list[i+1][0])] for i in range(len(char_index_list)-1)]
+
+def add_new_tags(possible_new):
+    global themes
+    for pn in possible_new:
+        if pn not in themes:
+            themes.append(pn.strip())
+
+
+popup = None
+label = None
+
+def show_popup():
+    global popup
+    global label
+    # Get the current position of the text cursor
+    cursor_index = text.index(INSERT)
+    bbox = text.bbox(cursor_index)
+
+    if bbox:
+        # Get the bounding box of the text cursor
+        x, y, width, height = bbox
+
+        # Get the absolute position of the text widget
+        abs_x = text.winfo_rootx() + x + 10
+        abs_y = text.winfo_rooty() + y
+
+        if popup is None:
+            # Create a popup window
+            popup = Toplevel(root)
+            popup.geometry(f"+{abs_x}+{abs_y}")
+            popup.wm_overrideredirect(True)
+
+            # Add content to the popup
+            label = Label(popup, text=str(last_guess), padx=5, pady=5)
+            label.pack()
+
+        else:
+            popup.geometry(f"+{abs_x}+{abs_y}")
+            label.config(text=str(last_guess))
 
 def predict(key):
     global last_guess_length
@@ -89,62 +127,56 @@ def predict(key):
     y,x = text.index(INSERT).split(".")
     t = text.get("1.0", "end-1c")
 
-
     all_tags = get_all_char_pos(t, "#")
+    all_tags_text = get_tags(all_tags, t)
+    add_new_tags(all_tags_text)
+
     prev_index, next_index = get_closest_char(all_tags, text.index(INSERT))
 
-    if next_index == -1:
-        prev = t[:prev_index]
-        t = t[prev_index:len(t)-last_guess_length]
-        after = ""
-    else:
-        prev = t[:prev_index]
-        after = t[next_index:len(t)-last_guess_length]
-        t=t[prev_index:next_index]
-
-    if next_index == -1:
-        text.delete('0.0', END)
-
-        if key.keysym == "Tab" and last_guess != "":
-            text.insert('1.0', prev)
-            text.insert('end', "#")
-            text.insert('end', last_guess)
-            text.insert('end', " #")
-            text.insert('end', after)
-            
-            theme = ""
-            last_guess = ""
-            last_guess_length = 0
+    if key.keysym == "Tab" and last_guess != "":
+        if next_index == -1:
+            text.delete("1."+str(prev_index), END)
         else:
-            theme = " " + guess_theme(t.lower()[1:])
-            last_guess = theme[1:]
-            last_guess_length = len(theme)
+            text.delete("1."+str(prev_index), "1."+str(next_index))
 
-            text.insert('1.0', prev)
-            text.insert('end', t)
-            text.insert('end', theme, 'guess')
-            text.insert('end', after)
+        text.insert("1."+str(prev_index), "#")
+        text.insert("1."+str(prev_index + 1), last_guess)
+        text.insert("1."+str(prev_index + 1 + len(last_guess)), " #")
 
-            text.mark_set("insert", "%d.%d" % (int(y), int(x)))
+        last_guess = ""
 
     else:
-        text.delete('0.0', END)
-        text.insert('1.0', prev)
-        text.insert('end', t)
-        text.insert('end', after)
-        last_guess_length = 0
-        last_guess = ""
-        theme = ""
-        text.mark_set("insert", "%d.%d" % (int(y), int(x)))
+        if next_index == -1:
+            t = t[prev_index:len(t)]
+        else:
+            t=t[prev_index:next_index]
+
+        last_guess = guess_theme(t.lower()[1:])
+
+    show_popup()
 
 
-text = Text(root)
+def ret(event):
+    return "break"
+
+def no_foxus(event):
+    global popup
+    if popup != None:
+        popup.destroy()
+        popup = None
+
+text = Text(root, wrap=WORD)
 text.insert("0.0", "#")
 text.tag_configure("guess", foreground="gray")
+text.bind("<Return>", ret)
 text.bind("<KeyRelease>", predict)
+text.bind("<FocusOut>", no_foxus)
 
 
 text.pack()
+
+text2 = Text(root, wrap=WORD)
+text2.pack()
 
 
 root.mainloop()
