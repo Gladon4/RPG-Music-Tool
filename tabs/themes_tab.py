@@ -148,9 +148,16 @@ class Themes_Tab():
 
 	def __apply_added_themes(self, path, song, new_themes, song_themes):
 		if new_themes != []:
+			print(new_themes)
 			self.sound_manager.add_new_themes(new_themes)
 
 		self.sound_manager.change_song_themes(path, song, song_themes)
+
+		new_possible_themes = self.sound_manager.get_themes_list() + new_themes
+		for text in self.theme_boxes:
+			text.update_possible_tags(new_possible_themes)
+
+		self.sound_manager.store_themes()
 
 
 	def __destroy_list(self):
@@ -203,6 +210,8 @@ class Themes_Tab():
 
 
 	def __select_tab(self, tab):
+		if (tab == "settings"):
+			self.tab_manager.tabs[tab].change = True
 		self.frame.focus() # Force unfocus of predictive text
 		self.__stop()
 		self.tab_manager.select(tab)

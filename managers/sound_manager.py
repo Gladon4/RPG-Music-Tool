@@ -76,7 +76,7 @@ class Sound_Manager():
 			return
 		
 		self.songs[path][song] = themes
-		self.create_themes_dict
+		self.create_themes_dict()
 
 	def store_themes(self):
 		try:

@@ -31,8 +31,14 @@ class PredictiveText(tk.Text):
     
 
     def get_tags(self):
-        char_index_list = self.__get_all_char_pos()
         text = super().get("1.0", "end-1c")
+
+        if len(text) == 0:
+            super().insert("1.0", self.tag_denominator)
+            text = super().get("1.0", "end-1c")
+            
+        char_index_list = self.__get_all_char_pos()
+
         tags = [text[int(char_index_list[i][0])+1:int(char_index_list[i+1][0])] for i in range(len(char_index_list)-1)]
         tags+= [text[int(char_index_list[-1][0])+1:]]
         
