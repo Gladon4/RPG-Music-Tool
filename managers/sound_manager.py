@@ -52,6 +52,7 @@ class Sound_Manager():
 
 	
 	def create_themes_dict(self):
+		self.themes = {}
 		for path in self.set_manager.music_paths:
 			for song in self.songs[path]:
 				for theme in self.songs[path][song]:
@@ -60,6 +61,22 @@ class Sound_Manager():
 
 					self.themes[theme].append(path+song)
 
+	
+	def get_themes_list(self):
+		return list(self.themes.keys())
+	
+
+	def add_new_themes(self, themes):
+		for theme in themes:
+			self.themes[theme] = []
+
+
+	def change_song_themes(self, path, song, themes):
+		if self.songs[path][song] == themes:
+			return
+		
+		self.songs[path][song] = themes
+		self.create_themes_dict
 
 	def store_themes(self):
 		try:

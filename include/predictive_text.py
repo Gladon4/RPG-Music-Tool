@@ -5,10 +5,12 @@ import tkinter as tk
 
 class PredictiveText(tk.Text):
     def __init__(self, master=None, possible_tags=[], tag_denominator="#", **kw):
+        self.popup_background = kw.pop("popup_background", None)
+
         super().__init__(master, kw)
         super().bind("<Return>", self.__no_return)
         super().bind("<KeyRelease>", self.__predict)
-        super().bind("<FocusOut>", self.__focus_out)
+        super().bind("<FocusOut>", self.__focus_out, add="+")
 
         self.master = master
 
@@ -28,11 +30,26 @@ class PredictiveText(tk.Text):
         return self.added_tags
     
 
+    def get_tags(self):
+        char_index_list = self.__get_all_char_pos()
+        text = super().get("1.0", "end-1c")
+        tags = [text[int(char_index_list[i][0])+1:int(char_index_list[i+1][0])] for i in range(len(char_index_list)-1)]
+        tags+= [text[int(char_index_list[-1][0])+1:]]
+        
+        tags = [tags[i].strip() for i in range(len(tags)) if tags[i] != ""]
+
+        return tags
+
+
+    def update_possible_tags(self, new_possible_tags):
+        self.possible_tags = new_possible_tags
+    
+
     def __no_return(self, _):
         return "break"
     
 
-    def __focus_out(self, _):       
+    def __focus_out(self, _):
         if self.predict_popup != None:
             self.predict_popup.destroy()
             self.predict_popup = None
@@ -87,7 +104,7 @@ class PredictiveText(tk.Text):
     
 
     def __predict(self, key):
-        t = text.get("1.0", "end-1c")
+        t = super().get("1.0", "end-1c")
 
         all_tags = self.__get_all_char_pos()
         all_tags_text = self.__get_tags(all_tags)
@@ -97,9 +114,9 @@ class PredictiveText(tk.Text):
 
         if key.keysym == "Tab" and self.last_guess != "":
             if next_index == -1:
-                text.delete("1."+str(prev_index), tk.END)
+                super().delete("1."+str(prev_index), tk.END)
             else:
-                text.delete("1."+str(prev_index), "1."+str(next_index))
+                super().delete("1."+str(prev_index), "1."+str(next_index))
 
             super().insert("1."+str(prev_index), self.tag_denominator)
             super().insert("1."+str(prev_index + 1), self.last_guess)
@@ -158,8 +175,8 @@ class PredictiveText(tk.Text):
             x, y, _, _ = bbox
 
             # Get the absolute position of the text widget
-            abs_x = text.winfo_rootx() + x + 10
-            abs_y = text.winfo_rooty() + y
+            abs_x = super().winfo_rootx() + x + 10
+            abs_y = super().winfo_rooty() + y
 
             if self.predict_popup is None:
                 # Create a popup window
@@ -168,7 +185,7 @@ class PredictiveText(tk.Text):
                 self.predict_popup.wm_overrideredirect(True)
 
                 # Add content to the popup
-                self.predict_label = tk.Label(self.predict_popup, text=str(self.last_guess), padx=5, pady=5)
+                self.predict_label = tk.Label(self.predict_popup, text=str(self.last_guess), padx=5, pady=5, background=self.popup_background)
                 self.predict_label.pack()
 
             else:
@@ -176,6 +193,16 @@ class PredictiveText(tk.Text):
                 self.predict_label.config(text=str(self.last_guess))
 
 
+    def destroy(self):
+        if self.predict_popup != None:
+            self.predict_popup.destroy()
+            self.predict_label.destroy()
+        super().destroy()
+
+
+"""
+def pr_added(event):
+    print(event.widget.get_added_tags())
 
 # --- Constants --- #
 APP_NAME = "RPG Music Tool v06_prediction"
@@ -189,8 +216,10 @@ if __name__ == "__main__":
     root.title(APP_NAME)
     root.geometry(START_SIZE)
 
-    text = PredictiveText(root, THEMES, "#", wrap=tk.WORD, width=50, height=20)
+    text = PredictiveText(root, THEMES, "#", wrap=tk.WORD, width=50, height=20, popup_background="#91a3c4")
+    text.bind("<FocusOut>", pr_added)
     text.pack()
 
 
     root.mainloop()
+"""

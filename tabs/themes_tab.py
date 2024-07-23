@@ -1,5 +1,6 @@
 from tkinter import *
 import sys, os
+from include.predictive_text import PredictiveText
 
 class Themes_Tab():
 	def __init__(self, set_manager, sound_manager, tab_manager, notebook, player):
@@ -85,8 +86,6 @@ class Themes_Tab():
 		self.__create_list()
 
 
-
-
 	def __create_list(self):
 		if len(self.paths) == 0:
 			return
@@ -111,13 +110,47 @@ class Themes_Tab():
 			song_label = Label(self.list_frame, text=song, font=("Helvetica",12), padx=5, bg=settings["sec_bg_color"], fg=settings["txt_color"])
 			song_label.grid(row=i, column=1)
 
-			song_themes = Text(self.list_frame, width=45, height=3)
+			song_themes = PredictiveText(self.list_frame, self.sound_manager.get_themes_list(), "#", width=45, height=3)
+			song_themes.myId = song
 			song_themes.grid(row=i, column=2, padx=10)
-			song_themes.insert('1.0', "#" + " #".join(self.sound_manager.songs[self.paths[self.current_path_index]][song]))
+			song_themes.insert('1.1', " #".join(self.sound_manager.songs[self.paths[self.current_path_index]][song]))
+			if len(self.sound_manager.songs[self.paths[self.current_path_index]][song]) != 0:
+				song_themes.insert(END, " #")
+			song_themes.bind("<FocusOut>", self.__apply_added_themes_focus_out, add="+")
 
 			self.play_buttons[i] = song_play_button
 			self.theme_boxes[i] = song_themes
 			self.songs_labels[i] = song_label
+
+
+	def __apply_added_themes_focus_out(self, event):
+		new_themes = event.widget.get_added_tags()
+		song_themes = event.widget.get_tags()
+		path = self.paths[self.current_path_index]
+		song = event.widget.myId
+
+		self.__apply_added_themes(path, song, new_themes, song_themes)
+
+	
+	def __apply_added_themes_page_change(self):
+		for i in range(self.songs_per_page):
+			if self.play_buttons[i] == None:
+				continue
+
+			current_focus = self.theme_boxes[i].focus_get()
+			if current_focus == self.theme_boxes[i]:			
+				path = self.paths[self.current_path_index]
+				song = self.theme_boxes[i].myId
+				new_themes = self.theme_boxes[i].get_added_tags()
+				song_themes = self.theme_boxes[i].get_tags()
+				self.__apply_added_themes(path, song, new_themes, song_themes)
+
+
+	def __apply_added_themes(self, path, song, new_themes, song_themes):
+		if new_themes != []:
+			self.sound_manager.add_new_themes(new_themes)
+
+		self.sound_manager.change_song_themes(path, song, song_themes)
 
 
 	def __destroy_list(self):
@@ -170,6 +203,7 @@ class Themes_Tab():
 
 
 	def __select_tab(self, tab):
+		self.frame.focus() # Force unfocus of predictive text
 		self.__stop()
 		self.tab_manager.select(tab)
 
@@ -204,6 +238,7 @@ class Themes_Tab():
 
 
 	def __previous_page(self):
+		self.__apply_added_themes_page_change()
 		self.page_number -= 1
 		if self.page_number == 0:
 			self.previous_page_button.config(state="disabled")
@@ -216,6 +251,7 @@ class Themes_Tab():
 
 
 	def __next_page(self):
+		self.__apply_added_themes_page_change()
 		self.page_number += 1
 		if (self.page_number + 1)* self.songs_per_page >= len(list(self.sound_manager.songs[self.paths[self.current_path_index]].keys())):
 			self.next_page_button.config(state="disabled")
@@ -228,6 +264,7 @@ class Themes_Tab():
 
 
 	def __previous_path(self):
+		self.__apply_added_themes_page_change()
 		self.current_path_index -= 1
 
 		if self.current_path_index == 0:
@@ -238,6 +275,7 @@ class Themes_Tab():
 		self.__set_directory()
 
 	def __next_path(self):
+		self.__apply_added_themes_page_change()
 		self.current_path_index += 1
 		if (self.current_path_index + 1) == len(self.paths):
 			self.next_path_button.config(state="disabled")
