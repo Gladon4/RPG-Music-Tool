@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 import sys, os
 from include.predictive_text import PredictiveText
 

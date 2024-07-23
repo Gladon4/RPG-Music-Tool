@@ -5,7 +5,8 @@ Methods:
 	- Update
 """
 
-from tkinter import Frame, Label, LabelFrame, Button, PhotoImage
+from tkinter import *
+from tkinter import ttk
 import tkfilebrowser
 import sys, os
 if sys.platform.startswith('win32'):

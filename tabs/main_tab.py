@@ -9,7 +9,8 @@ Methods:
 	- Update Element Settings
 """
 
-from tkinter import Frame, Button, LabelFrame, Label, PhotoImage, ttk
+from tkinter import *
+from tkinter import ttk
 import sys, time, os
 
 class Main_Tab():

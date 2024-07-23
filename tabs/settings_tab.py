@@ -4,7 +4,8 @@ Methods:
 	- Save Settings
 """
 
-from tkinter import Frame, Label, LabelFrame, Button, Checkbutton, ttk, PhotoImage
+from tkinter import *
+from tkinter import ttk
 from tkinter.colorchooser import askcolor
 import sys, os
 
