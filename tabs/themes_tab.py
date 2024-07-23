@@ -149,7 +149,6 @@ class Themes_Tab():
 
 	def __apply_added_themes(self, path, song, new_themes, song_themes):
 		if new_themes != []:
-			print(new_themes)
 			self.sound_manager.add_new_themes(new_themes)
 
 		self.sound_manager.change_song_themes(path, song, song_themes)

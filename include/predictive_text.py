@@ -42,7 +42,8 @@ class PredictiveText(tk.Text):
         tags = [text[int(char_index_list[i][0])+1:int(char_index_list[i+1][0])] for i in range(len(char_index_list)-1)]
         tags+= [text[int(char_index_list[-1][0])+1:]]
         
-        tags = [tags[i].strip() for i in range(len(tags)) if tags[i] != ""]
+        tags = [tags[i].strip() for i in range(len(tags))]
+        tags = [tag for tag in tags if tag != ""]
 
         return tags
 
