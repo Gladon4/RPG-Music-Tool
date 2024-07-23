@@ -1,7 +1,3 @@
-"""
-Manages Notebook Tabs
-"""
-
 class Tab_Manager():
 	def __init__(self, notebook):
 		self.notebook = notebook

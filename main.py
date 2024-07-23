@@ -1,22 +1,5 @@
 #!/bin/python3
 
-"""
-Start the App
-Methods:
-	- Load Settings
-	- Create Player
-	- Create Tabs
-
-Classes:
-	- Tabs:
-		- Main
-		- Paths
-		- Themes
-		- Settings
-		- SFX (potentially)
-	- Player
-"""
-
 from tkinter import *
 from tkinter import Tk, ttk
 
@@ -30,6 +13,7 @@ from tabs.main_tab import Main_Tab
 from tabs.settings_tab import Settings_Tab
 from tabs.paths_tab import Paths_Tab
 from tabs.themes_tab import Themes_Tab
+from tabs.sfx_tab import SFX_Tab
 
 
 
@@ -56,6 +40,7 @@ tab_manager = Tab_Manager(notebook)
 main_tab = Main_Tab(set_manager, sound_manager, tab_manager, notebook, player)
 settings_tab = Settings_Tab(set_manager, tab_manager, notebook)
 paths_tab = Paths_Tab(set_manager, tab_manager, notebook, sound_manager)
+sfx_tab = SFX_Tab(set_manager, tab_manager, notebook, sound_manager)
 themes_tab = Themes_Tab(set_manager, sound_manager, tab_manager, notebook, player)
 
 
@@ -83,14 +68,18 @@ def setup():
 	notebook.add(settings_tab.frame, text="Settings")
 
 	paths_tab.create()
-	notebook.add(paths_tab.frame, text="Paths")
+	notebook.add(paths_tab.frame, text="Song Paths")
+
+	sfx_tab.create()
+	notebook.add(sfx_tab.frame, text="SFX Paths")
 
 	themes_tab.create()
 	notebook.add(themes_tab.frame, text="Themes")
 
 	tab_manager.set_tabs({"main": main_tab,
 						  "settings": settings_tab,
-						  "paths": paths_tab,
+						  "song_paths": paths_tab,
+						  "sfx_paths": sfx_tab,
 						  "themes": themes_tab})
 
 

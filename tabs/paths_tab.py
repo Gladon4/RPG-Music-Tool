@@ -1,10 +1,3 @@
-"""
-Methods:
-	- Create GUI
-	- File adder
-	- Update
-"""
-
 from tkinter import *
 from tkinter import ttk
 import tkfilebrowser
@@ -141,7 +134,14 @@ class Paths_Tab():
 
 
 	def __music_path_picker(self):
-		dirs = tkfilebrowser.askopendirnames(title="Select your Music Directories", initialdir="/home/", okbuttontext="Select")
+		initialdir = ""
+		if sys.platform.startswith('linux'):
+			initialdir = "/home/"
+			
+		elif sys.platform.startswith('win32'):
+			initialdir = "C://"
+
+		dirs = tkfilebrowser.askopendirnames(title="Select your Music Directories", initialdir=initialdir, okbuttontext="Select")
 		i = len(self.set_manager.music_paths)
 
 		for dir in dirs:

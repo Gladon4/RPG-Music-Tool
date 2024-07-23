@@ -1,14 +1,3 @@
-"""
-Methods:
-	- Create GUI
-	- Call Player
-	- Switch Tab
-	- Update Player
-		- Progressbar
-		- Volume (Settings)
-	- Update Element Settings
-"""
-
 from tkinter import *
 from tkinter import ttk
 import sys, time, os
@@ -122,7 +111,7 @@ class Main_Tab():
 			self.sfx_buttons_frame = LabelFrame(self.frame, text="", bg=settings["bg_color"], padx=25, borderwidth=0, pady=5)
 			self.sfx_buttons_frame.grid(row=6, column=0)
 
-			self.label_sfx = Label(self.frame, text="Sound Effects", font = ("Helvetica",20), bg=settings["bg_color"], fg=settings["txt_color"])
+			self.label_sfx = Label(self.frame, text="Sound Effects", font=("Helvetica",20), bg=settings["bg_color"], fg=settings["txt_color"])
 			self.label_sfx.grid(row=5, column=0, pady=5)
 
 
@@ -258,7 +247,8 @@ class Main_Tab():
 										fg=settings["txt_color"],
 										height=int(2.5*settings["ui_scale"]), 
 										width=int(5*settings["ui_scale"]),
-										command=lambda _theme=_theme: self.__play(_theme))
+										command=lambda _theme=_theme: self.__play(_theme),
+										wraplength=100)
 
 
 			theme_play_button.grid(row = (i // settings["row_length"] + 1), column = (i % settings["row_length"]))
@@ -300,7 +290,8 @@ class Main_Tab():
 										fg=settings["txt_color"],
 										height=int(2.5*settings["ui_scale"]), 
 										width=int(5*settings["ui_scale"]),
-										command=lambda sfx=sfx: self.player.play_sfx(sfx))
+										command=lambda sfx=sfx: self.player.play_sfx(sfx),
+										wraplength=100)
 
 
 			self.sfx_play_button.grid(row=(i // settings["row_length"] + 1), column=(i % settings["row_length"]))

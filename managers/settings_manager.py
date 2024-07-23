@@ -164,3 +164,22 @@ class Set_Manager():
 		with open(self.path + "/paths.csv", "w") as csv_file:
 			write = csv.writer(csv_file)
 			write.writerow(self.music_paths)
+
+		# --- SFX --- #
+		if not isfile(self.path + "/sfx-paths.csv"):
+			open(self.path + "/sfx-paths.csv", 'a').close()
+
+		for path in self.sfx_paths:
+			try:
+				with open(path + "/sfx.csv") as file:
+					pass
+			except:
+				try:
+					sfxs = open(path + "/sfx.csv", 'a')
+					sfxs.close()
+				except:
+					pass
+
+		with open(self.path + "/sfx-paths.csv", "w") as csv_file:
+			write = csv.writer(csv_file)
+			write.writerow(self.sfx_paths)

@@ -114,3 +114,19 @@ class Sound_Manager():
 							self.sfxs[path] += [row[0]]
 		except:
 			pass
+
+
+	def store_sfx(self):
+		try:
+			for path in self.set_manager.sfx_paths:
+				rows = []
+
+				for song in self.sfxs[path]:
+					rows.append([song])
+
+				with open(path + "sfx.csv", "w", newline="") as file:
+					csvwriter = csv.writer(file, delimiter='\\')
+					csvwriter.writerows(rows)
+
+		except:
+			pass

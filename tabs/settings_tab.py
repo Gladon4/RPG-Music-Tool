@@ -1,9 +1,3 @@
-"""
-Methods:
-	- Create GUI
-	- Save Settings
-"""
-
 from tkinter import *
 from tkinter import ttk
 from tkinter.colorchooser import askcolor
@@ -70,7 +64,10 @@ class Settings_Tab():
 		self.settings_button = Button(self.navigation_buttons_frame, command=lambda tab="main": self.__select_tab(tab), image=self.back_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.settings_button.pack(side="top")
 
-		self.paths_button = Button(self.navigation_buttons_frame, command=lambda tab="paths": self.__select_tab(tab), image=self.list_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
+		self.paths_button = Button(self.navigation_buttons_frame, command=lambda tab="song_paths": self.__select_tab(tab), image=self.list_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
+		self.paths_button.pack(side="top")
+
+		self.paths_button = Button(self.navigation_buttons_frame, command=lambda tab="sfx_paths": self.__select_tab(tab), image=self.list_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
 		self.paths_button.pack(side="top")
 
 		self.themes_button = Button(self.navigation_buttons_frame, command=lambda tab="themes": self.__select_tab(tab), image=self.themes_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])

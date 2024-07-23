@@ -9,7 +9,7 @@
 - Rework
     - [x] Theme setting tab
         - [x]  Better theme selection with text prediction and a small popup and stuff
-    - [ ] SFX tab / add paths
+    - [x] SFX tab / add paths
     
 
 ## Fixes
@@ -27,3 +27,5 @@
 - Profiles (i.e. SciFi, Fantasy, Modern, etc.)
 - Export and Import of Themes (to share and switch between PCs)
 - Ecport and Import Settings (Customisation Settings)
+- More intuitive UI
+- Make SFX togglable so if you have many they don't clutter up the main tab
