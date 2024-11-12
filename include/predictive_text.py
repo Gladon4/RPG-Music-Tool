@@ -8,7 +8,7 @@ class PredictiveText(tk.Text):
         self.popup_background = kw.pop("popup_background", None)
 
         super().__init__(master, kw)
-        super().bind("<Return>", self.__no_return)
+        super().bind("<Return>", self.__return_add_tag_denominator)
         super().bind("<KeyRelease>", self.__predict)
         super().bind("<FocusOut>", self.__focus_out, add="+")
 
@@ -52,9 +52,39 @@ class PredictiveText(tk.Text):
         self.possible_tags = new_possible_tags
     
 
-    def __no_return(self, _):
+    def __return_add_tag_denominator(self, key):
+        t = super().get("1.0", "end-1c")
+        if int(super().index(tk.INSERT).split(".")[1]) != len(t):
+            return "break"
+
+        all_tags = self.__get_all_char_pos()
+        new_theme = self.__get_new_theme_in_last_position(all_tags)
+
+        if new_theme == "":
+            return "break"
+
+        all_tags_text = self.__get_tags(all_tags)
+        self.__add_new_tags(all_tags_text)
+
+        prev_index, _ = self.__get_closest_char(all_tags, super().index(tk.INSERT))
+       
+        super().delete("1."+str(prev_index), tk.END)
+        
+        super().insert("1."+str(prev_index), self.tag_denominator)
+        super().insert("1."+str(prev_index + 1), new_theme)
+        super().insert("1."+str(prev_index + 1 + len(new_theme)), " " + self.tag_denominator)
+
+        self.last_guess = ""
+        self.__show_popup()
+
         return "break"
     
+
+    def __get_new_theme_in_last_position(self, char_index_list):
+        text = super().get("1.0", "end-1c")
+        i = char_index_list[-1][0]
+        return text[i+1:]
+
 
     def __focus_out(self, _):
         if self.predict_popup != None:

@@ -34,12 +34,12 @@ class Set_Manager():
 					"sec_bg_color"			: color_settings["sec_bg_color"],
 					"button_bg_color"		: color_settings["button_color"],
 					"button_hov_color"		: color_settings["button_color_hover"],
-					"txt_color"			: color_settings["text_color"],
+					"txt_color"				: color_settings["text_color"],
 					# App Settings
 					"volume"				: int(app_settings["volume"]),
 					"ui_scale"				: int(app_settings["ui_scale"]),
 					"row_length"			: int(app_settings["row_length"]),
-					"sfx_on_themes"		: int(app_settings["sfx_on_themes"]),
+					"sfx_on_themes"			: int(app_settings["sfx_on_themes"]),
 					"full_paths_main"		: int(app_settings["full_paths_main"]),
 					"full_paths_settings"	: int(app_settings["full_paths_settings"])
 					}

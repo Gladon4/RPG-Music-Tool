@@ -155,6 +155,8 @@ class Themes_Tab():
 
 		new_possible_themes = self.sound_manager.get_themes_list() + new_themes
 		for text in self.theme_boxes:
+			if text is None: 
+				continue
 			text.update_possible_tags(new_possible_themes)
 
 		self.sound_manager.store_themes()
