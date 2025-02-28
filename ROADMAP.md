@@ -1,31 +1,25 @@
 # Roadmap and Planed Features
 
-## Currently worked on
-
-### Fixes
-
+## 0.6
 ### Features
-
-- Rework
+- Rework of the app
     - [x] Theme setting tab
         - [x]  Better theme selection with text prediction and a small popup and stuff
     - [x] SFX tab / add paths
+- QOL
+    - [x] better checkboxes
+    - [x] some styling (as far as tk allows)
     
-
-## Fixes
-
+### Fixes
 - [x] App start crashes if paths.csv is empty  
-- [ ] App start crashes if path in paths.csv doesn't exist
+- [x] App start crashes if path in paths.csv doesn't exist
 
-## 0.6
-
-- Rework of the app
-- Toggle Themes on the main page
 
 ## Future
-
 - Profiles (i.e. SciFi, Fantasy, Modern, etc.)
 - Export and Import of Themes (to share and switch between PCs)
-- Ecport and Import Settings (Customisation Settings)
+- Export and Import Settings (Customisation Settings)
 - More intuitive UI
-- Make SFX togglable so if you have many they don't clutter up the main tab
+- Make individual SFX togglable so if you have many they don't clutter up the main tab
+- Themes editor, being able to disable certain themes.
+- Toggle Themes on the main page

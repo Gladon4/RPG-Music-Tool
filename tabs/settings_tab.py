@@ -40,20 +40,26 @@ class Settings_Tab():
 		self.label_title_app_settings = Label(self.frame, text="Application Settings",font=("Helvetica",20), bg=settings["bg_color"], fg=settings["txt_color"])
 		self.label_title_app_settings.grid(row=0, column=0, pady=5)
 
-		self.label_subtitle_ui_scale = Label(self.ui_setting_frame, text="Theme Button Scale",font=("Helvetica",12), padx=15, bg=settings["sec_bg_color"], fg=settings["txt_color"])
-		self.label_subtitle_ui_scale.grid(row=0, column=0)
+		self.label_subtitle_ui_scale = Label(self.ui_setting_frame, text="Theme Button Scale",font=("Helvetica",12), padx=15, bg=settings["sec_bg_color"], fg=settings["txt_color"], height=2)
+		self.label_subtitle_ui_scale.grid(row=0, column=0, sticky="nw")
 
-		self.label_subtitle_ui_scale = Label(self.ui_setting_frame, text="Theme Button Scale",font=("Helvetica",12), padx=15, bg=settings["sec_bg_color"], fg=settings["txt_color"])
-		self.label_subtitle_ui_scale.grid(row=0, column=0)
+		self.ui_scale_label = Label(self.ui_setting_frame, text=settings["ui_scale"], font=("Helvetica",12), padx=10, bg=settings["sec_bg_color"], fg=settings["txt_color"], width=1)
+		self.ui_scale_label.grid(row=0, column=2, sticky="n")
 
-		self.ui_scale_label = Label(self.ui_setting_frame, text=settings["ui_scale"], font=("Helvetica",12), padx=10, bg=settings["sec_bg_color"], fg=settings["txt_color"])
-		self.ui_scale_label.grid(row=0, column=2)
+		self.label_subtitle_row_lenght = Label(self.ui_setting_frame, text="Themes Buttons per Row",font=("Helvetica",12), padx=15, bg=settings["sec_bg_color"], fg=settings["txt_color"], height=2)
+		self.label_subtitle_row_lenght.grid(row=2, column=0, sticky="nw")
 
-		self.label_subtitle_row_lenght = Label(self.ui_setting_frame, text="Themes Buttons per Row",font=("Helvetica",12), padx=15, bg=settings["sec_bg_color"], fg=settings["txt_color"])
-		self.label_subtitle_row_lenght.grid(row=2, column=0)
+		self.row_length_label = Label(self.ui_setting_frame, text=settings["row_length"], font=("Helvetica",12), padx=10, bg=settings["sec_bg_color"], fg=settings["txt_color"], width=1)
+		self.row_length_label.grid(row=2, column=2, sticky="n")
 
-		self.row_length_label = Label(self.ui_setting_frame, text=settings["row_length"], font=("Helvetica",12), padx=10, bg=settings["sec_bg_color"], fg=settings["txt_color"])
-		self.row_length_label.grid(row=2, column=2)
+		self.sfx_on_themes_label = Label(self.ui_setting_frame, text="Display SFX on Main Page",font=("Helvetica",12), padx=15, bg=settings["sec_bg_color"], fg=settings["txt_color"], height=2)
+		self.sfx_on_themes_label.grid(row=3, column=0, sticky="nw")
+
+		self.full_path_on_main_label = Label(self.ui_setting_frame, text="Display Full Paths on Main Page",font=("Helvetica",12), padx=15, bg=settings["sec_bg_color"], fg=settings["txt_color"], height=2)
+		self.full_path_on_main_label.grid(row=4, column=0, sticky="nw")
+
+		self.full_path_in_settings_label = Label(self.ui_setting_frame, text="Display Full Paths in Settings",font=("Helvetica",12), padx=15, bg=settings["sec_bg_color"], fg=settings["txt_color"], height=2)
+		self.full_path_in_settings_label.grid(row=5, column=0, sticky="nw")
 
 		# self.sfx_on_themes_label = Label(self.ui_setting_frame, text="Display SFX on Themes Tab", font=("Helvetica",12), padx=10, bg=settings["sec_bg_color"], fg=settings["txt_color"])
 		# self.sfx_on_themes_label.grid(row=3, column=0, pady=10)
@@ -75,23 +81,27 @@ class Settings_Tab():
 
 
 
-		self.ui_scale_slider = ttk.Scale(self.ui_setting_frame, from_=1, to=5, value=settings["ui_scale"], command=self.__change_ui_scale, length=200)
-		self.ui_scale_slider.grid(row=0, column=1, pady=10)
+		self.ui_scale_slider = ttk.Scale(self.ui_setting_frame, from_=1, to=5, value=settings["ui_scale"], command=self.__change_ui_scale, length=150)
+		self.ui_scale_slider.grid(row=0, column=1, sticky="n")
 
-		self.row_length_slider = ttk.Scale(self.ui_setting_frame, from_=1, to=10, value=settings["row_length"], command=self.__change_row_length, length=200)
-		self.row_length_slider.grid(row=2, column=1, pady=10)
+		self.row_length_slider = ttk.Scale(self.ui_setting_frame,from_=3, to=10, value=settings["row_length"], command=self.__change_row_length, length=150)
+		self.row_length_slider.grid(row=2, column=1, sticky="n")
 
-		self.sfx_on_themes_checkbox = Checkbutton(self.ui_setting_frame, text="    Display SFX on Main Page    ", height=2, bg=settings["button_bg_color"], command=self.__change_sfx_on_themes, activebackground=settings["button_hov_color"])
-		self.sfx_on_themes_checkbox.grid(row=3, column=0, columnspan=3, pady=5)
-		if settings["sfx_on_themes"]: self.sfx_on_themes_checkbox.select()
+		self.sfx_on_themes_check = Label(self.ui_setting_frame, image=self.check_off, cursor="hand2", bg=settings["sec_bg_color"], fg="#ffffff")
+		self.sfx_on_themes_check.bind("<Button-1>", self.__change_sfx_on_themes)
+		self.sfx_on_themes_check.grid(row=3, column=1, sticky="ne")
+		if settings["sfx_on_themes"]: self.sfx_on_themes_check.config(image=self.check_on)
 
-		self.full_path_on_main = Checkbutton(self.ui_setting_frame, text="    Display Full Paths on Main Page    ", height=2, bg=settings["button_bg_color"], command=self.__full_path_on_main, activebackground=settings["button_hov_color"])
-		self.full_path_on_main.grid(row=4, column=0, columnspan=3, pady=5)
-		if settings["full_paths_main"]: self.full_path_on_main.select()
+		self.full_path_on_main_check = Label(self.ui_setting_frame, image=self.check_off, cursor="hand2", bg=settings["sec_bg_color"], )
+		self.full_path_on_main_check.bind("<Button-1>", self.__full_path_on_main)
+		self.full_path_on_main_check.grid(row=4, column=1, sticky="ne")
+		if settings["full_paths_main"]: self.full_path_on_main_check.config(image=self.check_on)
 
-		self.full_path_on_main = Checkbutton(self.ui_setting_frame, text="    Display Full Paths in Settings    ", height=2, bg=settings["button_bg_color"], command=self.__full_path_in_settings, activebackground=settings["button_hov_color"])
-		self.full_path_on_main.grid(row=5, column=0, columnspan=3, pady=5)
-		if settings["full_paths_settings"]: self.full_path_on_main.select()
+
+		self.full_path_in_settings_check = Label(self.ui_setting_frame, image=self.check_off, cursor="hand2", bg=settings["sec_bg_color"], )
+		self.full_path_in_settings_check.bind("<Button-1>", self.__full_path_in_settings)
+		self.full_path_in_settings_check.grid(row=5, column=1, sticky="ne")
+		if settings["full_paths_settings"]: self.full_path_in_settings_check.config(image=self.check_on)
 		
 
 
@@ -107,14 +117,16 @@ class Settings_Tab():
 		colorNames = {"bg_color": "Background Colour", "sec_bg_color": "Secondary Backgroud Colour", "button_bg_color": "Button Colour", "button_hov_color": "Hover Button Colour", "txt_color": "Text Colour"}
 
 		for i, color in enumerate(colors):
-			label_frame = LabelFrame(colors_frame, bg=settings["sec_bg_color"], text=colorNames[color], fg=settings["txt_color"], borderwidth=0)
+			label_frame = LabelFrame(colors_frame, bg=settings["sec_bg_color"], borderwidth=0)
 			label_frame.grid(row=i//3+1, column=i % 3, padx=6, pady=6)
+			color_name_label = Label(label_frame, text=colorNames[color], fg=settings["txt_color"], bg=settings["sec_bg_color"])
+			color_name_label.grid(row=0, column=0, columnspan=2, sticky="w", padx=3, pady=(3,0))
 			color_label_frame = LabelFrame(label_frame, bg=settings["bg_color"], borderwidth=3)
-			color_label_frame.grid(row=0, column=0)
+			color_label_frame.grid(row=1, column=0, padx=3, pady=3)
 			color_label = Label(color_label_frame, width=18, height=9, bg=colors[color])
 			color_label.pack()
 			picker_button = Button(label_frame, text="Pick\nColour", command=lambda color=color, name=colorNames[color]: self.__change_color(color, name), activebackground=settings["button_hov_color"], bg=settings["button_bg_color"], fg=settings["txt_color"], height=3, width=5)
-			picker_button.grid(row=0, column=1, padx=5)
+			picker_button.grid(row=1, column=1, padx=5)
 
 			self.objects["color_elems"][color] = color_label
 
@@ -158,6 +170,8 @@ class Settings_Tab():
 			self.back_image = PhotoImage(file="img/back_img.png")
 			self.list_image = PhotoImage(file="img/list_img.png")
 			self.themes_image = PhotoImage(file="img/label.png")
+			self.check_on = PhotoImage(file="img/check_on.png").subsample(4,4)
+			self.check_off = PhotoImage(file="img/check_off.png").subsample(4,4)
 		
 	def __change_ui_scale(self, pos):
 		self.change = True
@@ -181,19 +195,31 @@ class Settings_Tab():
 		self.row_length_label.config(text=new_length)
 		self.row_length_slider.config(value=new_length)
 	
-	def __change_sfx_on_themes(self):
+	def __change_sfx_on_themes(self, e):
 		self.change = True
 		self.set_manager.settings["sfx_on_themes"] = 0 if self.set_manager.settings["sfx_on_themes"] else 1
+		if self.set_manager.settings["sfx_on_themes"]: 
+			self.sfx_on_themes_check.config(image=self.check_on)
+		else: 
+			self.sfx_on_themes_check.config(image=self.check_off)
 		self.set_manager.store_settings()
 
-	def __full_path_on_main(self):
+	def __full_path_on_main(self, e):
 		self.change = True
 		self.set_manager.settings["full_paths_main"] = 0 if self.set_manager.settings["full_paths_main"] else 1
+		if self.set_manager.settings["full_paths_main"]: 
+			self.full_path_on_main_check.config(image=self.check_on)
+		else: 
+			self.full_path_on_main_check.config(image=self.check_off)
 		self.set_manager.store_settings()
 	
-	def __full_path_in_settings(self):
+	def __full_path_in_settings(self, e):
 		self.change = True
 		self.set_manager.settings["full_paths_settings"] = 0 if self.set_manager.settings["full_paths_settings"] else 1
+		if self.set_manager.settings["full_paths_settings"]: 
+			self.full_path_in_settings_check.config(image=self.check_on)
+		else: 
+			self.full_path_in_settings_check.config(image=self.check_off)
 		self.set_manager.store_settings()
 
 	def __reset_settings(self):
