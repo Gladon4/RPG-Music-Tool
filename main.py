@@ -3,7 +3,7 @@
 from tkinter import *
 from tkinter import Tk, ttk
 
-from player import Player
+from include.player import Player
 
 from managers.settings_manager import Set_Manager
 from managers.sound_manager import Sound_Manager
