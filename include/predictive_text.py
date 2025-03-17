@@ -235,28 +235,3 @@ class PredictiveText(tk.Text):
             self.predict_popup.destroy()
             self.predict_label.destroy()
         super().destroy()
-
-
-"""
-def pr_added(event):
-    print(event.widget.get_added_tags())
-
-# --- Constants --- #
-APP_NAME = "RPG Music Tool v06_prediction"
-START_SIZE = "800x800"
-THEMES = ['Festive', 'Large', 'Tavern', 'Open', 'Combat', 'Tense', 'Calm', 'Mysterious', 'Epic', 'War', 'Hopeful', 'Hope', 'Dark', 'Quick', 'Sad', 'Sand', 'Boss', 'Bold']
-
-
-if __name__ == "__main__":
-    root = tk.Tk()
-
-    root.title(APP_NAME)
-    root.geometry(START_SIZE)
-
-    text = PredictiveText(root, THEMES, "#", wrap=tk.WORD, width=50, height=20, popup_background="#91a3c4")
-    text.bind("<FocusOut>", pr_added)
-    text.pack()
-
-
-    root.mainloop()
-"""
