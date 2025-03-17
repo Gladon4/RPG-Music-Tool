@@ -14,6 +14,8 @@
 - [x] App start crashes if paths.csv is empty  
 - [x] App start crashes if path in paths.csv doesn't exist
 
+### Other
+- [ ] Update Readme
 
 ## Future
 - Profiles (i.e. SciFi, Fantasy, Modern, etc.)
