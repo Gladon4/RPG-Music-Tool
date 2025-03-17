@@ -114,7 +114,7 @@ class Settings_Tab():
 
 
 		colors = {x: self.set_manager.settings[x] for x in ["bg_color", "sec_bg_color", "button_bg_color", "button_hov_color", "txt_color"]}
-		colorNames = {"bg_color": "Background Colour", "sec_bg_color": "Secondary Backgroud Colour", "button_bg_color": "Button Colour", "button_hov_color": "Hover Button Colour", "txt_color": "Text Colour"}
+		colorNames = {"bg_color": "Primary Background Colour", "sec_bg_color": "Secondary Backgroud Colour", "button_bg_color": "Primary Accent Colour", "button_hov_color": "Secondary Accent Colour", "txt_color": "Text Colour"}
 
 		for i, color in enumerate(colors):
 			label_frame = LabelFrame(colors_frame, bg=settings["sec_bg_color"], borderwidth=0)

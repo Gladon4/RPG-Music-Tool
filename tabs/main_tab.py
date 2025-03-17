@@ -34,13 +34,13 @@ class Main_Tab():
 		self.navigation_buttons_frame = LabelFrame(self.frame, bg=settings["bg_color"], padx=0, borderwidth=0)
 		self.navigation_buttons_frame.place(relx=1.0, rely=0, anchor="ne")
 
-		self.lower_frame = LabelFrame(self.frame, text="", pady=5, padx=15, bg=settings["bg_color"], borderwidth=0)
+		self.lower_frame = LabelFrame(self.frame, text="", pady=5, padx=10, bg=settings["bg_color"], borderwidth=0, highlightthickness=2, highlightbackground=settings["sec_bg_color"])
 		self.lower_frame.grid(row=4, column=0)
 
-		self.status = LabelFrame(self.lower_frame, text="", pady=15, padx=15, bg=settings["sec_bg_color"], borderwidth=1)
+		self.status = LabelFrame(self.lower_frame, text="", pady=15, padx=15, bg=settings["bg_color"], borderwidth=0)
 		self.status.grid(row=0, column=0, padx=2)
 
-		self.volume_frame = LabelFrame(self.lower_frame, text="", pady=15, padx=15, bg=settings["sec_bg_color"],)
+		self.volume_frame = LabelFrame(self.lower_frame, text="", pady=15, padx=15, bg=settings["sec_bg_color"], borderwidth=0)
 		self.volume_frame.grid(row=0, column=1, padx=2)
 
 		self.volume_plus_minus_frame = LabelFrame(self.lower_frame, text="", pady=2, padx=2, bg=settings["bg_color"], borderwidth=0)
@@ -53,6 +53,15 @@ class Main_Tab():
 
 		# --- Labels --- #
 
+		style = ttk.Style()
+		style.configure("Custom.Horizontal.TProgressbar", 
+						troughcolor=settings["sec_bg_color"],
+						background=settings["button_hov_color"],
+						bordercolor=settings["sec_bg_color"],
+						lightcolor="black",  
+						darkcolor="black",)
+
+
 		self.label_current_song = Label(self.frame, text="No Song Playing",font = ("Helvetica",20), bg=settings["bg_color"], fg=settings["txt_color"])
 		self.label_current_song.grid(row=2, column=0)
 
@@ -62,13 +71,13 @@ class Main_Tab():
 		self.label_current_theme = Label(self.frame, text="No Theme Selected", font = ("Helvetica",20), bg=settings["bg_color"], fg=settings["txt_color"])
 		self.label_current_theme.grid(row=0, column=0, pady=5)
 
-		self.label_duration_song = Label(self.status, text="00:00 / 00:00", font=("Helvetica",12), bg=settings["sec_bg_color"], fg=settings["txt_color"])
+		self.label_duration_song = Label(self.status, text="00:00 / 00:00", font=("Helvetica",12), bg=settings["bg_color"], fg=settings["txt_color"], width= 15)
 		self.label_duration_song.grid(row=0, column=4, padx=5)
 
-		self.song_progress = ttk.Progressbar(self.status, orient="horizontal", length=280, mode='determinate')
+		self.song_progress = ttk.Progressbar(self.status, orient="horizontal", length=280, mode='determinate', style="Custom.Horizontal.TProgressbar")
 		self.song_progress.grid(row=0, column=3, padx=5)
 
-		self.label_volume = Label(self.volume_frame, text=str(settings["volume"]),font=("Helvetica",10,'bold'), bg=settings["sec_bg_color"], fg=settings["txt_color"])
+		self.label_volume = Label(self.volume_frame, text=str(settings["volume"]),font=("Helvetica",10,'bold'), bg=settings["sec_bg_color"], fg=settings["txt_color"], width=3)
 		self.label_volume.grid(row=1, column=0)
 
 
@@ -78,22 +87,22 @@ class Main_Tab():
 
 		# --- Inputs --- #
 
-		self.button_stop = Button(self.status, command=self.__stop, image=self.stop_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
+		self.button_stop = Button(self.status, command=self.__stop, image=self.stop_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"], highlightbackground=settings["button_hov_color"])
 		self.button_stop.grid(row=0, column=0)
 
-		self.button_pause = Button(self.status, command=self.__pause, image=self.pause_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
+		self.button_pause = Button(self.status, command=self.__pause, image=self.pause_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"], highlightbackground=settings["button_hov_color"])
 		self.button_pause.grid(row=0, column=1)
 
-		self.button_skip = Button(self.status, command=self.__skip, image=self.skip_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
+		self.button_skip = Button(self.status, command=self.__skip, image=self.skip_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"], highlightbackground=settings["button_hov_color"])
 		self.button_skip.grid(row=0, column=2)
 
 		self.volume_changer = ttk.Scale(self.volume_frame, from_=100, to=0, orient="vertical", value=int(settings["volume"]), command=self.__change_volume, length=120)
 		self.volume_changer.grid(row=0, column=0)
 
-		self.volume_up_button = Button(self.volume_plus_minus_frame, command=self.__volume_up, image=self.plus_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
+		self.volume_up_button = Button(self.volume_plus_minus_frame, command=self.__volume_up, image=self.plus_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"], highlightthickness=0)
 		self.volume_up_button.grid(row=0, column=1, pady=5)
 
-		self.volume_down_button = Button(self.volume_plus_minus_frame, command=self.__volume_down, image=self.minus_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
+		self.volume_down_button = Button(self.volume_plus_minus_frame, command=self.__volume_down, image=self.minus_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"], highlightthickness=0)
 		self.volume_down_button.grid(row=1, column=1, pady=5)
 
 		self.settings_button = Button(self.navigation_buttons_frame, command=lambda x=self: self.tab_manager.select("settings"), image=self.settings_image, borderwidth=0, activebackground=settings["button_hov_color"], bg=settings["button_bg_color"])
@@ -168,18 +177,23 @@ class Main_Tab():
 	def __song_duration(self):
 		if not self.player.paused:
 			length = self.player.length
+			# if the track is longer than 1 hour, we display the hours, as most tracks will likely be shorter, we usually only display minutes and seconds
+			if length >= 3600:
+				format = '%H:%M:%S'
+			else:
+				format = '%M:%S'
 
 			current_time = self.player.get_pos()
-			converted_current_time = time.strftime('%M:%S', time.gmtime(current_time))
+			converted_current_time = time.strftime(format, time.gmtime(current_time))
 
 			if current_time >= length and not self.player.paused:
 				self.player.play()
 				self.__update_music_labels()
-				
+
 				# We set this explicitly to make sure we don't get something like 01:12 / 01:05, which can happen for 1 tick
-				converted_current_time = "00:00" 
+				converted_current_time = time.strftime(format, time.gmtime(0))
 			
-			converted_length = time.strftime('%M:%S', time.gmtime(length))
+			converted_length = time.strftime(format, time.gmtime(length))
 			song_time = str(converted_current_time) + " / " + str(converted_length)
 
 			self.label_duration_song.config(text=song_time)
@@ -251,7 +265,8 @@ class Main_Tab():
 										height=int(2.5*settings["ui_scale"]), 
 										width=int(5*settings["ui_scale"]),
 										command=lambda _theme=_theme: self.__play(_theme),
-										wraplength=100)
+										wraplength=100,
+										highlightbackground=settings["button_hov_color"])
 
 
 			theme_play_button.grid(row = (i // settings["row_length"] + 1), column = (i % settings["row_length"]))
@@ -294,7 +309,8 @@ class Main_Tab():
 										height=int(2.5*settings["ui_scale"]), 
 										width=int(5*settings["ui_scale"]),
 										command=lambda sfx=sfx: self.player.play_sfx(sfx),
-										wraplength=100)
+										wraplength=100, 
+										highlightbackground=settings["button_hov_color"])
 
 
 			self.sfx_play_button.grid(row=(i // settings["row_length"] + 1), column=(i % settings["row_length"]))
