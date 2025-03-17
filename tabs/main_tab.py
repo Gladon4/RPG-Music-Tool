@@ -171,6 +171,13 @@ class Main_Tab():
 
 			current_time = self.player.get_pos()
 			converted_current_time = time.strftime('%M:%S', time.gmtime(current_time))
+
+			if current_time >= length and not self.player.paused:
+				self.player.play()
+				self.__update_music_labels()
+				
+				# We set this explicitly to make sure we don't get something like 01:12 / 01:05, which can happen for 1 tick
+				converted_current_time = "00:00" 
 			
 			converted_length = time.strftime('%M:%S', time.gmtime(length))
 			song_time = str(converted_current_time) + " / " + str(converted_length)
@@ -178,11 +185,7 @@ class Main_Tab():
 			self.label_duration_song.config(text=song_time)
 			self.song_progress['value'] = current_time / length * 100
 
-			if current_time <= 0 and not self.player.paused:
-				song = self.player.play()
-				self.__update_music_labels()
-
-		self.label_duration_song.after(500, self.__song_duration)
+		self.label_duration_song.after(100, self.__song_duration)
 
 	def __update_music_labels(self):
 		if self.player.theme == None:
