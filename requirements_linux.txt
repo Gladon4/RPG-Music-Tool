@@ -1,4 +1,6 @@
-appdirs
-tkfilebrowser
-mutagen
-pygame-ce
+appdirs>=1.4.4
+babel>=2.17.0
+mutagen>=1.47.0
+psutil>=7.0.0
+pygame-ce>=2.5.3
+tkfilebrowser>=2.3.2
