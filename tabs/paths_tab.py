@@ -134,6 +134,10 @@ class Paths_Tab():
 
 
 	def __music_path_picker(self):
+		separator = "/"
+		if sys.platform.startswith('win32'):
+			separator = "\\"
+
 		dirs = tkfilebrowser.askopendirnames(title="Select your Music Directories", initialdir=os.path.expanduser("~"), okbuttontext="Select")
 		i = len(self.set_manager.music_paths)
 
@@ -144,7 +148,8 @@ class Paths_Tab():
 				path_label = Label(self.list_frame, text=dir,font=("Helvetica",12), bg=self.set_manager.settings["sec_bg_color"], fg=self.set_manager.settings["txt_color"])
 				path_label.grid(row=i, column=1)
 				self.paths[i] = [path_delete_button, path_label]
-			self.set_manager.music_paths += [dir+"/"]
+				
+			self.set_manager.music_paths += [dir + "/" if sys.platform.startswith('linux') else dir + "\\"]
 			i += 1
 
 		if not (self.page_number + 1)* self.paths_per_page >= len(self.set_manager.music_paths):
