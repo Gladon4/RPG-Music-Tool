@@ -165,6 +165,8 @@ class Settings_Tab():
 			self.back_image = PhotoImage(file=os.path.join(sys._MEIPASS, "img/back_img.png"))
 			self.list_image = PhotoImage(file=os.path.join(sys._MEIPASS, "img/list_img.png"))
 			self.themes_image = PhotoImage(file=os.path.join(sys._MEIPASS, "img/label.png"))
+			self.check_on = PhotoImage(file=os.path.join(sys._MEIPASS, "img/check_on.png")).subsample(4,4)
+			self.check_off = PhotoImage(file=os.path.join(sys._MEIPASS, "img/check_off.png")).subsample(4,4)
 			
 		else:
 			self.back_image = PhotoImage(file="img/back_img.png")

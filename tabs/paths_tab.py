@@ -134,24 +134,21 @@ class Paths_Tab():
 
 
 	def __music_path_picker(self):
-		initialdir = ""
-		if sys.platform.startswith('linux'):
-			initialdir = "/home/"
-			
-		elif sys.platform.startswith('win32'):
-			initialdir = "C://"
-
-		dirs = tkfilebrowser.askopendirnames(title="Select your Music Directories", initialdir=initialdir, okbuttontext="Select")
+		dirs = tkfilebrowser.askopendirnames(title="Select your Music Directories", initialdir=os.path.expanduser("~"), okbuttontext="Select")
 		i = len(self.set_manager.music_paths)
 
 		for dir in dirs:
-			path_delete_button = Button(self.list_frame, image=self.delete_image, command=lambda i=i: self.__delete(i), activebackground=self.set_manager.settings["button_hov_color"], bg=self.set_manager.settings["button_bg_color"])
-			path_delete_button.grid(row=i, column=0)
-			path_label = Label(self.list_frame, text=dir,font=("Helvetica",12), bg=self.set_manager.settings["sec_bg_color"], fg=self.set_manager.settings["txt_color"])
-			path_label.grid(row=i, column=1)
-			self.paths[i] = [path_delete_button, path_label]
+			if len(self.paths) < self.paths_per_page:
+				path_delete_button = Button(self.list_frame, image=self.delete_image, command=lambda i=i: self.__delete(i), activebackground=self.set_manager.settings["button_hov_color"], bg=self.set_manager.settings["button_bg_color"])
+				path_delete_button.grid(row=i, column=0)
+				path_label = Label(self.list_frame, text=dir,font=("Helvetica",12), bg=self.set_manager.settings["sec_bg_color"], fg=self.set_manager.settings["txt_color"])
+				path_label.grid(row=i, column=1)
+				self.paths[i] = [path_delete_button, path_label]
 			self.set_manager.music_paths += [dir+"/"]
 			i += 1
+
+		if not (self.page_number + 1)* self.paths_per_page >= len(self.set_manager.music_paths):
+			self.next_page_button.config(state="active")
 		
 		self.__update()
 		self.set_manager.store_paths()
@@ -165,20 +162,23 @@ class Paths_Tab():
 
 
 	def __delete(self, index):
-		self.paths[index][0].destroy()
-		self.paths[index][1].destroy()
-		del (self.paths[index])
-
 		self.set_manager.music_paths = self.set_manager.music_paths[:index] + self.set_manager.music_paths[index+1:]
 
-		new_paths = {}
-		for i, p in enumerate(self.paths):
-			new_paths[i] = self.paths[p]
-			new_paths[i][0].config(command=lambda i=i: self.__delete(i))
-		self.paths = new_paths
+		for i in range(len(self.paths)):
+			if self.page_number*self.paths_per_page + i >= len(self.set_manager.music_paths):
+				self.paths[i][0].destroy()
+				self.paths[i][1].destroy()
+				del(self.paths[i])
+
+				break
+
+			self.paths[i][1].config(text=self.set_manager.music_paths[self.page_number*self.paths_per_page + i])
 
 		self.set_manager.store_paths()
 		self.sound_manager.load_themes()
+
+		if (self.page_number + 1) * self.paths_per_page >= len(self.set_manager.music_paths):
+			self.next_page_button.config(state="disabled")
 
 
 	def __load_imgs(self):
@@ -193,6 +193,7 @@ class Paths_Tab():
 
 	def __select_tab(self, tab):
 		self.tab_manager.tabs["main"].update_elements()
+		self.tab_manager.tabs["themes"].update_elements()
 		self.tab_manager.select(tab)
 
 
