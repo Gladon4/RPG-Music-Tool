@@ -4,18 +4,14 @@ from tkinter import *
 from tkinter import Tk, ttk
 
 from include.player import Player
-
 from managers.settings_manager import Set_Manager
 from managers.sound_manager import Sound_Manager
 from managers.tab_manager import Tab_Manager
-
 from tabs.main_tab import Main_Tab
-from tabs.settings_tab import Settings_Tab
 from tabs.paths_tab import Paths_Tab
-from tabs.themes_tab import Themes_Tab
+from tabs.settings_tab import Settings_Tab
 from tabs.sfx_tab import SFX_Tab
-
-
+from tabs.themes_tab import Themes_Tab
 
 # --- Constants --- #
 APP_NAME = "RPG Music Tool v06_dev"
@@ -46,52 +42,53 @@ themes_tab = Themes_Tab(set_manager, sound_manager, tab_manager, notebook, playe
 
 # Load settings and create the tab classes
 def setup():
-	set_manager.load_settings()
-	set_manager.load_paths()
+    set_manager.load_settings()
+    set_manager.load_paths()
 
-	sound_manager.load_themes()
-	sound_manager.load_sfx()
+    sound_manager.load_themes()
+    sound_manager.load_sfx()
 
-	player.set_volume()
+    player.set_volume()
 
+    root.title(APP_NAME)
+    root.geometry(START_SIZE)
 
-	root.title(APP_NAME)
-	root.geometry(START_SIZE)
+    style.layout("TNotebook.Tab", [])
+    notebook.pack(fill="both", expand=1)
 
-	style.layout('TNotebook.Tab', [])
-	notebook.pack(fill="both", expand=1)
+    main_tab.create()
+    notebook.add(main_tab.frame, text="Main")
 
-	main_tab.create()
-	notebook.add(main_tab.frame, text="Main")
+    settings_tab.create()
+    notebook.add(settings_tab.frame, text="Settings")
 
-	settings_tab.create()
-	notebook.add(settings_tab.frame, text="Settings")
+    paths_tab.create()
+    notebook.add(paths_tab.frame, text="Song Paths")
 
-	paths_tab.create()
-	notebook.add(paths_tab.frame, text="Song Paths")
+    sfx_tab.create()
+    notebook.add(sfx_tab.frame, text="SFX Paths")
 
-	sfx_tab.create()
-	notebook.add(sfx_tab.frame, text="SFX Paths")
+    themes_tab.create()
+    notebook.add(themes_tab.frame, text="Themes")
 
-	themes_tab.create()
-	notebook.add(themes_tab.frame, text="Themes")
-
-	tab_manager.set_tabs({"main": main_tab,
-						  "settings": settings_tab,
-						  "song_paths": paths_tab,
-						  "sfx_paths": sfx_tab,
-						  "themes": themes_tab})
-
+    tab_manager.set_tabs(
+        {
+            "main": main_tab,
+            "settings": settings_tab,
+            "song_paths": paths_tab,
+            "sfx_paths": sfx_tab,
+            "themes": themes_tab,
+        }
+    )
 
 
 # Run the app
 def main():
-	print("\n ---RPG MUSIC TOOL v06dev--- \n")
+    print("\n ---RPG MUSIC TOOL v06dev--- \n")
 
-	root.mainloop()
-
+    root.mainloop()
 
 
 if __name__ == "__main__":
-	setup()
-	main()
+    setup()
+    main()

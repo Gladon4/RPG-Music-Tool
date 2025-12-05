@@ -1,185 +1,146 @@
-from appdirs import user_config_dir
+import csv
+import os
+import shutil
+import sys
 from configparser import ConfigParser
-from os.path import isdir, isfile
-from os import mkdir
-import sys, csv
+
+from appdirs import user_config_dir
+
+VERSION = "0.6.0d"
 
 
-class Set_Manager():
-	def __init__(self):
-		self.path = user_config_dir("rpg-mt", "Gladon")
-		if not isdir(self.path): 
-			self.create_config_dir()
-		self.config = ConfigParser()
+class Set_Manager:
+    def __init__(self):
+        self.path = user_config_dir("rpg-mt", "Gladon")
+        if not os.path.isdir(self.path):
+            self.create_config_dir()
+        self.config = ConfigParser()
 
-		self.settings = {}
-		self.music_paths = []
-		self.sfx_paths = []
+        self.settings = {}
+        self.music_paths = []
+        self.sfx_paths = []
 
+    # --- Settings --- #
 
-	# --- Settings --- #
+    def load_settings(self):
+        if os.path.isfile(os.path.join(self.path, "config.ini")):
+            config_file = self.path + "/config.ini"
+            self.config.read(config_file)
 
-	def load_settings(self):
-		if isfile(self.path + "/config.ini"):
-			config_file = self.path + "/config.ini"
-			self.config.read(config_file)
+            try:
+                settings_version = self.config["version"]["version"]
+                if settings_version != VERSION:
+                    self.__write_default_settings()
 
-			color_settings = self.config["color_settings"]
-			app_settings = self.config["app_settings"]
+            except KeyError:
+                self.__write_default_settings()
 
-			try:
-				self.settings = {
-					# Colors
-					"bg_color"				: color_settings["bg_color"],
-					"sec_bg_color"			: color_settings["sec_bg_color"],
-					"button_bg_color"		: color_settings["button_color"],
-					"button_hov_color"		: color_settings["button_color_hover"],
-					"txt_color"				: color_settings["text_color"],
-					# App Settings
-					"volume"				: int(app_settings["volume"]),
-					"ui_scale"				: int(app_settings["ui_scale"]),
-					"row_length"			: int(app_settings["row_length"]),
-					"sfx_on_themes"			: int(app_settings["sfx_on_themes"]),
-					"full_paths_main"		: int(app_settings["full_paths_main"]),
-					"full_paths_settings"	: int(app_settings["full_paths_settings"])
-					}
-			except KeyError:
-				self.__write_default_settings()
-				self.load_settings()
+            self.settings = {}
+            for setting in self.config["app_settings"].keys():
+                self.settings[setting] = int(self.config["app_settings"][setting])
 
-		else:
-			self.__write_default_settings()
-			self.load_settings()
+            for setting in self.config["color_settings"].keys():
+                self.settings[setting] = self.config["color_settings"][setting]
 
-	def store_settings(self):
-		self.config["color_settings"] = {"bg_color" 			: self.settings["bg_color"],
-										 "sec_bg_color" 		: self.settings["sec_bg_color"],
-										 "button_color" 		: self.settings["button_bg_color"],
-										 "button_color_hover" 	: self.settings["button_hov_color"],
-										 "text_color" 			: self.settings["txt_color"]}
+        else:
+            self.__write_default_settings()
+            self.load_settings()
 
-		self.config["app_settings"] = {"ui_scale" 				: self.settings["ui_scale"],
-									   "row_length"				: self.settings["row_length"],
-									   "volume" 				: self.settings["volume"],
-									   "sfx_on_themes" 			: self.settings["sfx_on_themes"],
-									   "full_paths_main"		: self.settings["full_paths_main"],
-									   "full_paths_settings"	: self.settings["full_paths_settings"]}
+    def store_settings(self):
+        for setting in self.config["app_settings"].keys():
+            self.config["app_settings"][setting] = str(self.settings[setting])
 
-		with open(self.path + '/config.ini', 'w') as configfile:
-			self.config.write(configfile)  
+        for setting in self.config["color_settings"].keys():
+            self.config["color_settings"][setting] = str(self.settings[setting])
 
-	def create_config_dir(self):
-		if sys.platform.startswith('linux'):
-			try:
-				mkdir(self.path)
-			except:
-				pass
-			
-		elif sys.platform.startswith('win32'):
-			try:
-				path2 = "\\".join(self.path.split("\\")[:-1])
-				mkdir(path2)
-				mkdir(self.path)
-			except:
-				pass
+        with open(self.path + "/config.ini", "w") as configfile:
+            self.config.write(configfile)
 
-	def reset_to_defaults(self):
-		self.__write_default_settings()
-		self.load_settings()
+    def create_config_dir(self):
+        if sys.platform.startswith("linux"):
+            try:
+                os.mkdir(self.path)
+            except OSError:
+                pass
 
-	def __write_default_settings(self):
-		# --- Defaults --- #
-		# Color
-		bg_col =      	"#91a3c4"
-		sec_bg_col =    "#9baecb"
-		but_col =       "#7b8cb3"
-		sec_but_col =   "#668bb0"
-		text_col =      "#323232"
+        elif sys.platform.startswith("win32"):
+            try:
+                path2 = "\\".join(self.path.split("\\")[:-1])
+                os.mkdir(path2)
+                os.mkdir(self.path)
+            except OSError:
+                pass
 
-		# App Settings
-		ui_scale =      		2
-		row_length =    		6
-		def_vol =       		15
-		def_sfx_pos =   		1
-		def_paths_main =		0
-		def_paths_settings = 	1
+    def reset_to_defaults(self):
+        self.__write_default_settings()
+        self.load_settings()
 
-		self.config["color_settings"] = {"bg_color" 			: bg_col,
-										 "sec_bg_color" 		: sec_bg_col,
-										 "button_color" 		: but_col,
-										 "button_color_hover" 	: sec_but_col,
-										 "text_color" 			: text_col}
+    def __write_default_settings(self):
+        shutil.copyfile(
+            os.path.join(os.getcwd(), "resources/default_config.ini"),
+            os.path.join(self.path, "config.ini"),
+        )
+        self.load_settings()
 
-		self.config["app_settings"] = {"ui_scale" 				: ui_scale,
-									   "row_length"				: row_length,
-									   "volume" 				: def_vol,
-									   "sfx_on_themes" 			: def_sfx_pos,
-									   "full_paths_main"		: def_paths_main,
-									   "full_paths_settings"	: def_paths_settings}
+    # --- Paths --- #
 
-		with open(self.path + '/config.ini', 'w') as configfile:
-			self.config.write(configfile)
+    def load_paths(self):
+        self.music_paths = []
+        self.sfx_paths = []
 
+        # --- Music --- #
+        if not os.path.isfile(self.path + "/paths.csv"):
+            open(self.path + "/paths.csv", "a").close()
+        with open(self.path + "/paths.csv", "r", encoding="utf-8-sig") as csv_file:
+            list = csv.reader(csv_file, delimiter=",", quotechar="|")
+            for row in list:
+                if row != []:
+                    self.music_paths = row
 
-	# --- Paths --- #
+        # --- SFX --- #
+        if not os.path.isfile(self.path + "/sfx-paths.csv"):
+            open(self.path + "/sfx-paths.csv", "a").close()
+        with open(self.path + "/sfx-paths.csv", "r", encoding="utf-8-sig") as csv_file:
+            list = csv.reader(csv_file, delimiter=",", quotechar="|")
+            for row in list:
+                if row != []:
+                    self.sfx_paths = row
 
-	def load_paths(self):
-		self.music_paths = []
-		self.sfx_paths = []
-		
-		# --- Music --- #
-		if not isfile(self.path + "/paths.csv"):
-			open(self.path + "/paths.csv", 'a').close()
-		with open(self.path + "/paths.csv", "r", encoding="utf-8-sig") as csv_file:
-			list = csv.reader(csv_file, delimiter=',', quotechar='|')
-			for row in list:
-				if row != []:
-					self.music_paths = row
+    def store_paths(self):
+        # --- Music --- #
+        if not os.path.isfile(self.path + "/paths.csv"):
+            open(self.path + "/paths.csv", "a").close()
 
-		# --- SFX --- #
-		if not isfile(self.path + "/sfx-paths.csv"):
-			open(self.path + "/sfx-paths.csv", 'a').close()
-		with open(self.path + "/sfx-paths.csv", "r", encoding="utf-8-sig") as csv_file:
-			list = csv.reader(csv_file, delimiter=',', quotechar='|')
-			for row in list:
-				if row != []:
-					self.sfx_paths = row
+        for path in self.music_paths:
+            try:
+                with open(os.path.join(path, "songs.csv")) as _:
+                    pass
+            except OSError:
+                try:
+                    songs = open(path + "/songs.csv", "a")
+                    songs.close()
+                except OSError:
+                    pass
 
-	def store_paths(self):
-		# --- Music --- #
-		if not isfile(self.path + "/paths.csv"):
-			open(self.path + "/paths.csv", 'a').close()
+        with open(self.path + "/paths.csv", "w") as csv_file:
+            write = csv.writer(csv_file)
+            write.writerow(self.music_paths)
 
-		for path in self.music_paths:
-			try:
-				with open(path + "/songs.csv") as file:
-					pass
-			except:
-				try:
-					songs = open(path + "/songs.csv", 'a')
-					songs.close()
-				except:
-					pass
+        # --- SFX --- #
+        if not os.path.isfile(self.path + "/sfx-paths.csv"):
+            open(self.path + "/sfx-paths.csv", "a").close()
 
-		with open(self.path + "/paths.csv", "w") as csv_file:
-			write = csv.writer(csv_file)
-			write.writerow(self.music_paths)
+        for path in self.sfx_paths:
+            try:
+                with open(os.path.join(path, "sfx.csv")) as _:
+                    pass
+            except OSError:
+                try:
+                    sfxs = open(path + "/sfx.csv", "a")
+                    sfxs.close()
+                except OSError:
+                    pass
 
-		# --- SFX --- #
-		if not isfile(self.path + "/sfx-paths.csv"):
-			open(self.path + "/sfx-paths.csv", 'a').close()
-
-		for path in self.sfx_paths:
-			try:
-				with open(path + "/sfx.csv") as file:
-					pass
-			except:
-				try:
-					sfxs = open(path + "/sfx.csv", 'a')
-					sfxs.close()
-				except:
-					pass
-
-		with open(self.path + "/sfx-paths.csv", "w") as csv_file:
-			write = csv.writer(csv_file)
-			write.writerow(self.sfx_paths)
+        with open(self.path + "/sfx-paths.csv", "w") as csv_file:
+            write = csv.writer(csv_file)
+            write.writerow(self.sfx_paths)

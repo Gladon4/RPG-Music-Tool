@@ -12,3 +12,8 @@ build/
 *.AppImage
 
 Pipfile
+uv.lock
+
+.zed
+.vscode
+.venv
