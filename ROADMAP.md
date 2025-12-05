@@ -15,6 +15,9 @@
 ### Fixes
 - [x] App start crashes if paths.csv is empty  
 - [x] App start crashes if path in paths.csv doesn't exist
+- [ ] UI Scaling
+  - [/] UI Scaling for elemente
+  - [ ] Font Size
 
 ### Other
 - [ ] Update Readme
