@@ -7,9 +7,9 @@ from include.player import Player
 from managers.settings_manager import Set_Manager
 from managers.sound_manager import Sound_Manager
 from managers.tab_manager import Tab_Manager
-from tabs.main_tab import Main_Tab
+from tabs.main_tab import MainTab
 from tabs.paths_tab import Paths_Tab
-from tabs.settings_tab import Settings_Tab
+from tabs.settings_tab import SettingsTab
 from tabs.sfx_tab import SFX_Tab
 from tabs.themes_tab import Themes_Tab
 
@@ -33,8 +33,8 @@ notebook = ttk.Notebook(root)
 # Tabs
 tab_manager = Tab_Manager(notebook)
 
-main_tab = Main_Tab(set_manager, sound_manager, tab_manager, notebook, player)
-settings_tab = Settings_Tab(set_manager, tab_manager, notebook)
+main_tab = MainTab(set_manager, sound_manager, tab_manager, notebook, player)
+settings_tab = SettingsTab(set_manager, tab_manager, notebook)
 paths_tab = Paths_Tab(set_manager, tab_manager, notebook, sound_manager)
 sfx_tab = SFX_Tab(set_manager, tab_manager, notebook, sound_manager)
 themes_tab = Themes_Tab(set_manager, sound_manager, tab_manager, notebook, player)

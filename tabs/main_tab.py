@@ -1,10 +1,11 @@
 import os
 import sys
 import time
-from tkinter import Button, Frame, Label, LabelFrame, PhotoImage, ttk
+from tkinter import Button, Frame, Label, LabelFrame, PhotoImage
+from tkinter.ttk import Progressbar, Scale, Style
 
 
-class Main_Tab:
+class MainTab:
     def __init__(self, set_manager, sound_manager, tab_manager, notebook, player):
         self.set_manager = set_manager
         self.sound_manager = sound_manager
@@ -94,7 +95,7 @@ class Main_Tab:
 
         # --- Labels --- #
 
-        style = ttk.Style()
+        style = Style()
         style.configure(
             "Custom.Horizontal.TProgressbar",
             troughcolor=settings["sec_bg_color"],
@@ -102,6 +103,17 @@ class Main_Tab:
             bordercolor=settings["sec_bg_color"],
             lightcolor="black",
             darkcolor="black",
+            thickness=20 * (settings["ui_scale"] / 100),
+        )
+
+        style.configure(
+            "Custom.Vertical.TScale",
+            troughcolor=settings["sec_bg_color"],
+            background=settings["button_hov_color"],
+            lightcolor="black",
+            darkcolor="black",
+            sliderlength=25 * (settings["ui_scale"] / 100),
+            sliderthickness=20 * (settings["ui_scale"] / 100),
         )
 
         self.label_current_song = Label(
@@ -141,10 +153,10 @@ class Main_Tab:
         )
         self.label_duration_song.grid(row=0, column=4, padx=5)
 
-        self.song_progress = ttk.Progressbar(
+        self.song_progress = Progressbar(
             self.status,
             orient="horizontal",
-            length=280,
+            length=3 * settings["ui_scale"],
             mode="determinate",
             style="Custom.Horizontal.TProgressbar",
         )
@@ -209,14 +221,15 @@ class Main_Tab:
         )
         self.button_skip.grid(row=0, column=2)
 
-        self.volume_changer = ttk.Scale(
+        self.volume_changer = Scale(
             self.volume_frame,
             from_=100,
             to=0,
             orient="vertical",
             value=int(settings["volume"]),
             command=self.__change_volume,
-            length=120,
+            length=int(1.2 * settings["ui_scale"]),
+            style="Custom.Vertical.TScale",
         )
         self.volume_changer.grid(row=0, column=0)
 
@@ -526,9 +539,7 @@ class Main_Tab:
             self.settings_image = PhotoImage(
                 file=os.path.join(sys._MEIPASS, "img/settings_img.png")
             )
-            self.empty_image = PhotoImage(
-                file=os.path.join(sys._MEIPASS, "img/empty_img.png")
-            )
+            self.empty_image = PhotoImage(width=1, height=1)
 
         else:
             self.stop_image = PhotoImage(file="img/stop_img.png")
@@ -538,4 +549,4 @@ class Main_Tab:
             self.plus_image = PhotoImage(file="img/plus_img.png")
             self.minus_image = PhotoImage(file="img/minus_img.png")
             self.settings_image = PhotoImage(file="img/settings_img.png")
-            self.empty_image = PhotoImage(file="img/empty_img.png")
+            self.empty_image = PhotoImage(width=1, height=1)
