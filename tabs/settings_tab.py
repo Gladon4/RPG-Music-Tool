@@ -1,9 +1,11 @@
 import os
 import sys
-from tkinter import Button, Frame, Label, LabelFrame, PhotoImage
+from tkinter import Button, Event, EventType, Frame, Label, LabelFrame, PhotoImage
 from tkinter.colorchooser import askcolor
 from tkinter.ttk import Scale, Style
-from turtle import width
+
+from managers.settings_manager import SetttingsManager
+from managers.tab_manager import Tab_Manager
 
 
 class SettingSlider:
@@ -14,9 +16,11 @@ class SettingSlider:
 
 
 class SettingsTab:
-    def __init__(self, set_manager, tab_manager, notebook):
-        self.set_manager = set_manager
-        self.tab_manager = tab_manager
+    def __init__(
+        self, settings_manager: SetttingsManager, tab_manager: Tab_Manager, notebook
+    ):
+        self.settings_manager: SetttingsManager = settings_manager
+        self.tab_manager: Tab_Manager = tab_manager
         self.notebook = notebook
         self.objects = {
             "labels": [],
@@ -28,7 +32,7 @@ class SettingsTab:
         self.change = False
 
     def create(self, new=False):
-        settings = self.set_manager.settings
+        settings = self.settings_manager.settings
         self.__load_imgs()
 
         # --- Main Frame --- #
@@ -110,6 +114,17 @@ class SettingsTab:
             settings=settings,
         )
 
+        self.font_size = self.__make_setting_slider(
+            self.ui_setting_frame,
+            row=3,
+            title="Font Size",
+            current_value=settings["font_size"],
+            min_value=10,
+            max_value=30,
+            command=self.__change_font_size,
+            settings=settings,
+        )
+
         # --- Labels --- #
 
         self.sfx_on_themes_label = Label(
@@ -121,7 +136,7 @@ class SettingsTab:
             fg=settings["txt_color"],
             height=2,
         )
-        self.sfx_on_themes_label.grid(row=3, column=0, sticky="nw")
+        self.sfx_on_themes_label.grid(row=4, column=0, sticky="nw")
 
         self.full_path_on_main_label = Label(
             self.ui_setting_frame,
@@ -132,7 +147,7 @@ class SettingsTab:
             fg=settings["txt_color"],
             height=2,
         )
-        self.full_path_on_main_label.grid(row=4, column=0, sticky="nw")
+        self.full_path_on_main_label.grid(row=5, column=0, sticky="nw")
 
         self.full_path_in_settings_label = Label(
             self.ui_setting_frame,
@@ -143,7 +158,7 @@ class SettingsTab:
             fg=settings["txt_color"],
             height=2,
         )
-        self.full_path_in_settings_label.grid(row=5, column=0, sticky="nw")
+        self.full_path_in_settings_label.grid(row=6, column=0, sticky="nw")
 
         # self.sfx_on_themes_label = Label(self.ui_setting_frame, text="Display SFX on Themes Tab", font=("Helvetica",12), padx=10, bg=settings["sec_bg_color"], fg=settings["txt_color"])
         # self.sfx_on_themes_label.grid(row=3, column=0, pady=10)
@@ -198,7 +213,7 @@ class SettingsTab:
             fg="#ffffff",
         )
         self.sfx_on_themes_check.bind("<Button-1>", self.__change_sfx_on_themes)
-        self.sfx_on_themes_check.grid(row=3, column=1, sticky="ns")
+        self.sfx_on_themes_check.grid(row=4, column=1, sticky="ns")
         if settings["sfx_on_themes"]:
             self.sfx_on_themes_check.config(image=self.check_on)
 
@@ -209,7 +224,7 @@ class SettingsTab:
             bg=settings["sec_bg_color"],
         )
         self.full_path_on_main_check.bind("<Button-1>", self.__full_path_on_main)
-        self.full_path_on_main_check.grid(row=4, column=1, sticky="ns")
+        self.full_path_on_main_check.grid(row=5, column=1, sticky="ns")
         if settings["full_paths_main"]:
             self.full_path_on_main_check.config(image=self.check_on)
 
@@ -222,7 +237,7 @@ class SettingsTab:
         self.full_path_in_settings_check.bind(
             "<Button-1>", self.__full_path_in_settings
         )
-        self.full_path_in_settings_check.grid(row=5, column=1, sticky="ns")
+        self.full_path_in_settings_check.grid(row=6, column=1, sticky="ns")
         if settings["full_paths_settings"]:
             self.full_path_in_settings_check.config(image=self.check_on)
 
@@ -240,7 +255,7 @@ class SettingsTab:
         colors_frame.grid(row=4, column=0)
 
         colors = {
-            x: self.set_manager.settings[x]
+            x: self.settings_manager.settings[x]
             for x in [
                 "bg_color",
                 "sec_bg_color",
@@ -257,6 +272,7 @@ class SettingsTab:
             "txt_color": "Text Colour",
         }
 
+        self.color_labels = []
         for i, color in enumerate(colors):
             label_frame = LabelFrame(
                 colors_frame, bg=settings["sec_bg_color"], borderwidth=0
@@ -281,14 +297,26 @@ class SettingsTab:
                 width=2 * settings["ui_scale"],
                 height=2 * settings["ui_scale"],
                 bg=colors[color],
-                activebackground=settings["button_hov_color"],
+                activebackground=colors[color],
                 fg=settings["txt_color"],
                 command=lambda color=color, name=colorNames[color]: self.__change_color(
                     color, name
                 ),
+                borderwidth=0,
+                highlightthickness=7,
+                highlightbackground=colors[color],
+            )
+            color_label.bind(
+                "<Enter>",
+                func=lambda e, j=i, col=colors[color]: self.__color_hover(e, j, col),
+            )
+            color_label.bind(
+                "<Leave>",
+                func=lambda e, j=i, col=colors[color]: self.__color_hover(e, j, col),
             )
             color_label.pack()
 
+            self.color_labels.append(color_label)
             self.objects["color_elems"][color] = color_label
 
         # -- Reset Settings -- #
@@ -302,6 +330,18 @@ class SettingsTab:
             width=12,
         )
         reset_button.grid(row=5, column=0)
+
+    def __color_hover(self, e: Event, index: int, color: str):
+        color_picker: Button = self.color_labels[index]
+
+        if e.type == EventType.Enter:
+            if color == self.settings_manager.settings["button_hov_color"]:
+                color = self.settings_manager.settings["bg_color"]
+            else:
+                color = self.settings_manager.settings["button_hov_color"]
+            color_picker.config(highlightbackground=color)
+        elif e.type == EventType.Leave:
+            color_picker.config(highlightbackground=color)
 
     def __make_setting_slider(
         self, frame, row, title, current_value, min_value, max_value, command, settings
@@ -350,7 +390,7 @@ class SettingsTab:
                     self.objects[category][object].destroy()
 
     def update_elements(self):
-        self.frame.config(bg=self.set_manager.settings["bg_color"])
+        self.frame.config(bg=self.settings_manager.settings["bg_color"])
         self.__destroy()
         self.create(True)
 
@@ -396,8 +436,8 @@ class SettingsTab:
 
         new_scale = int((int(float(pos)) // 10) * 10)
 
-        self.set_manager.settings["ui_scale"] = new_scale
-        self.set_manager.store_settings()
+        self.settings_manager.settings["ui_scale"] = new_scale
+        self.settings_manager.store_settings()
 
         self.ui_scale.label.config(text=new_scale)
         self.ui_scale.scale.config(value=new_scale)
@@ -407,8 +447,8 @@ class SettingsTab:
 
         new_scale = int(float(pos))
 
-        self.set_manager.settings["theme_button_scale"] = new_scale
-        self.set_manager.store_settings()
+        self.settings_manager.settings["theme_button_scale"] = new_scale
+        self.settings_manager.store_settings()
 
         self.theme_button_scale.label.config(text=new_scale)
         self.theme_button_scale.scale.config(value=new_scale)
@@ -418,54 +458,64 @@ class SettingsTab:
 
         new_length = int(float(pos))
 
-        self.set_manager.settings["row_length"] = new_length
-        self.set_manager.store_settings()
+        self.settings_manager.settings["row_length"] = new_length
+        self.settings_manager.store_settings()
 
         self.row_length.label.config(text=new_length)
         self.row_length.scale.config(value=new_length)
 
+    def __change_font_size(self, pos):
+        self.change = True
+
+        new_size = int(float(pos))
+        self.settings_manager.settings["font_size"] = new_size
+        self.settings_manager.store_settings()
+
+        self.font_size.label.config(text=new_size)
+        self.font_size.scale.config(value=new_size)
+
     def __change_sfx_on_themes(self, _):
         self.change = True
-        self.set_manager.settings["sfx_on_themes"] = (
-            0 if self.set_manager.settings["sfx_on_themes"] else 1
+        self.settings_manager.settings["sfx_on_themes"] = (
+            0 if self.settings_manager.settings["sfx_on_themes"] else 1
         )
-        if self.set_manager.settings["sfx_on_themes"]:
+        if self.settings_manager.settings["sfx_on_themes"]:
             self.sfx_on_themes_check.config(image=self.check_on)
         else:
             self.sfx_on_themes_check.config(image=self.check_off)
-        self.set_manager.store_settings()
+        self.settings_manager.store_settings()
 
     def __full_path_on_main(self, _):
         self.change = True
-        self.set_manager.settings["full_paths_main"] = (
-            0 if self.set_manager.settings["full_paths_main"] else 1
+        self.settings_manager.settings["full_paths_main"] = (
+            0 if self.settings_manager.settings["full_paths_main"] else 1
         )
-        if self.set_manager.settings["full_paths_main"]:
+        if self.settings_manager.settings["full_paths_main"]:
             self.full_path_on_main_check.config(image=self.check_on)
         else:
             self.full_path_on_main_check.config(image=self.check_off)
-        self.set_manager.store_settings()
+        self.settings_manager.store_settings()
 
     def __full_path_in_settings(self, _):
         self.change = True
-        self.set_manager.settings["full_paths_settings"] = (
-            0 if self.set_manager.settings["full_paths_settings"] else 1
+        self.settings_manager.settings["full_paths_settings"] = (
+            0 if self.settings_manager.settings["full_paths_settings"] else 1
         )
-        if self.set_manager.settings["full_paths_settings"]:
+        if self.settings_manager.settings["full_paths_settings"]:
             self.full_path_in_settings_check.config(image=self.check_on)
         else:
             self.full_path_in_settings_check.config(image=self.check_off)
-        self.set_manager.store_settings()
+        self.settings_manager.store_settings()
 
     def __reset_settings(self):
-        self.set_manager.reset_to_defaults()
+        self.settings_manager.reset_to_defaults()
         self.tab_manager.update_all_tab_elements()
 
     def __change_color(self, color, name):
         self.change = True
 
         chosenColor = askcolor(
-            self.set_manager.settings[color], title="Choose " + name
+            self.settings_manager.settings[color], title="Choose " + name
         )[1]
 
         if chosenColor is None:
@@ -473,7 +523,7 @@ class SettingsTab:
 
         self.objects["color_elems"][color].config(bg=chosenColor)
 
-        self.set_manager.settings[color] = chosenColor
-        self.set_manager.store_settings()
+        self.settings_manager.settings[color] = chosenColor
+        self.settings_manager.store_settings()
 
         self.update_elements()

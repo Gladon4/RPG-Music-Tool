@@ -9,7 +9,7 @@ from appdirs import user_config_dir
 VERSION = "0.6.0d"
 
 
-class Set_Manager:
+class SetttingsManager:
     def __init__(self):
         self.path = user_config_dir("rpg-mt", "Gladon")
         if not os.path.isdir(self.path):

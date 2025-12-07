@@ -4,7 +4,7 @@ from tkinter import *
 from tkinter import Tk, ttk
 
 from include.player import Player
-from managers.settings_manager import Set_Manager
+from managers.settings_manager import SetttingsManager
 from managers.sound_manager import Sound_Manager
 from managers.tab_manager import Tab_Manager
 from tabs.main_tab import MainTab
@@ -21,7 +21,7 @@ START_SIZE = "800x800"
 
 
 # --- Objects--- #
-set_manager = Set_Manager()
+set_manager = SetttingsManager()
 sound_manager = Sound_Manager(set_manager)
 player = Player(set_manager, sound_manager)
 
