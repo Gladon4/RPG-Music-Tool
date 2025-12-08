@@ -52,7 +52,7 @@ class SettingsTab:
 
         self.ui_setting_frame = LabelFrame(
             self.frame,
-            font=("Helvetica", 15),
+            font=("Helvetica", settings["font_size"]),
             pady=15,
             padx=15,
             bg=settings["sec_bg_color"],
@@ -63,7 +63,7 @@ class SettingsTab:
         self.label_title_app_settings = Label(
             self.frame,
             text="Application Settings",
-            font=("Helvetica", 20),
+            font=("Helvetica", int(settings["font_size"] * 2)),
             bg=settings["bg_color"],
             fg=settings["txt_color"],
         )
@@ -119,7 +119,7 @@ class SettingsTab:
             row=3,
             title="Font Size",
             current_value=settings["font_size"],
-            min_value=10,
+            min_value=8,
             max_value=30,
             command=self.__change_font_size,
             settings=settings,
@@ -130,7 +130,7 @@ class SettingsTab:
         self.sfx_on_themes_label = Label(
             self.ui_setting_frame,
             text="Display SFX on Main Page",
-            font=("Helvetica", 12),
+            font=("Helvetica", settings["font_size"]),
             padx=15,
             bg=settings["sec_bg_color"],
             fg=settings["txt_color"],
@@ -141,7 +141,7 @@ class SettingsTab:
         self.full_path_on_main_label = Label(
             self.ui_setting_frame,
             text="Display Full Paths on Main Page",
-            font=("Helvetica", 12),
+            font=("Helvetica", settings["font_size"]),
             padx=15,
             bg=settings["sec_bg_color"],
             fg=settings["txt_color"],
@@ -152,16 +152,13 @@ class SettingsTab:
         self.full_path_in_settings_label = Label(
             self.ui_setting_frame,
             text="Display Full Paths in Settings",
-            font=("Helvetica", 12),
+            font=("Helvetica", settings["font_size"]),
             padx=15,
             bg=settings["sec_bg_color"],
             fg=settings["txt_color"],
             height=2,
         )
         self.full_path_in_settings_label.grid(row=6, column=0, sticky="nw")
-
-        # self.sfx_on_themes_label = Label(self.ui_setting_frame, text="Display SFX on Themes Tab", font=("Helvetica",12), padx=10, bg=settings["sec_bg_color"], fg=settings["txt_color"])
-        # self.sfx_on_themes_label.grid(row=3, column=0, pady=10)
 
         # --- Inputs --- #
 
@@ -172,6 +169,8 @@ class SettingsTab:
             borderwidth=0,
             activebackground=settings["button_hov_color"],
             bg=settings["button_bg_color"],
+            width=int(settings["ui_scale"] * 0.4),
+            height=int(settings["ui_scale"] * 0.4),
         )
         self.settings_button.pack(side="top")
 
@@ -182,6 +181,8 @@ class SettingsTab:
             borderwidth=0,
             activebackground=settings["button_hov_color"],
             bg=settings["button_bg_color"],
+            width=int(settings["ui_scale"] * 0.4),
+            height=int(settings["ui_scale"] * 0.4),
         )
         self.paths_button.pack(side="top")
 
@@ -192,6 +193,8 @@ class SettingsTab:
             borderwidth=0,
             activebackground=settings["button_hov_color"],
             bg=settings["button_bg_color"],
+            width=int(settings["ui_scale"] * 0.4),
+            height=int(settings["ui_scale"] * 0.4),
         )
         self.paths_button.pack(side="top")
 
@@ -202,6 +205,8 @@ class SettingsTab:
             borderwidth=0,
             activebackground=settings["button_hov_color"],
             bg=settings["button_bg_color"],
+            width=int(settings["ui_scale"] * 0.4),
+            height=int(settings["ui_scale"] * 0.4),
         )
         self.themes_button.pack(side="top")
 
@@ -281,8 +286,11 @@ class SettingsTab:
             color_name_label = Label(
                 label_frame,
                 text=colorNames[color],
+                font=("Helvetica", settings["font_size"]),
                 fg=settings["txt_color"],
                 bg=settings["sec_bg_color"],
+                wraplength=2.5 * settings["ui_scale"],
+                justify="left",
             )
             color_name_label.grid(
                 row=0, column=0, columnspan=2, sticky="w", padx=3, pady=(3, 0)
@@ -349,7 +357,7 @@ class SettingsTab:
         title_label = Label(
             frame,
             text=title,
-            font=("Helvetica", 12),
+            font=("Helvetica", settings["font_size"]),
             padx=15,
             bg=settings["sec_bg_color"],
             fg=settings["txt_color"],
@@ -371,7 +379,7 @@ class SettingsTab:
         label = Label(
             frame,
             text=current_value,
-            font=("Helvetica", 12),
+            font=("Helvetica", settings["font_size"]),
             padx=10,
             bg=settings["sec_bg_color"],
             fg=settings["txt_color"],

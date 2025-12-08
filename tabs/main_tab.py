@@ -114,12 +114,13 @@ class MainTab:
             darkcolor="black",
             sliderlength=25 * (settings["ui_scale"] / 100),
             sliderthickness=20 * (settings["ui_scale"] / 100),
+            activebackground="black",
         )
 
         self.label_current_song = Label(
             self.frame,
             text="No Song Playing",
-            font=("Helvetica", 20),
+            font=("Helvetica", int(settings["font_size"] * 2)),
             bg=settings["bg_color"],
             fg=settings["txt_color"],
         )
@@ -128,7 +129,7 @@ class MainTab:
         self.label_current_song_path = Label(
             self.frame,
             text="No Song Playing",
-            font=("Helvetica", 12),
+            font=("Helvetica", settings["font_size"]),
             bg=settings["bg_color"],
             fg=settings["txt_color"],
         )
@@ -137,7 +138,7 @@ class MainTab:
         self.label_current_theme = Label(
             self.frame,
             text="No Theme Selected",
-            font=("Helvetica", 20),
+            font=("Helvetica", int(settings["font_size"] * 2)),
             bg=settings["bg_color"],
             fg=settings["txt_color"],
         )
@@ -296,7 +297,7 @@ class MainTab:
             self.label_sfx = Label(
                 self.frame,
                 text="Sound Effects",
-                font=("Helvetica", 20),
+                font=("Helvetica", int(settings["font_size"] * 1.5)),
                 bg=settings["bg_color"],
                 fg=settings["txt_color"],
             )
@@ -450,8 +451,9 @@ class MainTab:
                 height=int(settings["theme_button_scale"] * settings["ui_scale"] * 0.5),
                 width=int(settings["theme_button_scale"] * settings["ui_scale"] * 0.5),
                 command=lambda _theme=_theme: self.__play(_theme),
-                wraplength=100,
+                wraplength=settings["ui_scale"],
                 highlightbackground=settings["button_hov_color"],
+                font=("Helvetica", settings["font_size"]),
             )
 
             theme_play_button.grid(
@@ -502,8 +504,9 @@ class MainTab:
                 height=int(settings["theme_button_scale"] * settings["ui_scale"] * 0.5),
                 width=int(settings["theme_button_scale"] * settings["ui_scale"] * 0.5),
                 command=lambda sfx=sfx: self.player.play_sfx(sfx),
-                wraplength=100,
+                wraplength=settings["ui_scale"],
                 highlightbackground=settings["button_hov_color"],
+                font=("Helvetica", settings["font_size"]),
             )
 
             self.sfx_play_button.grid(

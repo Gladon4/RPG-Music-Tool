@@ -17,7 +17,7 @@
 - [x] App start crashes if path in paths.csv doesn't exist
 - [ ] UI Scaling
   - [/] UI Scaling for elemente
-  - [ ] Font Size
+  - [/] Font Size
 
 ### Other
 - [ ] Update Readme
