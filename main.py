@@ -1,94 +1,11 @@
 #!/bin/python3
 
-from tkinter import *
-from tkinter import Tk, ttk
+from include.app import App
 
-from include.player import Player
-from managers.settings_manager import SetttingsManager
-from managers.sound_manager import Sound_Manager
-from managers.tab_manager import Tab_Manager
-from tabs.main_tab import MainTab
-from tabs.paths_tab import Paths_Tab
-from tabs.settings_tab import SettingsTab
-from tabs.sfx_tab import SFX_Tab
-from tabs.themes_tab import Themes_Tab
-
-# --- Constants --- #
-APP_NAME = "RPG Music Tool v06_dev"
-START_SIZE = "800x800"
-
-# --- Variables --- #
-
-
-# --- Objects--- #
-set_manager = SetttingsManager()
-sound_manager = Sound_Manager(set_manager)
-player = Player(set_manager, sound_manager)
-
-root = Tk()
-
-style = ttk.Style()
-notebook = ttk.Notebook(root)
-
-# Tabs
-tab_manager = Tab_Manager(notebook)
-
-main_tab = MainTab(set_manager, sound_manager, tab_manager, notebook, player)
-settings_tab = SettingsTab(set_manager, tab_manager, notebook)
-paths_tab = Paths_Tab(set_manager, tab_manager, notebook, sound_manager)
-sfx_tab = SFX_Tab(set_manager, tab_manager, notebook, sound_manager)
-themes_tab = Themes_Tab(set_manager, sound_manager, tab_manager, notebook, player)
-
-
-# Load settings and create the tab classes
-def setup():
-    set_manager.load_settings()
-    set_manager.load_paths()
-
-    sound_manager.load_themes()
-    sound_manager.load_sfx()
-
-    player.set_volume()
-
-    root.title(APP_NAME)
-    root.geometry(START_SIZE)
-
-    style.layout("TNotebook.Tab", [])
-    notebook.pack(fill="both", expand=1)
-
-    main_tab.create()
-    notebook.add(main_tab.frame, text="Main")
-
-    settings_tab.create()
-    notebook.add(settings_tab.frame, text="Settings")
-
-    paths_tab.create()
-    notebook.add(paths_tab.frame, text="Song Paths")
-
-    sfx_tab.create()
-    notebook.add(sfx_tab.frame, text="SFX Paths")
-
-    themes_tab.create()
-    notebook.add(themes_tab.frame, text="Themes")
-
-    tab_manager.set_tabs(
-        {
-            "main": main_tab,
-            "settings": settings_tab,
-            "song_paths": paths_tab,
-            "sfx_paths": sfx_tab,
-            "themes": themes_tab,
-        }
-    )
-
-
-# Run the app
-def main():
-    print("\n ---RPG MUSIC TOOL v06dev--- \n")
-
-    root.mainloop()
-
+VERSION = "060_dev"
+APP_NAME = f"RPG Music Tool v{VERSION}"
+START_SIZE = "800x1000"
 
 if __name__ == "__main__":
-    setup()
-    main()
+    app = App(APP_NAME, START_SIZE)
+    app.run()

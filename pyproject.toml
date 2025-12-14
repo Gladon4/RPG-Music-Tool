@@ -1,7 +1,7 @@
 [project]
 name = "RPG-Music-Tool"
 version = "0.6.0.dev"
-description = "A small tool to play music during TTRPGs"
+description = "A small tool to play music and sound effects during TTRPGs"
 readme = "README.md"
 requires-python = "==3.12.*"
 dependencies = [

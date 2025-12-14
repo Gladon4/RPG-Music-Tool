@@ -5,7 +5,7 @@ from tkinter.colorchooser import askcolor
 from tkinter.ttk import Scale, Style
 
 from managers.settings_manager import SetttingsManager
-from managers.tab_manager import Tab_Manager
+from managers.tab_manager import TabManager
 
 
 class SettingSlider:
@@ -17,10 +17,10 @@ class SettingSlider:
 
 class SettingsTab:
     def __init__(
-        self, settings_manager: SetttingsManager, tab_manager: Tab_Manager, notebook
+        self, settings_manager: SetttingsManager, tab_manager: TabManager, notebook
     ):
         self.settings_manager: SetttingsManager = settings_manager
-        self.tab_manager: Tab_Manager = tab_manager
+        self.tab_manager: TabManager = tab_manager
         self.notebook = notebook
         self.objects = {
             "labels": [],

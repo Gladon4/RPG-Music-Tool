@@ -24,11 +24,10 @@ class PredictiveText(tk.Text):
         self.predict_label = None
 
         self.last_guess = ""
-
+        self.myId = 0
 
     def get_added_tags(self):
         return self.added_tags
-    
 
     def get_tags(self):
         text = super().get("1.0", "end-1c")
@@ -36,21 +35,22 @@ class PredictiveText(tk.Text):
         if len(text) == 0:
             super().insert("1.0", self.tag_denominator)
             text = super().get("1.0", "end-1c")
-            
+
         char_index_list = self.__get_all_char_pos()
 
-        tags = [text[int(char_index_list[i][0])+1:int(char_index_list[i+1][0])] for i in range(len(char_index_list)-1)]
-        tags+= [text[int(char_index_list[-1][0])+1:]]
-        
+        tags = [
+            text[int(char_index_list[i][0]) + 1 : int(char_index_list[i + 1][0])]
+            for i in range(len(char_index_list) - 1)
+        ]
+        tags += [text[int(char_index_list[-1][0]) + 1 :]]
+
         tags = [tags[i].strip() for i in range(len(tags))]
         tags = [tag for tag in tags if tag != ""]
 
         return tags
 
-
     def update_possible_tags(self, new_possible_tags):
         self.possible_tags = new_possible_tags
-    
 
     def __return_add_tag_denominator(self, key):
         t = super().get("1.0", "end-1c")
@@ -67,35 +67,34 @@ class PredictiveText(tk.Text):
         self.__add_new_tags(all_tags_text)
 
         prev_index, _ = self.__get_closest_char(all_tags, super().index(tk.INSERT))
-       
-        super().delete("1."+str(prev_index), tk.END)
-        
-        super().insert("1."+str(prev_index), self.tag_denominator)
-        super().insert("1."+str(prev_index + 1), new_theme)
-        super().insert("1."+str(prev_index + 1 + len(new_theme)), " " + self.tag_denominator)
+
+        super().delete("1." + str(prev_index), tk.END)
+
+        super().insert("1." + str(prev_index), self.tag_denominator)
+        super().insert("1." + str(prev_index + 1), new_theme)
+        super().insert(
+            "1." + str(prev_index + 1 + len(new_theme)), " " + self.tag_denominator
+        )
 
         self.last_guess = ""
         self.__show_popup()
 
         return "break"
-    
 
     def __get_new_theme_in_last_position(self, char_index_list):
         text = super().get("1.0", "end-1c")
         i = char_index_list[-1][0]
-        return text[i+1:]
-
+        return text[i + 1 :]
 
     def __focus_out(self, _):
-        if self.predict_popup != None:
+        if self.predict_popup is not None:
             self.predict_popup.destroy()
             self.predict_popup = None
 
             self.predict_label.destroy()
             self.predict_label = None
 
-
-    def __guess_theme(self, word:str) -> str:
+    def __guess_theme(self, word: str) -> str:
         best_guess = ""
         best_score = 0
 
@@ -106,7 +105,7 @@ class PredictiveText(tk.Text):
                 if char in tag.lower():
                     score += 1
 
-            THEME_STARTS_WITH_WORD = word == tag.lower()[:len(word)]
+            THEME_STARTS_WITH_WORD = word == tag.lower()[: len(word)]
             THEME_CONTAINS_WORD = word in tag.lower()
 
             if THEME_CONTAINS_WORD:
@@ -114,7 +113,6 @@ class PredictiveText(tk.Text):
 
             if THEME_STARTS_WITH_WORD:
                 score = 200 - len(tag)
-
 
             if score > best_score:
                 best_score = score
@@ -124,7 +122,7 @@ class PredictiveText(tk.Text):
 
     def __get_all_char_pos(self):
         char_index_list = []
-        x, y = 0,1
+        x, y = 0, 1
         for i, c in enumerate(super().get("1.0", "end-1c")):
             if c == self.tag_denominator:
                 char_index_list.append((i, str(y) + "." + str(x)))
@@ -138,7 +136,6 @@ class PredictiveText(tk.Text):
                 x += 1
 
         return char_index_list
-    
 
     def __predict(self, key):
         t = super().get("1.0", "end-1c")
@@ -147,23 +144,28 @@ class PredictiveText(tk.Text):
         all_tags_text = self.__get_tags(all_tags)
         self.__add_new_tags(all_tags_text)
 
-        prev_index, next_index = self.__get_closest_char(all_tags, super().index(tk.INSERT))
+        prev_index, next_index = self.__get_closest_char(
+            all_tags, super().index(tk.INSERT)
+        )
 
         if key.keysym == "Tab" and self.last_guess != "":
             if next_index == -1:
-                super().delete("1."+str(prev_index), tk.END)
+                super().delete("1." + str(prev_index), tk.END)
             else:
-                super().delete("1."+str(prev_index), "1."+str(next_index))
+                super().delete("1." + str(prev_index), "1." + str(next_index))
 
-            super().insert("1."+str(prev_index), self.tag_denominator)
-            super().insert("1."+str(prev_index + 1), self.last_guess)
-            super().insert("1."+str(prev_index + 1 + len(self.last_guess)), " " + self.tag_denominator)
+            super().insert("1." + str(prev_index), self.tag_denominator)
+            super().insert("1." + str(prev_index + 1), self.last_guess)
+            super().insert(
+                "1." + str(prev_index + 1 + len(self.last_guess)),
+                " " + self.tag_denominator,
+            )
 
             self.last_guess = ""
 
         else:
             if next_index == -1:
-                to_predict = t[prev_index:len(t)]
+                to_predict = t[prev_index : len(t)]
             else:
                 to_predict = t[prev_index:next_index]
 
@@ -171,11 +173,12 @@ class PredictiveText(tk.Text):
 
         self.__show_popup()
 
-
     def __get_tags(self, char_index_list):
         text = super().get("1.0", "end-1c")
-        return [text[int(char_index_list[i][0])+1:int(char_index_list[i+1][0])] for i in range(len(char_index_list)-1)]
-
+        return [
+            text[int(char_index_list[i][0]) + 1 : int(char_index_list[i + 1][0])]
+            for i in range(len(char_index_list) - 1)
+        ]
 
     def __add_new_tags(self, possible_new):
         for pn in possible_new:
@@ -185,9 +188,8 @@ class PredictiveText(tk.Text):
                 self.possible_tags.append(pn_stripped)
                 self.added_tags.append(pn_stripped)
 
-
     def __get_closest_char(self, list, pos):
-        y,x = pos.split(".")
+        y, x = pos.split(".")
         last = 0
         for i, char in list:
             if int(char.split(".")[0]) < int(y):
@@ -200,7 +202,6 @@ class PredictiveText(tk.Text):
             else:
                 return [last, i]
         return [last, -1]
-
 
     def __show_popup(self):
         # Get the current position of the text cursor
@@ -222,16 +223,21 @@ class PredictiveText(tk.Text):
                 self.predict_popup.wm_overrideredirect(True)
 
                 # Add content to the popup
-                self.predict_label = tk.Label(self.predict_popup, text=str(self.last_guess), padx=5, pady=5, background=self.popup_background)
+                self.predict_label = tk.Label(
+                    self.predict_popup,
+                    text=str(self.last_guess),
+                    padx=5,
+                    pady=5,
+                    background=self.popup_background,
+                )
                 self.predict_label.pack()
 
             else:
                 self.predict_popup.geometry(f"+{abs_x}+{abs_y}")
                 self.predict_label.config(text=str(self.last_guess))
 
-
     def destroy(self):
-        if self.predict_popup != None:
+        if self.predict_popup is not None:
             self.predict_popup.destroy()
             self.predict_label.destroy()
         super().destroy()
