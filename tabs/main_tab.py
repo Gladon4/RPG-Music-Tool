@@ -6,8 +6,8 @@ from tkinter.ttk import Progressbar, Scale, Style
 
 
 class MainTab:
-    def __init__(self, set_manager, sound_manager, tab_manager, notebook, player):
-        self.set_manager = set_manager
+    def __init__(self, settings_manager, sound_manager, tab_manager, notebook, player):
+        self.setttings_manager = settings_manager
         self.sound_manager = sound_manager
         self.tab_manager = tab_manager
         self.notebook = notebook
@@ -15,7 +15,7 @@ class MainTab:
         self.objects = {"labels": [], "sec_labels": [], "buttons": []}
 
     def create(self, new=False):
-        settings = self.set_manager.settings
+        settings = self.setttings_manager.settings
         self.__load_imgs()
 
         # --- Main Frame --- #
@@ -315,19 +315,19 @@ class MainTab:
                 object.destroy()
 
     def update_elements(self):
-        self.frame.config(bg=self.set_manager.settings["bg_color"])
+        self.frame.config(bg=self.setttings_manager.settings["bg_color"])
         self.__destroy()
         self.create(True)
 
     # Media Methods
     def __play(self, theme):
         self.theme_buttons[theme].config(
-            bg=self.set_manager.settings["button_hov_color"], relief="sunken"
+            bg=self.setttings_manager.settings["button_hov_color"], relief="sunken"
         )
 
         if self.player.theme is not None and not theme == self.player.theme:
             self.theme_buttons[self.player.theme].config(
-                bg=self.set_manager.settings["button_bg_color"], relief="raised"
+                bg=self.setttings_manager.settings["button_bg_color"], relief="raised"
             )
 
         self.player.change_theme(theme)
@@ -346,7 +346,7 @@ class MainTab:
             return
 
         self.theme_buttons[self.player.theme].config(
-            bg=self.set_manager.settings["button_bg_color"], relief="raised"
+            bg=self.setttings_manager.settings["button_bg_color"], relief="raised"
         )
         self.player.stop()
         self.__update_music_labels()
@@ -403,7 +403,7 @@ class MainTab:
                 song = self.player.song.split("\\")[-1].split(".mp3")[0]
                 path = self.player.song.split("\\")[-2]
 
-            if self.set_manager.settings["full_paths_main"]:
+            if self.setttings_manager.settings["full_paths_main"]:
                 path = self.player.song
 
             self.label_current_theme.config(text=self.player.theme)
@@ -412,8 +412,8 @@ class MainTab:
 
     # Volume Change Methods
     def __set_volume(self, volume, button=False):
-        self.set_manager.settings["volume"] = volume
-        self.set_manager.store_settings()
+        self.setttings_manager.settings["volume"] = volume
+        self.setttings_manager.store_settings()
 
         self.label_volume.config(text=str(int(volume)))
         if button:
@@ -424,16 +424,16 @@ class MainTab:
         self.__set_volume(int(float(pos)))
 
     def __volume_up(self):
-        volume = self.set_manager.settings["volume"] + 1
+        volume = self.setttings_manager.settings["volume"] + 1
         self.__set_volume(volume, True)
 
     def __volume_down(self):
-        volume = self.set_manager.settings["volume"] - 1
+        volume = self.setttings_manager.settings["volume"] - 1
         self.__set_volume(volume, True)
 
     # Create Button Methods
     def __create_theme_buttons(self):
-        settings = self.set_manager.settings
+        settings = self.setttings_manager.settings
         self.theme_buttons = {}
 
         i = 0
@@ -471,10 +471,10 @@ class MainTab:
             self.theme_buttons[_theme] = theme_play_button
 
     def __create_sfx_buttons(self):
-        settings = self.set_manager.settings
+        settings = self.setttings_manager.settings
         temp_sfx_list = []
 
-        for path in self.set_manager.sfx_paths:
+        for path in self.setttings_manager.sfx_paths:
             for sfx in self.sound_manager.sfxs[path]:
                 temp_sfx_list += [path + sfx]
 

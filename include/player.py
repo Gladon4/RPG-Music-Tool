@@ -1,96 +1,88 @@
-"""
-Methods:
-	- Play Music
-	- Play SFX
-"""
-
-from pygame import mixer
 from random import randint
+
 from mutagen.mp3 import MP3
-
-class Player():
-	def __init__(self, set_manager, sound_manager):
-		mixer.init(frequency=44100)
-
-		self.set_manager = set_manager
-		self.sound_manager = sound_manager
-		
-		self.theme = None
-		self.song = ""
-		self.paused = True
-		self.length = 0
+from pygame import mixer
 
 
+class MusicPlayer:
+    def __init__(self, settings_manager, sound_manager):
+        mixer.init(frequency=44100)
 
-	def set_volume(self, volume=-1):
-		if volume == -1:
-			mixer.music.set_volume(self.set_manager.settings["volume"] / 100)
-		else:
-			mixer.music.set_volume(volume / 100)
+        self.settings_manager = settings_manager
+        self.sound_manager = sound_manager
 
+        self.theme = None
+        self.song = ""
+        self.paused = True
+        self.length = 0
 
-	def change_theme(self, theme):
-		print(f'\nTheme: {theme}')
+    def set_volume(self, volume=-1):
+        if volume == -1:
+            mixer.music.set_volume(self.settings_manager.settings["volume"] / 100)
+        else:
+            mixer.music.set_volume(volume / 100)
 
-		self.theme = theme
-		self.play()
-		
+    def change_theme(self, theme):
+        print(f"\nTheme: {theme}")
 
-	def play(self, song=None):
-		if song == None:
-			song_id = randint(0, len(self.sound_manager.themes[self.theme]) - 1)
-			song_path = self.sound_manager.themes[self.theme][song_id]
-			
-			mixer.music.load(song_path)
-			mixer.music.play(loops=0)
+        self.theme = theme
+        self.play()
 
-			self.length = MP3(song_path).info.length
-			self.paused = False
-			self.song = song_path
+    def play(self, song=None):
+        if song == None:
+            song_id = randint(0, len(self.sound_manager.themes[self.theme]) - 1)
+            song_path = self.sound_manager.themes[self.theme][song_id]
 
-			print(f'Next Song: {song_path}')
+            mixer.music.load(song_path)
+            mixer.music.play(loops=0)
 
-		else:
-			mixer.music.load(song)
-			mixer.music.play(loops=0)
+            self.length = MP3(song_path).info.length
+            self.paused = False
+            self.song = song_path
 
-			print(f'Next Song: {song}')
+            print(f"Next Song: {song_path}")
 
-	def stop(self):
-		mixer.music.stop()
+        else:
+            mixer.music.load(song)
+            mixer.music.play(loops=0)
 
-		if self.theme == None:
-			return
-		
-		self.paused = True
-		self.theme = None
-		self.song = ""
+            print(f"Next Song: {song}")
 
-	def pause(self):
-		if self.theme == None:
-			return
-		
-		if self.paused:
-			mixer.music.unpause()
-		else:
-			mixer.music.pause()
-		self.paused = not self.paused
+    def stop(self):
+        mixer.music.stop()
 
-	def skip(self):
-		if self.theme == None:
-			return
-		
-		self.play()
+        if self.theme is None:
+            return
 
+        self.paused = True
+        self.theme = None
+        self.song = ""
 
-	def play_sfx(self, sfx_path):
-		sfx = mixer.Sound(sfx_path)
+    def pause(self):
+        if self.theme is None:
+            return
 
-		mixer.Sound.set_volume(sfx, 4 * (self.set_manager.settings["volume"] / 100))
-		mixer.Sound.play(sfx)
+        if self.paused:
+            mixer.music.unpause()
+        else:
+            mixer.music.pause()
+        self.paused = not self.paused
 
-		print(f'\nSFX: {sfx}')
+    def skip(self):
+        if self.theme is None:
+            return
 
+        self.play()
 
-	def get_pos(self):
-		return mixer.music.get_pos() / 1000
+    def play_sfx(self, sfx_path):
+        sfx = mixer.Sound(sfx_path)
+
+        mixer.Sound.set_volume(
+            sfx, 4 * (self.settings_manager.settings["volume"] / 100)
+        )
+        mixer.Sound.play(sfx)
+
+        print(f"\nSFX: {sfx}")
+
+    def get_pos(self):
+        return mixer.music.get_pos() / 1000

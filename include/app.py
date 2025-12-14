@@ -1,8 +1,8 @@
 from tkinter import Tk, ttk
 
-from include.player import Player
+from include.player import MusicPlayer
 from managers.settings_manager import SetttingsManager
-from managers.sound_manager import Sound_Manager
+from managers.sound_manager import SoundManager
 from managers.tab_manager import TabManager
 from tabs.main_tab import MainTab
 from tabs.paths_tab import PathsTab
@@ -29,11 +29,11 @@ class App:
         self.settings_manager.load_settings()
         self.settings_manager.load_paths()
 
-        self.sound_manager = Sound_Manager(self.settings_manager)
+        self.sound_manager = SoundManager(self.settings_manager)
         self.sound_manager.load_themes()
         self.sound_manager.load_sfx()
 
-        self.player = Player(self.settings_manager, self.sound_manager)
+        self.player = MusicPlayer(self.settings_manager, self.sound_manager)
         self.player.set_volume()
 
         self.tab_manager = TabManager(self.notebook)
