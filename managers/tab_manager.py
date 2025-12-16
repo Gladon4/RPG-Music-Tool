@@ -12,4 +12,7 @@ class TabManager:
 
     def update_all_tab_elements(self):
         for tab in self.tabs:
-            self.tabs[tab].update_elements()
+            try:
+                self.tabs[tab].update_elements()
+            except:
+                self.tabs[tab].update()

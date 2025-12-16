@@ -1,10 +1,12 @@
 import csv
 import os
 
+from managers.settings_manager import SetttingsManager
+
 
 class SoundManager:
-    def __init__(self, set_manager):
-        self.set_manager = set_manager
+    def __init__(self, set_manager: SetttingsManager):
+        self.settings_manager = set_manager
 
         self.load_themes()
         self.load_sfx()
@@ -15,7 +17,7 @@ class SoundManager:
         self.songs = {}
 
         try:
-            for path in self.set_manager.music_paths:
+            for path in self.settings_manager.music_paths:
                 self.songs[path] = {}
 
                 with open(path + "/songs.csv", "r", encoding="utf-8-sig") as csv_file:
@@ -32,11 +34,11 @@ class SoundManager:
         except IOError:
             pass
 
-        self.check_for_new_files()
+        self.check_for_new_music_files()
         self.create_themes_dict()
 
-    def check_for_new_files(self):
-        for path in self.set_manager.music_paths:
+    def check_for_new_music_files(self):
+        for path in self.settings_manager.music_paths:
             for file in os.listdir(path):
                 if file not in self.songs[path] and file.endswith(".mp3"):
                     print(f"New Song found: {file}")
@@ -55,7 +57,7 @@ class SoundManager:
 
     def create_themes_dict(self):
         self.themes = {}
-        for path in self.set_manager.music_paths:
+        for path in self.settings_manager.music_paths:
             for song in self.songs[path]:
                 for theme in self.songs[path][song]:
                     if theme not in self.themes:
@@ -79,7 +81,7 @@ class SoundManager:
 
     def store_themes(self):
         try:
-            for path in self.set_manager.music_paths:
+            for path in self.settings_manager.music_paths:
                 rows = []
 
                 for song in self.songs[path]:
@@ -101,7 +103,7 @@ class SoundManager:
         self.sfxs = {}
 
         try:
-            for path in self.set_manager.sfx_paths:
+            for path in self.settings_manager.sfx_paths:
                 self.sfxs[path] = []
 
                 with open(path + "/sfx.csv", "r", encoding="utf-8-sig") as csv_file:
@@ -112,9 +114,29 @@ class SoundManager:
         except IOError:
             pass
 
+        self.check_for_new_sfx_files()
+
+    def check_for_new_sfx_files(self):
+        for path in self.settings_manager.sfx_paths:
+            for file in os.listdir(path):
+                if file not in self.sfxs[path] and file.endswith(".mp3"):
+                    print(f"New SFX found: {file}")
+                    self.sfxs[path].append(file)
+
+            removed_files = []
+            for sfx in self.sfxs[path]:
+                if sfx not in os.listdir(path):
+                    print(f"Deleted File found: {sfx}")
+                    removed_files.append(sfx)
+
+            for sfx in removed_files:
+                self.sfxs[path].remove(sfx)
+
+        self.store_sfx()
+
     def store_sfx(self):
         try:
-            for path in self.set_manager.sfx_paths:
+            for path in self.settings_manager.sfx_paths:
                 rows = []
 
                 for song in self.sfxs[path]:
@@ -126,3 +148,11 @@ class SoundManager:
 
         except IOError:
             pass
+
+    def get_sfx_list(self) -> list[str]:
+        sfx_list = []
+        for path in self.sfxs:
+            for sfx in self.sfxs[path]:
+                sfx_list.append(os.path.join(path, sfx))
+
+        return sfx_list

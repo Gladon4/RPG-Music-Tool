@@ -57,35 +57,43 @@ class MainTab(Tab):
         self.theme_buttons_frame = self.add_label_frame(self.frame)
         self.theme_buttons_frame.grid(row=1, column=0)
 
-        self.lower_frame = self.add_label_frame(self.frame)
+        self.lower_frame = self.add_label_frame(self.frame, bg="sec_bg_color")
         self.lower_frame.grid(row=4, column=0)
 
-        self.status_frame = self.add_label_frame(self.lower_frame)
-        self.status_frame.grid(row=0, column=0, padx=2)
+        self.lower_frame_a = self.add_label_frame(self.lower_frame, bg="sec_bg_color")
+        self.lower_frame_a.grid(row=0, column=0)
 
-        self.volume_frame = self.add_label_frame(self.lower_frame, bg="sec_bg_color")
-        self.volume_frame.grid(row=0, column=1, padx=2)
+        self.lower_frame_b = self.add_label_frame(self.lower_frame, bg="sec_bg_color")
+        self.lower_frame_b.grid(row=1, column=0)
 
-        self.volume_plus_minus_frame = self.add_label_frame(self.lower_frame)
-        self.volume_plus_minus_frame.grid(row=0, column=2, padx=2)
+        self.status_frame = self.add_label_frame(self.lower_frame_b, bg="sec_bg_color")
+        self.status_frame.grid(row=0, column=0)
+
+        self.volume_frame = self.add_label_frame(self.lower_frame_b, bg="sec_bg_color")
+        self.volume_frame.grid(row=0, column=1)
+
+        self.volume_plus_minus_frame = self.add_label_frame(
+            self.volume_frame, bg="sec_bg_color"
+        )
+        self.volume_plus_minus_frame.grid(row=0, column=1)
 
         self.current_song_label = self.add_label(
-            self.frame, text="No Song Playing", font_size=2
+            self.lower_frame_a, text="No Song Playing", font_size=2, bg="sec_bg_color"
         )
         self.current_song_label.grid(row=2, column=0)
 
         self.current_song_path_label = self.add_label(
-            self.frame, text="No Song Playing"
+            self.lower_frame_a, text="No Song Playing", bg="sec_bg_color"
         )
         self.current_song_path_label.grid(row=3, column=0)
 
         self.current_theme_label = self.add_label(
             self.frame, text="No Theme Selected", font_size=2
         )
-        self.current_theme_label.grid(row=0, column=0, pady=5)
+        self.current_theme_label.grid(row=0, column=0, pady=10)
 
         self.song_duration_label = self.add_label(
-            self.status_frame, text="00:00 / 00:00"
+            self.status_frame, text="00:00 / 00:00", bg="sec_bg_color"
         )
         self.song_duration_label.config(width=15)
         self.song_duration_label.grid(row=0, column=4, pady=5)
@@ -159,13 +167,7 @@ class MainTab(Tab):
         )
         self.volume_down_button.grid(row=1, column=1, pady=5)
 
-        self.settings_button = self.add_button(
-            self.navigation_buttons_frame,
-            command=lambda x=self: self.tab_manager.select("settings"),
-            image="gear",
-            scale=0.4,
-        )
-        self.settings_button.pack(side="bottom")
+        self.add_navigation_button(destination="settings", image="gear")
 
         self.__create_theme_buttons()
         self.__create_sfx_buttons()
@@ -200,8 +202,10 @@ class MainTab(Tab):
         if not self.settings_manager.settings["sfx_on_themes"]:
             return
 
+        settings = self.settings_manager.settings
+
         self.sfx_button_frame = self.add_label_frame(self.frame)
-        self.sfx_button_frame.grid(row=6, column=6)
+        self.sfx_button_frame.grid(row=6, column=0)
 
         self.sfx_label = self.add_label(
             self.frame,
@@ -210,7 +214,33 @@ class MainTab(Tab):
         )
         self.sfx_label.grid(row=5, column=0, pady=5)
 
-        # TODO: reimplement the rest, after I changed the sfx path thingies
+        sfx_list = self.sound_manager.get_sfx_list()
+        self.sfx_buttons = []
+
+        i = 0
+        for sfx in sfx_list:
+            text = ""
+            if sys.platform.startswith("win32"):
+                text = sfx.split("\\")
+                text = text[-1].split(".mp3")[0]
+
+            elif sys.platform.startswith("linux"):
+                text = sfx.split("/")
+                text = text[-1].split(".mp3")[0]
+
+            sfx_button = self.add_button(
+                self.sfx_button_frame,
+                text=text,
+                scale=settings["theme_button_scale"] * 0.5,
+                command=lambda sfx=sfx: self.music_player.play_sfx(sfx),
+                wraplength=settings["ui_scale"],
+            )
+            sfx_button.grid(
+                row=(i // settings["row_length"] + 1),
+                column=(i % settings["row_length"]),
+            )
+
+            i += 1
 
     def __play(self, theme):
         self.theme_buttons[theme].config(
@@ -252,7 +282,8 @@ class MainTab(Tab):
     def __song_duration(self):
         if not self.music_player.paused:
             length = self.music_player.length
-            # if the track is longer than 1 hour, we display the hours, as most tracks will likely be shorter, we usually only display minutes and seconds
+            # if the track is longer than 1 hour, we display the hours
+            # As most tracks will likely be shorter, we usually only display minutes and seconds
             if length >= 3600:
                 format = "%H:%M:%S"
             else:

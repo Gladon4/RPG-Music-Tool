@@ -267,7 +267,7 @@ class SFXTab:
             self.delete_image = PhotoImage(file="img/delete_img.png")
 
     def __select_tab(self, tab):
-        self.tab_manager.tabs["main"].update_elements()
+        self.tab_manager.tabs["main"].update()
         self.tab_manager.select(tab)
 
     def __destroy(self):
