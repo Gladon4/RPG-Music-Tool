@@ -1,4 +1,4 @@
-from tkinter import Button, Frame, LabelFrame, Widget, ttk
+from tkinter import Button, Frame, Label, LabelFrame, Widget, ttk
 from typing import Callable
 
 from managers.image_manager import ImageManager
@@ -23,7 +23,7 @@ class Tab:
 
     def create(self, new: bool = False):
         settings = self.settings_manager.settings
-        if not new:
+        if new:
             self.frame = Frame(
                 self.notebook,
                 width=0,
@@ -69,6 +69,49 @@ class Tab:
         self.widgets.append(button)
 
         return button
+
+    def add_label_frame(
+        self,
+        frame: Frame | LabelFrame,
+        text: str = "",
+        bg: str = "bg_color",
+    ) -> LabelFrame:
+        settings = self.settings_manager.settings
+
+        label_frame = LabelFrame(
+            frame,
+            text=text,
+            padx=15,
+            pady=15,
+            bg=settings[bg],
+            highlightthickness=0,
+            borderwidth=0,
+        )
+
+        self.widgets.append(label_frame)
+
+        return label_frame
+
+    def add_label(
+        self,
+        frame: Frame | LabelFrame,
+        text: str = "",
+        bg: str = "bg_color",
+        font_size: float = 1.0,
+    ) -> Label:
+        settings = self.settings_manager.settings
+
+        label = Label(
+            frame,
+            text=text,
+            bg=settings[bg],
+            fg=settings["txt_color"],
+            font=("Helvetica", int(settings["font_size"] * font_size)),
+        )
+
+        self.widgets.append(label)
+
+        return label
 
     def add_navigation_button(self, destination: str, image: str):
         navigation_button = self.add_button(

@@ -16,6 +16,8 @@ class MusicPlayer:
         self.paused = True
         self.length = 0
 
+        self.set_volume()
+
     def set_volume(self, volume=-1):
         if volume == -1:
             mixer.music.set_volume(self.settings_manager.settings["volume"] / 100)

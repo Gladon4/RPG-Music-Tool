@@ -6,6 +6,9 @@ class SoundManager:
     def __init__(self, set_manager):
         self.set_manager = set_manager
 
+        self.load_themes()
+        self.load_sfx()
+
     # --- Themes --- #
     def load_themes(self):
         self.themes = {}
@@ -26,7 +29,7 @@ class SoundManager:
                                 if not theme == "":
                                     self.songs[path][row[0]].append(theme)
 
-        except:
+        except IOError:
             pass
 
         self.check_for_new_files()
@@ -35,13 +38,13 @@ class SoundManager:
     def check_for_new_files(self):
         for path in self.set_manager.music_paths:
             for file in os.listdir(path):
-                if not file in self.songs[path] and file.endswith(".mp3"):
+                if file not in self.songs[path] and file.endswith(".mp3"):
                     print(f"New Song found: {file}")
                     self.songs[path][file] = []
 
             removed_songs = []
             for song in self.songs[path]:
-                if not song in os.listdir(path):
+                if song not in os.listdir(path):
                     print(f"Deleted File found: {song}")
                     removed_songs.append(song)
 
@@ -55,7 +58,7 @@ class SoundManager:
         for path in self.set_manager.music_paths:
             for song in self.songs[path]:
                 for theme in self.songs[path][song]:
-                    if not theme in self.themes:
+                    if theme not in self.themes:
                         self.themes[theme] = []
 
                     self.themes[theme].append(path + song)
@@ -90,7 +93,7 @@ class SoundManager:
                     csvwriter = csv.writer(file, delimiter="\\")
                     csvwriter.writerows(rows)
 
-        except:
+        except IOError:
             pass
 
     # --- SFX --- #
@@ -106,7 +109,7 @@ class SoundManager:
                     for row in list:
                         if not row[0] == "":
                             self.sfxs[path] += [row[0]]
-        except:
+        except IOError:
             pass
 
     def store_sfx(self):
@@ -121,5 +124,5 @@ class SoundManager:
                     csvwriter = csv.writer(file, delimiter="\\")
                     csvwriter.writerows(rows)
 
-        except:
+        except IOError:
             pass

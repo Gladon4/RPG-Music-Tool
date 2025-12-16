@@ -1,99 +1,36 @@
-import os
 import sys
 import time
-from tkinter import Button, Frame, Label, LabelFrame, PhotoImage
+from tkinter import ttk
 from tkinter.ttk import Progressbar, Scale, Style
 
+from include.player import MusicPlayer
+from include.tab import Tab
+from managers.image_manager import ImageManager
+from managers.settings_manager import SetttingsManager
+from managers.sound_manager import SoundManager
+from managers.tab_manager import TabManager
 
-class MainTab:
-    def __init__(self, settings_manager, sound_manager, tab_manager, notebook, player):
-        self.setttings_manager = settings_manager
+
+class MainTab(Tab):
+    def __init__(
+        self,
+        settings_manager: SetttingsManager,
+        tab_manager: TabManager,
+        image_manager: ImageManager,
+        notebook: ttk.Notebook,
+        sound_manager: SoundManager,
+        music_player: MusicPlayer,
+    ) -> None:
+        super().__init__(settings_manager, tab_manager, image_manager, notebook)
         self.sound_manager = sound_manager
-        self.tab_manager = tab_manager
-        self.notebook = notebook
-        self.player = player
-        self.objects = {"labels": [], "sec_labels": [], "buttons": []}
+        self.music_player = music_player
 
-    def create(self, new=False):
-        settings = self.setttings_manager.settings
-        self.__load_imgs()
+        self.create(True)
 
-        # --- Main Frame --- #
-        if not new:
-            self.frame = Frame(
-                self.notebook, width=0, height=0, bg=settings["bg_color"]
-            )
-            self.frame.grid_rowconfigure(0, weight=0)
-            self.frame.grid_columnconfigure(0, weight=1)
+    def create(self, new: bool = False):
+        super().create(new)
 
-        # --- Frames --- #
-
-        self.theme_buttons_frame = LabelFrame(
-            self.frame,
-            text="",
-            bg=settings["bg_color"],
-            padx=25,
-            borderwidth=0,
-            pady=10,
-        )
-        self.theme_buttons_frame.grid(row=1, column=0)
-
-        self.navigation_buttons_frame = LabelFrame(
-            self.frame, bg=settings["bg_color"], padx=0, borderwidth=0
-        )
-        self.navigation_buttons_frame.place(relx=1.0, rely=0, anchor="ne")
-
-        self.lower_frame = LabelFrame(
-            self.frame,
-            text="",
-            pady=5,
-            padx=10,
-            bg=settings["bg_color"],
-            borderwidth=0,
-            highlightthickness=2,
-            highlightbackground=settings["sec_bg_color"],
-        )
-        self.lower_frame.grid(row=4, column=0)
-
-        self.status = LabelFrame(
-            self.lower_frame,
-            text="",
-            pady=15,
-            padx=15,
-            bg=settings["bg_color"],
-            borderwidth=0,
-        )
-        self.status.grid(row=0, column=0, padx=2)
-
-        self.volume_frame = LabelFrame(
-            self.lower_frame,
-            text="",
-            pady=15,
-            padx=15,
-            bg=settings["sec_bg_color"],
-            borderwidth=0,
-        )
-        self.volume_frame.grid(row=0, column=1, padx=2)
-
-        self.volume_plus_minus_frame = LabelFrame(
-            self.lower_frame,
-            text="",
-            pady=2,
-            padx=2,
-            bg=settings["bg_color"],
-            borderwidth=0,
-        )
-        self.volume_plus_minus_frame.grid(row=0, column=2, padx=2)
-
-        self.objects["labels"] += [
-            self.theme_buttons_frame,
-            self.lower_frame,
-            self.volume_plus_minus_frame,
-            self.navigation_buttons_frame,
-        ]
-        self.objects["sec_labels"] += [self.status, self.volume_frame]
-
-        # --- Labels --- #
+        settings = self.settings_manager.settings
 
         style = Style()
         style.configure(
@@ -117,110 +54,82 @@ class MainTab:
             activebackground="black",
         )
 
-        self.label_current_song = Label(
-            self.frame,
-            text="No Song Playing",
-            font=("Helvetica", int(settings["font_size"] * 2)),
-            bg=settings["bg_color"],
-            fg=settings["txt_color"],
-        )
-        self.label_current_song.grid(row=2, column=0)
+        self.theme_buttons_frame = self.add_label_frame(self.frame)
+        self.theme_buttons_frame.grid(row=1, column=0)
 
-        self.label_current_song_path = Label(
-            self.frame,
-            text="No Song Playing",
-            font=("Helvetica", settings["font_size"]),
-            bg=settings["bg_color"],
-            fg=settings["txt_color"],
-        )
-        self.label_current_song_path.grid(row=3, column=0)
+        self.lower_frame = self.add_label_frame(self.frame)
+        self.lower_frame.grid(row=4, column=0)
 
-        self.label_current_theme = Label(
-            self.frame,
-            text="No Theme Selected",
-            font=("Helvetica", int(settings["font_size"] * 2)),
-            bg=settings["bg_color"],
-            fg=settings["txt_color"],
-        )
-        self.label_current_theme.grid(row=0, column=0, pady=5)
+        self.status_frame = self.add_label_frame(self.lower_frame)
+        self.status_frame.grid(row=0, column=0, padx=2)
 
-        self.label_duration_song = Label(
-            self.status,
-            text="00:00 / 00:00",
-            font=("Helvetica", 12),
-            bg=settings["bg_color"],
-            fg=settings["txt_color"],
-            width=15,
-        )
-        self.label_duration_song.grid(row=0, column=4, padx=5)
+        self.volume_frame = self.add_label_frame(self.lower_frame, bg="sec_bg_color")
+        self.volume_frame.grid(row=0, column=1, padx=2)
 
-        self.song_progress = Progressbar(
-            self.status,
+        self.volume_plus_minus_frame = self.add_label_frame(self.lower_frame)
+        self.volume_plus_minus_frame.grid(row=0, column=2, padx=2)
+
+        self.current_song_label = self.add_label(
+            self.frame, text="No Song Playing", font_size=2
+        )
+        self.current_song_label.grid(row=2, column=0)
+
+        self.current_song_path_label = self.add_label(
+            self.frame, text="No Song Playing"
+        )
+        self.current_song_path_label.grid(row=3, column=0)
+
+        self.current_theme_label = self.add_label(
+            self.frame, text="No Theme Selected", font_size=2
+        )
+        self.current_theme_label.grid(row=0, column=0, pady=5)
+
+        self.song_duration_label = self.add_label(
+            self.status_frame, text="00:00 / 00:00"
+        )
+        self.song_duration_label.config(width=15)
+        self.song_duration_label.grid(row=0, column=4, pady=5)
+
+        self.song_progressbar = Progressbar(
+            self.status_frame,
             orient="horizontal",
             length=3 * settings["ui_scale"],
             mode="determinate",
             style="Custom.Horizontal.TProgressbar",
         )
-        self.song_progress.grid(row=0, column=3, padx=5)
+        self.song_progressbar.grid(row=0, column=3, padx=5)
 
-        self.label_volume = Label(
+        self.volume_label = self.add_label(
             self.volume_frame,
             text=str(settings["volume"]),
-            font=("Helvetica", 10, "bold"),
-            bg=settings["sec_bg_color"],
-            fg=settings["txt_color"],
-            width=3,
+            bg="sec_bg_color",
         )
-        self.label_volume.grid(row=1, column=0)
+        self.volume_label.config(width=3)
+        self.volume_label.grid(row=1, column=0)
 
-        self.objects["labels"] += [
-            self.label_current_song,
-            self.label_current_song_path,
-            self.label_current_theme,
-            self.label_duration_song,
-            self.label_volume,
-        ]
-
-        # --- Inputs --- #
-
-        self.button_stop = Button(
-            self.status,
+        self.stop_button = self.add_button(
+            self.status_frame,
             command=self.__stop,
-            image=self.stop_image,
-            borderwidth=0,
-            activebackground=settings["button_hov_color"],
-            bg=settings["button_bg_color"],
-            highlightbackground=settings["button_hov_color"],
-            width=int(settings["ui_scale"] * 0.7),
-            height=int(settings["ui_scale"] * 0.7),
+            image="stop",
+            scale=0.7,
         )
-        self.button_stop.grid(row=0, column=0)
+        self.stop_button.grid(row=0, column=0)
 
-        self.button_pause = Button(
-            self.status,
+        self.pause_button = self.add_button(
+            self.status_frame,
             command=self.__pause,
-            image=self.pause_image,
-            borderwidth=0,
-            activebackground=settings["button_hov_color"],
-            bg=settings["button_bg_color"],
-            highlightbackground=settings["button_hov_color"],
-            width=int(settings["ui_scale"] * 0.7),
-            height=int(settings["ui_scale"] * 0.7),
+            image="pause",
+            scale=0.7,
         )
-        self.button_pause.grid(row=0, column=1)
+        self.pause_button.grid(row=0, column=1)
 
-        self.button_skip = Button(
-            self.status,
+        self.skip_button = self.add_button(
+            self.status_frame,
             command=self.__skip,
-            image=self.skip_image,
-            borderwidth=0,
-            activebackground=settings["button_hov_color"],
-            bg=settings["button_bg_color"],
-            highlightbackground=settings["button_hov_color"],
-            width=int(settings["ui_scale"] * 0.7),
-            height=int(settings["ui_scale"] * 0.7),
+            image="skip",
+            scale=0.7,
         )
-        self.button_skip.grid(row=0, column=2)
+        self.skip_button.grid(row=0, column=2)
 
         self.volume_changer = Scale(
             self.volume_frame,
@@ -234,142 +143,126 @@ class MainTab:
         )
         self.volume_changer.grid(row=0, column=0)
 
-        self.volume_up_button = Button(
+        self.volume_up_button = self.add_button(
             self.volume_plus_minus_frame,
             command=self.__volume_up,
-            image=self.plus_image,
-            borderwidth=0,
-            activebackground=settings["button_hov_color"],
-            bg=settings["button_bg_color"],
-            highlightthickness=0,
-            width=int(settings["ui_scale"] * 0.3),
-            height=int(settings["ui_scale"] * 0.3),
+            image="plus",
+            scale=0.3,
         )
         self.volume_up_button.grid(row=0, column=1, pady=5)
 
-        self.volume_down_button = Button(
+        self.volume_down_button = self.add_button(
             self.volume_plus_minus_frame,
             command=self.__volume_down,
-            image=self.minus_image,
-            borderwidth=0,
-            activebackground=settings["button_hov_color"],
-            bg=settings["button_bg_color"],
-            highlightthickness=0,
-            width=int(settings["ui_scale"] * 0.3),
-            height=int(settings["ui_scale"] * 0.3),
+            image="minus",
+            scale=0.3,
         )
         self.volume_down_button.grid(row=1, column=1, pady=5)
 
-        self.settings_button = Button(
+        self.settings_button = self.add_button(
             self.navigation_buttons_frame,
             command=lambda x=self: self.tab_manager.select("settings"),
-            image=self.settings_image,
-            borderwidth=0,
-            activebackground=settings["button_hov_color"],
-            bg=settings["button_bg_color"],
-            width=int(settings["ui_scale"] * 0.4),
-            height=int(settings["ui_scale"] * 0.4),
+            image="gear",
+            scale=0.4,
         )
         self.settings_button.pack(side="bottom")
 
-        self.objects["buttons"] += [
-            self.button_stop,
-            self.button_pause,
-            self.button_skip,
-            self.volume_down_button,
-            self.volume_up_button,
-            self.settings_button,
-        ]
-
         self.__create_theme_buttons()
-
-        if settings["sfx_on_themes"]:
-            self.sfx_buttons_frame = LabelFrame(
-                self.frame,
-                text="",
-                bg=settings["bg_color"],
-                padx=25,
-                borderwidth=0,
-                pady=5,
-            )
-            self.sfx_buttons_frame.grid(row=6, column=0)
-
-            self.label_sfx = Label(
-                self.frame,
-                text="Sound Effects",
-                font=("Helvetica", int(settings["font_size"] * 1.5)),
-                bg=settings["bg_color"],
-                fg=settings["txt_color"],
-            )
-            self.label_sfx.grid(row=5, column=0, pady=5)
-
-            self.objects["labels"] += [self.sfx_buttons_frame, self.label_sfx]
-
-            self.__create_sfx_buttons()
+        self.__create_sfx_buttons()
 
         self.__song_duration()
 
-    def __destroy(self):
-        for category in self.objects:
-            for object in self.objects[category]:
-                object.destroy()
+    def __create_theme_buttons(self):
+        settings = self.settings_manager.settings
+        self.theme_buttons = {}
 
-    def update_elements(self):
-        self.frame.config(bg=self.setttings_manager.settings["bg_color"])
-        self.__destroy()
-        self.create(True)
-
-    # Media Methods
-    def __play(self, theme):
-        self.theme_buttons[theme].config(
-            bg=self.setttings_manager.settings["button_hov_color"], relief="sunken"
-        )
-
-        if self.player.theme is not None and not theme == self.player.theme:
-            self.theme_buttons[self.player.theme].config(
-                bg=self.setttings_manager.settings["button_bg_color"], relief="raised"
+        i = 0
+        for _theme in sorted(self.sound_manager.themes.keys()):
+            theme_button = self.add_button(
+                self.theme_buttons_frame,
+                text=_theme,
+                scale=settings["theme_button_scale"] * 0.5,
+                command=lambda _theme=_theme: self.__play(_theme),
+                wraplength=settings["ui_scale"],
+            )
+            theme_button.grid(
+                row=(i // settings["row_length"] + 1),
+                column=(i % settings["row_length"]),
             )
 
-        self.player.change_theme(theme)
-        self.__update_music_labels()
+            if self.music_player.theme == _theme:
+                theme_button.config(bg=settings["button_hov_color"], relief="sunken")
 
-    def __pause(self):
-        if self.player.paused:
-            self.button_pause.config(image=self.pause_image)
-        else:
-            self.button_pause.config(image=self.play_image)
+            i += 1
+            self.theme_buttons[_theme] = theme_button
 
-        self.player.pause()
-
-    def __stop(self):
-        if self.player.theme is None:
+    def __create_sfx_buttons(self):
+        if not self.settings_manager.settings["sfx_on_themes"]:
             return
 
-        self.theme_buttons[self.player.theme].config(
-            bg=self.setttings_manager.settings["button_bg_color"], relief="raised"
+        self.sfx_button_frame = self.add_label_frame(self.frame)
+        self.sfx_button_frame.grid(row=6, column=6)
+
+        self.sfx_label = self.add_label(
+            self.frame,
+            text="Sound Effects",
+            font_size=1.5,
         )
-        self.player.stop()
+        self.sfx_label.grid(row=5, column=0, pady=5)
+
+        # TODO: reimplement the rest, after I changed the sfx path thingies
+
+    def __play(self, theme):
+        self.theme_buttons[theme].config(
+            bg=self.settings_manager.settings["button_hov_color"], relief="sunken"
+        )
+
+        if self.music_player.theme is not None and not theme == self.music_player.theme:
+            self.theme_buttons[self.music_player.theme].config(
+                bg=self.settings_manager.settings["button_bg_color"], relief="raised"
+            )
+
+        self.music_player.change_theme(theme)
+        self.__update_music_labels()
+
+    def __stop(self):
+        if self.music_player.theme is None:
+            return
+
+        self.theme_buttons[self.music_player.theme].config(
+            bg=self.settings_manager.settings["button_bg_color"], relief="raised"
+        )
+        self.song_duration_label.config(text="00:00 / 00:00")
+
+        self.music_player.stop()
         self.__update_music_labels()
 
     def __skip(self):
-        self.player.skip()
+        self.music_player.skip()
         self.__update_music_labels()
 
-    # Loop Method to update to song progress
+    def __pause(self):
+        if self.music_player.paused:
+            self.pause_button.config(image=self.image_manager.images["pause"])
+        else:
+            self.pause_button.config(image=self.image_manager.images["play"])
+
+        self.music_player.pause()
+
     def __song_duration(self):
-        if not self.player.paused:
-            length = self.player.length
+        if not self.music_player.paused:
+            length = self.music_player.length
             # if the track is longer than 1 hour, we display the hours, as most tracks will likely be shorter, we usually only display minutes and seconds
             if length >= 3600:
                 format = "%H:%M:%S"
             else:
                 format = "%M:%S"
 
-            current_time = self.player.get_pos()
+            current_time = self.music_player.get_pos()
             converted_current_time = time.strftime(format, time.gmtime(current_time))
 
-            if current_time >= length and not self.player.paused:
-                self.player.play()
+            if current_time >= length and not self.music_player.paused:
+                self.music_player.play()
                 self.__update_music_labels()
 
                 # We set this explicitly to make sure we don't get something like 01:12 / 01:05, which can happen for 1 tick
@@ -378,178 +271,54 @@ class MainTab:
             converted_length = time.strftime(format, time.gmtime(length))
             song_time = str(converted_current_time) + " / " + str(converted_length)
 
-            self.label_duration_song.config(text=song_time)
-            self.song_progress["value"] = current_time / length * 100
+            self.song_duration_label.config(text=song_time)
+            self.song_progressbar["value"] = current_time / length * 100
 
-        self.label_duration_song.after(100, self.__song_duration)
+        self.song_duration_label.after(100, self.__song_duration)
 
     def __update_music_labels(self):
-        if self.player.theme is None:
-            self.label_current_theme.config(text="No Theme Selected")
-            self.label_current_song.config(text="No Song Playing")
-            self.label_current_song_path.config(text="No Song Playing")
+        if self.music_player.theme is None:
+            self.current_theme_label.config(text="No Theme Selected")
+            self.current_song_label.config(text="No Song Playing")
+            self.current_song_path_label.config(text="No Song Playing")
 
-            self.label_duration_song.config(text="00:00/00:00")
-            self.song_progress["value"] = 0
+            self.song_duration_label.config(text="00:00/00:00")
+            self.song_progressbar["value"] = 0
 
         else:
             song = ""
             path = ""
             if sys.platform.startswith("linux"):
-                song = self.player.song.split("/")[-1].split(".mp3")[0]
-                path = self.player.song.split("/")[-2]
+                song = self.music_player.song.split("/")[-1].split(".mp3")[0]
+                path = self.music_player.song.split("/")[-2]
 
             elif sys.platform.startswith("win32"):
-                song = self.player.song.split("\\")[-1].split(".mp3")[0]
-                path = self.player.song.split("\\")[-2]
+                song = self.music_player.song.split("\\")[-1].split(".mp3")[0]
+                path = self.music_player.song.split("\\")[-2]
 
-            if self.setttings_manager.settings["full_paths_main"]:
-                path = self.player.song
+            if self.settings_manager.settings["full_paths_main"]:
+                path = self.music_player.song
 
-            self.label_current_theme.config(text=self.player.theme)
-            self.label_current_song.config(text=song)
-            self.label_current_song_path.config(text=path)
-
-    # Volume Change Methods
-    def __set_volume(self, volume, button=False):
-        self.setttings_manager.settings["volume"] = volume
-        self.setttings_manager.store_settings()
-
-        self.label_volume.config(text=str(int(volume)))
-        if button:
-            self.volume_changer.set(volume)
-        self.player.set_volume()
+            self.current_theme_label.config(text=self.music_player.theme)
+            self.current_song_label.config(text=song)
+            self.current_song_path_label.config(text=path)
 
     def __change_volume(self, pos):
         self.__set_volume(int(float(pos)))
 
     def __volume_up(self):
-        volume = self.setttings_manager.settings["volume"] + 1
+        volume = self.settings_manager.settings["volume"] + 1
         self.__set_volume(volume, True)
 
     def __volume_down(self):
-        volume = self.setttings_manager.settings["volume"] - 1
+        volume = self.settings_manager.settings["volume"] - 1
         self.__set_volume(volume, True)
 
-    # Create Button Methods
-    def __create_theme_buttons(self):
-        settings = self.setttings_manager.settings
-        self.theme_buttons = {}
+    def __set_volume(self, volume: int, button: bool = False):
+        self.settings_manager.settings["volume"] = volume
+        self.settings_manager.store_settings()
 
-        i = 0
-        for _theme in self.sound_manager.themes:
-            text = _theme
-            theme_play_button = Button(
-                self.theme_buttons_frame,
-                text=text,
-                image=self.empty_image,
-                compound="center",
-                borderwidth=0,
-                activebackground=settings["button_hov_color"],
-                bg=settings["button_bg_color"],
-                fg=settings["txt_color"],
-                height=int(settings["theme_button_scale"] * settings["ui_scale"] * 0.5),
-                width=int(settings["theme_button_scale"] * settings["ui_scale"] * 0.5),
-                command=lambda _theme=_theme: self.__play(_theme),
-                wraplength=settings["ui_scale"],
-                highlightbackground=settings["button_hov_color"],
-                font=("Helvetica", settings["font_size"]),
-            )
-
-            theme_play_button.grid(
-                row=(i // settings["row_length"] + 1),
-                column=(i % settings["row_length"]),
-            )
-
-            if self.player.theme == _theme:
-                theme_play_button.config(
-                    bg=settings["button_hov_color"], relief="sunken"
-                )
-
-            i += 1
-
-            self.theme_buttons[_theme] = theme_play_button
-
-    def __create_sfx_buttons(self):
-        settings = self.setttings_manager.settings
-        temp_sfx_list = []
-
-        for path in self.setttings_manager.sfx_paths:
-            for sfx in self.sound_manager.sfxs[path]:
-                temp_sfx_list += [path + sfx]
-
-        self.sfx_buttons = []
-
-        i = 0
-        for sfx in temp_sfx_list:
-            text = ""
-            if sys.platform.startswith("win32"):
-                text = sfx.split("\\")
-                text = text[-1].split(".mp3")[0]
-
-            elif sys.platform.startswith("linux"):
-                text = sfx.split("/")
-                text = text[-1].split(".mp3")[0]
-
-            # self.sfx_play_button = Button(sfx_buttons_frame, text=text, command=lambda sfx=sfx: play_sfx(sfx), compound=CENTER, borderwidth=0, activebackground=BUTTON_HOVER, bg=BUTTON_BG, fg=TEXT_COLOR, height=int(2.5*UI_SCALE), width=int(5*UI_SCALE))
-            self.sfx_play_button = Button(
-                self.sfx_buttons_frame,
-                text=text,
-                image=self.empty_image,
-                compound="center",
-                borderwidth=0,
-                activebackground=settings["button_hov_color"],
-                bg=settings["button_bg_color"],
-                fg=settings["txt_color"],
-                height=int(settings["theme_button_scale"] * settings["ui_scale"] * 0.5),
-                width=int(settings["theme_button_scale"] * settings["ui_scale"] * 0.5),
-                command=lambda sfx=sfx: self.player.play_sfx(sfx),
-                wraplength=settings["ui_scale"],
-                highlightbackground=settings["button_hov_color"],
-                font=("Helvetica", settings["font_size"]),
-            )
-
-            self.sfx_play_button.grid(
-                row=(i // settings["row_length"] + 1),
-                column=(i % settings["row_length"]),
-            )
-
-            self.sfx_buttons.append(self.sfx_play_button)
-
-            i += 1
-
-    # Images
-    def __load_imgs(self):
-        if getattr(sys, "frozen", False):
-            self.stop_image = PhotoImage(
-                file=os.path.join(sys._MEIPASS, "img/stop_img.png")
-            )
-            self.skip_image = PhotoImage(
-                file=os.path.join(sys._MEIPASS, "img/skip_img.png")
-            )
-            self.pause_image = PhotoImage(
-                file=os.path.join(sys._MEIPASS, "img/pause_img.png")
-            )
-            self.play_image = PhotoImage(
-                file=os.path.join(sys._MEIPASS, "img/play_img.png")
-            )
-            self.plus_image = PhotoImage(
-                file=os.path.join(sys._MEIPASS, "img/plus_img.png")
-            )
-            self.minus_image = PhotoImage(
-                file=os.path.join(sys._MEIPASS, "img/minus_img.png")
-            )
-            self.settings_image = PhotoImage(
-                file=os.path.join(sys._MEIPASS, "img/settings_img.png")
-            )
-            self.empty_image = PhotoImage(width=1, height=1)
-
-        else:
-            self.stop_image = PhotoImage(file="img/stop_img.png")
-            self.skip_image = PhotoImage(file="img/skip_img.png")
-            self.pause_image = PhotoImage(file="img/pause_img.png")
-            self.play_image = PhotoImage(file="img/play_img.png")
-            self.plus_image = PhotoImage(file="img/plus_img.png")
-            self.minus_image = PhotoImage(file="img/minus_img.png")
-            self.settings_image = PhotoImage(file="img/settings_img.png")
-            self.empty_image = PhotoImage(width=1, height=1)
+        self.volume_label.config(text=str(int(volume)))
+        if button:
+            self.volume_changer.set(volume)
+        self.music_player.set_volume()

@@ -8,6 +8,9 @@ class ImageManager:
         self.images = {}
         self.path = path
 
+        self.load_images()
+
+    def load_images(self):
         if getattr(sys, "frozen", False):
             assert False, "Still needs to be implemented"
         else:

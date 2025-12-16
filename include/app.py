@@ -1,6 +1,7 @@
 from tkinter import Tk, ttk
 
 from include.player import MusicPlayer
+from managers.image_manager import ImageManager
 from managers.settings_manager import SetttingsManager
 from managers.sound_manager import SoundManager
 from managers.tab_manager import TabManager
@@ -26,23 +27,17 @@ class App:
         self.notebook.pack(fill="both", expand=1)
 
         self.settings_manager = SetttingsManager()
-        self.settings_manager.load_settings()
-        self.settings_manager.load_paths()
-
         self.sound_manager = SoundManager(self.settings_manager)
-        self.sound_manager.load_themes()
-        self.sound_manager.load_sfx()
-
         self.player = MusicPlayer(self.settings_manager, self.sound_manager)
-        self.player.set_volume()
-
         self.tab_manager = TabManager(self.notebook)
+        self.image_manager = ImageManager("img")
 
         self.main_tab = MainTab(
             self.settings_manager,
-            self.sound_manager,
             self.tab_manager,
+            self.image_manager,
             self.notebook,
+            self.sound_manager,
             self.player,
         )
         self.settings_tab = SettingsTab(
@@ -62,7 +57,6 @@ class App:
             self.player,
         )
 
-        self.main_tab.create()
         self.notebook.add(self.main_tab.frame, text="Main")
 
         self.settings_tab.create()

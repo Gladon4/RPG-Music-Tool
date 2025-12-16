@@ -20,6 +20,9 @@ class SetttingsManager:
         self.music_paths = []
         self.sfx_paths = []
 
+        self.load_settings()
+        self.load_paths()
+
     # --- Settings --- #
 
     def load_settings(self):
