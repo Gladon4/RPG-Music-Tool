@@ -70,6 +70,26 @@ class Tab:
 
         return button
 
+    def add_frame(
+        self,
+        frame: Frame | LabelFrame,
+        bg: str = "bg_color",
+    ) -> LabelFrame:
+        settings = self.settings_manager.settings
+
+        frame = LabelFrame(
+            frame,
+            padx=5,
+            pady=5,
+            bg=settings[bg],
+            highlightthickness=0,
+            borderwidth=0,
+        )
+
+        self.widgets.append(frame)
+
+        return frame
+
     def add_label_frame(
         self,
         frame: Frame | LabelFrame,
@@ -81,8 +101,8 @@ class Tab:
         label_frame = LabelFrame(
             frame,
             text=text,
-            padx=15,
-            pady=15,
+            padx=5,
+            pady=5,
             bg=settings[bg],
             highlightthickness=0,
             borderwidth=0,

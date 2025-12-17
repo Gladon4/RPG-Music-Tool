@@ -29,8 +29,8 @@ class App:
         self.settings_manager = SetttingsManager()
         self.sound_manager = SoundManager(self.settings_manager)
         self.player = MusicPlayer(self.settings_manager, self.sound_manager)
-        self.tab_manager = TabManager(self.notebook)
-        self.image_manager = ImageManager("img")
+        self.image_manager = ImageManager("img", self.settings_manager)
+        self.tab_manager = TabManager(self.notebook, self.image_manager)
 
         self.main_tab = MainTab(
             self.settings_manager,

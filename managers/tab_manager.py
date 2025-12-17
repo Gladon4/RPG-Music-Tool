@@ -1,7 +1,11 @@
+from managers.image_manager import ImageManager
+
+
 class TabManager:
-    def __init__(self, notebook):
+    def __init__(self, notebook, image_manager: ImageManager):
         self.notebook = notebook
         self.tabs = {}
+        self.image_manager = image_manager
 
     def set_tabs(self, tabs):
         self.tabs = tabs
@@ -11,6 +15,8 @@ class TabManager:
         self.notebook.select(sel.frame)
 
     def update_all_tab_elements(self):
+        self.image_manager.load_images()
+
         for tab in self.tabs:
             try:
                 self.tabs[tab].update_elements()

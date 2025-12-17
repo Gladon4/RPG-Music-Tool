@@ -54,38 +54,31 @@ class MainTab(Tab):
             activebackground="black",
         )
 
-        self.theme_buttons_frame = self.add_label_frame(self.frame)
+        self.theme_buttons_frame = self.add_frame(self.frame)
         self.theme_buttons_frame.grid(row=1, column=0)
 
-        self.lower_frame = self.add_label_frame(self.frame, bg="sec_bg_color")
-        self.lower_frame.grid(row=4, column=0)
+        self.lower_frame = self.add_frame(self.frame, bg="sec_bg_color")
+        self.lower_frame.grid(row=4, column=0, pady=20)
 
-        self.lower_frame_a = self.add_label_frame(self.lower_frame, bg="sec_bg_color")
-        self.lower_frame_a.grid(row=0, column=0)
-
-        self.lower_frame_b = self.add_label_frame(self.lower_frame, bg="sec_bg_color")
-        self.lower_frame_b.grid(row=1, column=0)
-
-        self.status_frame = self.add_label_frame(self.lower_frame_b, bg="sec_bg_color")
+        self.status_frame = self.add_frame(self.lower_frame, bg="sec_bg_color")
         self.status_frame.grid(row=0, column=0)
 
-        self.volume_frame = self.add_label_frame(self.lower_frame_b, bg="sec_bg_color")
+        self.volume_frame = self.add_frame(self.lower_frame, bg="sec_bg_color")
         self.volume_frame.grid(row=0, column=1)
 
-        self.volume_plus_minus_frame = self.add_label_frame(
-            self.volume_frame, bg="sec_bg_color"
-        )
-        self.volume_plus_minus_frame.grid(row=0, column=1)
-
         self.current_song_label = self.add_label(
-            self.lower_frame_a, text="No Song Playing", font_size=2, bg="sec_bg_color"
+            self.status_frame, text="No Song Playing", font_size=1.5, bg="sec_bg_color"
         )
-        self.current_song_label.grid(row=2, column=0)
+        self.current_song_label.config(justify="left")
+        self.current_song_label.grid(row=0, column=3, columnspan=2, sticky="w", padx=5)
 
         self.current_song_path_label = self.add_label(
-            self.lower_frame_a, text="No Song Playing", bg="sec_bg_color"
+            self.status_frame, text="No Song Playing", bg="sec_bg_color"
         )
-        self.current_song_path_label.grid(row=3, column=0)
+        self.current_song_path_label.config(justify="left", anchor="w")
+        self.current_song_path_label.grid(
+            row=2, column=3, columnspan=2, sticky="w", padx=5
+        )
 
         self.current_theme_label = self.add_label(
             self.frame, text="No Theme Selected", font_size=2
@@ -95,8 +88,8 @@ class MainTab(Tab):
         self.song_duration_label = self.add_label(
             self.status_frame, text="00:00 / 00:00", bg="sec_bg_color"
         )
-        self.song_duration_label.config(width=15)
-        self.song_duration_label.grid(row=0, column=4, pady=5)
+        # self.song_duration_label.config(width=15)
+        self.song_duration_label.grid(row=1, column=4, pady=5)
 
         self.song_progressbar = Progressbar(
             self.status_frame,
@@ -105,7 +98,7 @@ class MainTab(Tab):
             mode="determinate",
             style="Custom.Horizontal.TProgressbar",
         )
-        self.song_progressbar.grid(row=0, column=3, padx=5)
+        self.song_progressbar.grid(row=1, column=3, padx=5)
 
         self.volume_label = self.add_label(
             self.volume_frame,
@@ -113,7 +106,7 @@ class MainTab(Tab):
             bg="sec_bg_color",
         )
         self.volume_label.config(width=3)
-        self.volume_label.grid(row=1, column=0)
+        self.volume_label.grid(row=2, column=1)
 
         self.stop_button = self.add_button(
             self.status_frame,
@@ -121,7 +114,7 @@ class MainTab(Tab):
             image="stop",
             scale=0.7,
         )
-        self.stop_button.grid(row=0, column=0)
+        self.stop_button.grid(row=0, column=0, rowspan=3)
 
         self.pause_button = self.add_button(
             self.status_frame,
@@ -129,7 +122,7 @@ class MainTab(Tab):
             image="pause",
             scale=0.7,
         )
-        self.pause_button.grid(row=0, column=1)
+        self.pause_button.grid(row=0, column=1, rowspan=3)
 
         self.skip_button = self.add_button(
             self.status_frame,
@@ -137,7 +130,7 @@ class MainTab(Tab):
             image="skip",
             scale=0.7,
         )
-        self.skip_button.grid(row=0, column=2)
+        self.skip_button.grid(row=0, column=2, rowspan=3)
 
         self.volume_changer = Scale(
             self.volume_frame,
@@ -146,26 +139,26 @@ class MainTab(Tab):
             orient="vertical",
             value=int(settings["volume"]),
             command=self.__change_volume,
-            length=int(1.2 * settings["ui_scale"]),
+            length=int(1.5 * settings["ui_scale"]),
             style="Custom.Vertical.TScale",
         )
-        self.volume_changer.grid(row=0, column=0)
+        self.volume_changer.grid(row=0, column=0, rowspan=5, padx=5)
 
         self.volume_up_button = self.add_button(
-            self.volume_plus_minus_frame,
+            self.volume_frame,
             command=self.__volume_up,
             image="plus",
             scale=0.3,
         )
-        self.volume_up_button.grid(row=0, column=1, pady=5)
+        self.volume_up_button.grid(row=1, column=1, pady=5)
 
         self.volume_down_button = self.add_button(
-            self.volume_plus_minus_frame,
+            self.volume_frame,
             command=self.__volume_down,
             image="minus",
             scale=0.3,
         )
-        self.volume_down_button.grid(row=1, column=1, pady=5)
+        self.volume_down_button.grid(row=3, column=1, pady=5)
 
         self.add_navigation_button(destination="settings", image="gear")
 
@@ -313,7 +306,7 @@ class MainTab(Tab):
             self.current_song_label.config(text="No Song Playing")
             self.current_song_path_label.config(text="No Song Playing")
 
-            self.song_duration_label.config(text="00:00/00:00")
+            self.song_duration_label.config(text="00:00 / 00:00")
             self.song_progressbar["value"] = 0
 
         else:
