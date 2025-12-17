@@ -1,8 +1,10 @@
+from tkinter import ttk
+
 from managers.image_manager import ImageManager
 
 
 class TabManager:
-    def __init__(self, notebook, image_manager: ImageManager):
+    def __init__(self, notebook: ttk.Notebook, image_manager: ImageManager):
         self.notebook = notebook
         self.tabs = {}
         self.image_manager = image_manager

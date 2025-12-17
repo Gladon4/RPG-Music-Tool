@@ -1,9 +1,9 @@
-import os
-import sys
-from tkinter import Button, Event, EventType, Frame, Label, LabelFrame, PhotoImage
+from tkinter import Button, Event, EventType, Label, ttk
 from tkinter.colorchooser import askcolor
 from tkinter.ttk import Scale, Style
 
+from include.tab import Tab
+from managers.image_manager import ImageManager
 from managers.settings_manager import SetttingsManager
 from managers.tab_manager import TabManager
 
@@ -15,59 +15,51 @@ class SettingSlider:
         self.label: Label = label
 
 
-class SettingsTab:
+class SettingsTab(Tab):
     def __init__(
-        self, settings_manager: SetttingsManager, tab_manager: TabManager, notebook
-    ):
+        self,
+        settings_manager: SetttingsManager,
+        tab_manager: TabManager,
+        image_manager: ImageManager,
+        notebook: ttk.Notebook,
+    ) -> None:
+        super().__init__(settings_manager, tab_manager, image_manager, notebook)
+
         self.settings_manager: SetttingsManager = settings_manager
         self.tab_manager: TabManager = tab_manager
         self.notebook = notebook
-        self.objects = {
-            "labels": [],
-            "sec_labels": [],
-            "buttons": [],
-            "color_elems": {},
-        }
 
         self.change = False
 
-    def create(self, new=False):
-        settings = self.settings_manager.settings
-        self.__load_imgs()
+        self.create(True)
 
-        # --- Main Frame --- #
-        if not new:
-            self.frame = Frame(
-                self.notebook, width=0, height=0, bg=settings["bg_color"]
-            )
-            self.frame.grid_rowconfigure(0, weight=0)
-            self.frame.grid_columnconfigure(0, weight=1)
+    def add_navigation_button(self, destination: str, image: str) -> Button:
+        navigation_button = super().add_navigation_button(destination, image)
+
+        navigation_button.config(command=lambda: self.__select_tab(destination))
+
+        return navigation_button
+
+    def __select_tab(self, tab):
+        if self.change:
+            self.tab_manager.update_all_tab_elements()
+        self.tab_manager.select(tab)
+
+    def create(self, new: bool = False):
+        super().create(new)
+
+        settings = self.settings_manager.settings
 
         # --- Frames --- #
-
-        self.navigation_buttons_frame = LabelFrame(
-            self.frame, bg=settings["bg_color"], padx=0, borderwidth=0
-        )
-        self.navigation_buttons_frame.place(relx=1.0, rely=0, anchor="ne")
-
-        self.ui_setting_frame = LabelFrame(
-            self.frame,
-            font=("Helvetica", settings["font_size"]),
-            pady=15,
-            padx=15,
-            bg=settings["sec_bg_color"],
-            borderwidth=0,
-        )
+        self.ui_setting_frame = self.add_frame(self.frame, bg="sec_bg_color")
         self.ui_setting_frame.grid(row=1, column=0)
 
-        self.label_title_app_settings = Label(
+        self.app_settings_label = self.add_label(
             self.frame,
             text="Application Settings",
-            font=("Helvetica", int(settings["font_size"] * 2)),
-            bg=settings["bg_color"],
-            fg=settings["txt_color"],
+            font_size=2,
         )
-        self.label_title_app_settings.grid(row=0, column=0, pady=5)
+        self.app_settings_label.grid(row=0, column=0, pady=5)
 
         style = Style()
 
@@ -125,139 +117,81 @@ class SettingsTab:
             settings=settings,
         )
 
-        # --- Labels --- #
-
-        self.sfx_on_themes_label = Label(
+        sfx_tab_text = {0: "Off", 1: "Themes", 2: "SFX"}
+        self.sfx_tab = self.__make_setting_slider(
             self.ui_setting_frame,
-            text="Display SFX on Main Page",
-            font=("Helvetica", settings["font_size"]),
-            padx=15,
-            bg=settings["sec_bg_color"],
-            fg=settings["txt_color"],
-            height=2,
+            row=4,
+            title="SFX Tab",
+            current_value=settings["sfx_tab"],
+            min_value=0,
+            max_value=2,
+            command=self.__change_sfx_tab,
+            settings=settings,
         )
-        self.sfx_on_themes_label.grid(row=4, column=0, sticky="nw")
+        self.sfx_tab.label.config(text=sfx_tab_text[settings["sfx_tab"]], width=7)
 
-        self.full_path_on_main_label = Label(
+        # --- Labels --- #
+        self.full_path_on_main_label = self.add_label(
             self.ui_setting_frame,
             text="Display Full Paths on Main Page",
-            font=("Helvetica", settings["font_size"]),
-            padx=15,
-            bg=settings["sec_bg_color"],
-            fg=settings["txt_color"],
-            height=2,
+            bg="sec_bg_color",
         )
-        self.full_path_on_main_label.grid(row=5, column=0, sticky="nw")
+        self.full_path_on_main_label.grid(row=5, column=0, sticky="w", pady=7)
 
-        self.full_path_in_settings_label = Label(
+        self.full_path_in_settings_label = self.add_label(
             self.ui_setting_frame,
             text="Display Full Paths in Settings",
-            font=("Helvetica", settings["font_size"]),
-            padx=15,
-            bg=settings["sec_bg_color"],
-            fg=settings["txt_color"],
-            height=2,
+            bg="sec_bg_color",
         )
-        self.full_path_in_settings_label.grid(row=6, column=0, sticky="nw")
+        self.full_path_in_settings_label.grid(row=6, column=0, sticky="w", pady=7)
 
         # --- Inputs --- #
 
-        self.settings_button = Button(
-            self.navigation_buttons_frame,
-            command=lambda tab="main": self.__select_tab(tab),
-            image=self.back_image,
-            borderwidth=0,
-            activebackground=settings["button_hov_color"],
-            bg=settings["button_bg_color"],
-            width=int(settings["ui_scale"] * 0.4),
-            height=int(settings["ui_scale"] * 0.4),
-        )
-        self.settings_button.pack(side="top")
+        self.add_navigation_button(destination="themes", image="label")
+        self.add_navigation_button(destination="sfx_paths", image="list")
+        self.add_navigation_button(destination="song_paths", image="list")
+        self.add_navigation_button(destination="main", image="back")
 
-        self.paths_button = Button(
-            self.navigation_buttons_frame,
-            command=lambda tab="song_paths": self.__select_tab(tab),
-            image=self.list_image,
-            borderwidth=0,
-            activebackground=settings["button_hov_color"],
-            bg=settings["button_bg_color"],
-            width=int(settings["ui_scale"] * 0.4),
-            height=int(settings["ui_scale"] * 0.4),
+        self.full_path_on_main_check = self.add_label(
+            self.ui_setting_frame, bg="sec_bg_color"
         )
-        self.paths_button.pack(side="top")
-
-        self.paths_button = Button(
-            self.navigation_buttons_frame,
-            command=lambda tab="sfx_paths": self.__select_tab(tab),
-            image=self.list_image,
-            borderwidth=0,
-            activebackground=settings["button_hov_color"],
-            bg=settings["button_bg_color"],
-            width=int(settings["ui_scale"] * 0.4),
-            height=int(settings["ui_scale"] * 0.4),
-        )
-        self.paths_button.pack(side="top")
-
-        self.themes_button = Button(
-            self.navigation_buttons_frame,
-            command=lambda tab="themes": self.__select_tab(tab),
-            image=self.themes_image,
-            borderwidth=0,
-            activebackground=settings["button_hov_color"],
-            bg=settings["button_bg_color"],
-            width=int(settings["ui_scale"] * 0.4),
-            height=int(settings["ui_scale"] * 0.4),
-        )
-        self.themes_button.pack(side="top")
-
-        self.sfx_on_themes_check = Label(
-            self.ui_setting_frame,
-            image=self.check_off,
+        self.full_path_on_main_check.config(
+            image=self.image_manager.images["check_off"],
             cursor="hand2",
-            bg=settings["sec_bg_color"],
-            fg="#ffffff",
-        )
-        self.sfx_on_themes_check.bind("<Button-1>", self.__change_sfx_on_themes)
-        self.sfx_on_themes_check.grid(row=4, column=1, sticky="ns")
-        if settings["sfx_on_themes"]:
-            self.sfx_on_themes_check.config(image=self.check_on)
-
-        self.full_path_on_main_check = Label(
-            self.ui_setting_frame,
-            image=self.check_off,
-            cursor="hand2",
-            bg=settings["sec_bg_color"],
         )
         self.full_path_on_main_check.bind("<Button-1>", self.__full_path_on_main)
         self.full_path_on_main_check.grid(row=5, column=1, sticky="ns")
         if settings["full_paths_main"]:
-            self.full_path_on_main_check.config(image=self.check_on)
+            self.full_path_on_main_check.config(
+                image=self.image_manager.images["check_on"]
+            )
 
-        self.full_path_in_settings_check = Label(
-            self.ui_setting_frame,
-            image=self.check_off,
+        self.full_path_in_settings_check = self.add_label(
+            self.ui_setting_frame, bg="sec_bg_color"
+        )
+        self.full_path_in_settings_check.config(
+            image=self.image_manager.images["check_off"],
             cursor="hand2",
-            bg=settings["sec_bg_color"],
         )
         self.full_path_in_settings_check.bind(
             "<Button-1>", self.__full_path_in_settings
         )
         self.full_path_in_settings_check.grid(row=6, column=1, sticky="ns")
         if settings["full_paths_settings"]:
-            self.full_path_in_settings_check.config(image=self.check_on)
+            self.full_path_in_settings_check.config(
+                image=self.image_manager.images["check_on"]
+            )
 
         # -- Color Settings -- #
-        self.label_title_color_settings = Label(
+        self.label_title_color_settings = self.add_label(
             self.frame,
             text="Color Settings",
-            font=("Helvetica", 20),
-            bg=settings["bg_color"],
-            fg=settings["txt_color"],
+            font_size=2,
         )
         self.label_title_color_settings.grid(row=3, column=0, pady=10)
 
-        colors_frame = LabelFrame(self.frame, bg=settings["bg_color"], borderwidth=0)
-        colors_frame.grid(row=4, column=0)
+        self.colors_frame = self.add_frame(self.frame)
+        self.colors_frame.grid(row=4, column=0)
 
         colors = {
             x: self.settings_manager.settings[x]
@@ -279,38 +213,32 @@ class SettingsTab:
 
         self.color_labels = []
         for i, color in enumerate(colors):
-            label_frame = LabelFrame(
-                colors_frame, bg=settings["sec_bg_color"], borderwidth=0
-            )
-            label_frame.grid(row=i // 3 + 1, column=i % 3, padx=6, pady=6)
-            color_name_label = Label(
-                label_frame,
+            frame = self.add_frame(self.colors_frame, bg="sec_bg_color")
+            frame.grid(row=i // 3 + 1, column=i % 3, padx=6, pady=6)
+            color_name_label = self.add_label(
+                frame,
                 text=colorNames[color],
-                font=("Helvetica", settings["font_size"]),
-                fg=settings["txt_color"],
-                bg=settings["sec_bg_color"],
+                bg="sec_bg_color",
                 wraplength=2.5 * settings["ui_scale"],
-                justify="left",
             )
+            color_name_label.config(justify="left")
             color_name_label.grid(
                 row=0, column=0, columnspan=2, sticky="w", padx=3, pady=(3, 0)
             )
-            color_label_frame = LabelFrame(
-                label_frame, bg=settings["bg_color"], borderwidth=3
+            image = "eyedropper"
+            if color == "txt_color":
+                image = "eyedropper_inverse"
+            color_label = self.add_button(
+                frame,
+                image=image,
+                scale=2,
+                command=lambda i=i, name=colorNames[color]: self.__change_color(
+                    i, name
+                ),
             )
-            color_label_frame.grid(row=1, column=0, padx=3, pady=3)
-            color_label = Button(
-                color_label_frame,
-                image=self.eyedropper_image,
-                width=2 * settings["ui_scale"],
-                height=2 * settings["ui_scale"],
+            color_label.config(
                 bg=colors[color],
                 activebackground=colors[color],
-                fg=settings["txt_color"],
-                command=lambda color=color, name=colorNames[color]: self.__change_color(
-                    color, name
-                ),
-                borderwidth=0,
                 highlightthickness=7,
                 highlightbackground=colors[color],
             )
@@ -322,10 +250,9 @@ class SettingsTab:
                 "<Leave>",
                 func=lambda e, j=i, col=colors[color]: self.__color_hover(e, j, col),
             )
-            color_label.pack()
+            color_label.grid(row=1, column=0)
 
             self.color_labels.append(color_label)
-            self.objects["color_elems"][color] = color_label
 
         # -- Reset Settings -- #
         reset_button = Button(
@@ -354,16 +281,8 @@ class SettingsTab:
     def __make_setting_slider(
         self, frame, row, title, current_value, min_value, max_value, command, settings
     ) -> SettingSlider:
-        title_label = Label(
-            frame,
-            text=title,
-            font=("Helvetica", settings["font_size"]),
-            padx=15,
-            bg=settings["sec_bg_color"],
-            fg=settings["txt_color"],
-            height=2,
-        )
-        title_label.grid(row=row, column=0, sticky="nw")
+        title_label = self.add_label(frame, text=title, bg="sec_bg_color")
+        title_label.grid(row=row, column=0, sticky="w")
 
         scale = Scale(
             frame,
@@ -374,70 +293,25 @@ class SettingsTab:
             length=2 * settings["ui_scale"],
             style="Custom.Horizontal.TScale",
         )
-        scale.grid(row=row, column=1, sticky="n")
+        scale.grid(row=row, column=1, sticky="ns", pady=7)
+        self.widgets.append(scale)
 
-        label = Label(
-            frame,
-            text=current_value,
-            font=("Helvetica", settings["font_size"]),
-            padx=10,
-            bg=settings["sec_bg_color"],
-            fg=settings["txt_color"],
-            width=1,
-        )
-        label.grid(row=row, column=2, sticky="n")
+        label = self.add_label(frame, text=current_value, bg="sec_bg_color")
+        label.grid(row=row, column=2, sticky="ns")
 
         return SettingSlider(title_label, scale, label)
 
-    def __destroy(self):
-        for category in self.objects:
-            for object in self.objects[category]:
-                if type(object) is not str:
-                    object.destroy()
-                else:
-                    self.objects[category][object].destroy()
+    def __change_sfx_tab(self, pos):
+        self.change = True
 
-    def update_elements(self):
-        self.frame.config(bg=self.settings_manager.settings["bg_color"])
-        self.__destroy()
-        self.create(True)
+        sfx_tab_text = {0: "Off", 1: "Themes", 2: "SFX"}
+        new_value = int(float(pos))
 
-    def __select_tab(self, tab):
-        if self.change:
-            self.tab_manager.update_all_tab_elements()
-            self.change = False
-        self.tab_manager.select(tab)
+        self.settings_manager.settings["sfx_tab"] = new_value
+        self.settings_manager.store_settings()
 
-    def __load_imgs(self):
-        if getattr(sys, "frozen", False):
-            self.back_image = PhotoImage(
-                file=os.path.join(sys._MEIPASS, "img/back_img.png")
-            )
-            self.list_image = PhotoImage(
-                file=os.path.join(sys._MEIPASS, "img/list_img.png")
-            )
-            self.themes_image = PhotoImage(
-                file=os.path.join(sys._MEIPASS, "img/label.png")
-            )
-            self.eyedropper_image = PhotoImage(
-                file=os.path.join(sys._MEIPASS, "img/eyedropper.png")
-            )
-            self.check_on = PhotoImage(
-                file=os.path.join(sys._MEIPASS, "img/check_on.png")
-            ).subsample(4)
-            self.check_off = PhotoImage(
-                file=os.path.join(sys._MEIPASS, "img/check_off.png")
-            ).subsample(4)
-            self.empty_image = PhotoImage(width=1, height=1)
-
-        else:
-            self.back_image = PhotoImage(file="img/back_img.png")
-            self.list_image = PhotoImage(file="img/list_img.png")
-            self.themes_image = PhotoImage(file="img/label.png")
-            self.eyedropper_image = PhotoImage(file="img/eyedropper.png")
-            self.check_on = PhotoImage(file="img/check_on.png").subsample(4)
-            self.check_off = PhotoImage(file="img/check_off.png").subsample(4)
-            self.empty_image = PhotoImage(width=1, height=1)
+        self.sfx_tab.label.config(text=sfx_tab_text[new_value])
+        self.sfx_tab.scale.config(value=new_value)
 
     def __change_ui_scale(self, pos):
         self.change = True
@@ -482,26 +356,19 @@ class SettingsTab:
         self.font_size.label.config(text=new_size)
         self.font_size.scale.config(value=new_size)
 
-    def __change_sfx_on_themes(self, _):
-        self.change = True
-        self.settings_manager.settings["sfx_on_themes"] = (
-            0 if self.settings_manager.settings["sfx_on_themes"] else 1
-        )
-        if self.settings_manager.settings["sfx_on_themes"]:
-            self.sfx_on_themes_check.config(image=self.check_on)
-        else:
-            self.sfx_on_themes_check.config(image=self.check_off)
-        self.settings_manager.store_settings()
-
     def __full_path_on_main(self, _):
         self.change = True
         self.settings_manager.settings["full_paths_main"] = (
             0 if self.settings_manager.settings["full_paths_main"] else 1
         )
         if self.settings_manager.settings["full_paths_main"]:
-            self.full_path_on_main_check.config(image=self.check_on)
+            self.full_path_on_main_check.config(
+                image=self.image_manager.images["check_on"]
+            )
         else:
-            self.full_path_on_main_check.config(image=self.check_off)
+            self.full_path_on_main_check.config(
+                image=self.image_manager.images["check_off"]
+            )
         self.settings_manager.store_settings()
 
     def __full_path_in_settings(self, _):
@@ -510,17 +377,31 @@ class SettingsTab:
             0 if self.settings_manager.settings["full_paths_settings"] else 1
         )
         if self.settings_manager.settings["full_paths_settings"]:
-            self.full_path_in_settings_check.config(image=self.check_on)
+            self.full_path_in_settings_check.config(
+                image=self.image_manager.images["check_on"]
+            )
         else:
-            self.full_path_in_settings_check.config(image=self.check_off)
+            self.full_path_in_settings_check.config(
+                image=self.image_manager.images["check_off"]
+            )
         self.settings_manager.store_settings()
 
     def __reset_settings(self):
         self.settings_manager.reset_to_defaults()
         self.tab_manager.update_all_tab_elements()
 
-    def __change_color(self, color, name):
+    def __change_color(self, index: int, name):
         self.change = True
+
+        colors = [
+            "bg_color",
+            "sec_bg_color",
+            "button_bg_color",
+            "button_hov_color",
+            "txt_color",
+        ]
+
+        color = colors[index]
 
         chosenColor = askcolor(
             self.settings_manager.settings[color], title="Choose " + name
@@ -529,9 +410,10 @@ class SettingsTab:
         if chosenColor is None:
             return
 
-        self.objects["color_elems"][color].config(bg=chosenColor)
+        self.color_labels[index].config(bg=chosenColor)
 
         self.settings_manager.settings[color] = chosenColor
         self.settings_manager.store_settings()
 
-        self.update_elements()
+        self.image_manager.load_images()
+        self.update()

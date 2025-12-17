@@ -33,7 +33,7 @@ class Tab:
             self.frame.grid_rowconfigure(0, weight=0)
             self.frame.grid_columnconfigure(0, weight=1)
 
-        self.navigation_buttons_frame = LabelFrame(
+        self.navigation_buttons_frame = Frame(
             self.frame, bg=settings["bg_color"], padx=0, borderwidth=0
         )
         self.navigation_buttons_frame.place(relx=1.0, rely=0, anchor="ne")
@@ -57,6 +57,7 @@ class Tab:
             compound="center",
             borderwidth=0,
             activebackground=settings["button_hov_color"],
+            activeforeground=settings["txt_color"],
             bg=settings["button_bg_color"],
             fg=settings["txt_color"],
             height=int(settings["ui_scale"] * scale),
@@ -118,6 +119,7 @@ class Tab:
         text: str = "",
         bg: str = "bg_color",
         font_size: float = 1.0,
+        wraplength: int = 0,
     ) -> Label:
         settings = self.settings_manager.settings
 
@@ -127,20 +129,23 @@ class Tab:
             bg=settings[bg],
             fg=settings["txt_color"],
             font=("Helvetica", int(settings["font_size"] * font_size)),
+            wraplength=wraplength,
         )
 
         self.widgets.append(label)
 
         return label
 
-    def add_navigation_button(self, destination: str, image: str):
+    def add_navigation_button(self, destination: str, image: str) -> Button:
         navigation_button = self.add_button(
             frame=self.navigation_buttons_frame,
-            command=lambda x=self: self.tab_manager.select(destination),
+            command=lambda: self.tab_manager.select(destination),
             image=image,
             scale=0.4,
         )
         navigation_button.pack(side="bottom")
+
+        return navigation_button
 
     def update(self):
         self.frame.config(bg=self.settings_manager.settings["bg_color"])

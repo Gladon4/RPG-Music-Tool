@@ -6,7 +6,7 @@ from configparser import ConfigParser
 
 from appdirs import user_config_dir
 
-VERSION = "0.6.0f"
+VERSION = "0.6.0h"
 
 
 class SetttingsManager:

@@ -165,6 +165,8 @@ class MainTab(Tab):
         self.__create_theme_buttons()
         self.__create_sfx_buttons()
 
+        self.navigation_buttons_frame.tkraise()
+
         self.__song_duration()
 
     def __create_theme_buttons(self):
@@ -192,7 +194,7 @@ class MainTab(Tab):
             self.theme_buttons[_theme] = theme_button
 
     def __create_sfx_buttons(self):
-        if not self.settings_manager.settings["sfx_on_themes"]:
+        if not self.settings_manager.settings["sfx_tab"] == 1:
             return
 
         settings = self.settings_manager.settings

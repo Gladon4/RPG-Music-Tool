@@ -41,7 +41,7 @@ class App:
             self.player,
         )
         self.settings_tab = SettingsTab(
-            self.settings_manager, self.tab_manager, self.notebook
+            self.settings_manager, self.tab_manager, self.image_manager, self.notebook
         )
         self.paths_tab = PathsTab(
             self.settings_manager, self.tab_manager, self.notebook, self.sound_manager
@@ -59,7 +59,6 @@ class App:
 
         self.notebook.add(self.main_tab.frame, text="Main")
 
-        self.settings_tab.create()
         self.notebook.add(self.settings_tab.frame, text="Settings")
 
         self.paths_tab.create()
