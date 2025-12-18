@@ -2,15 +2,17 @@
 
 ## 0.6
 ### Features
-- Rework of the app
+- [ ] Rework of the app
     - [x] Theme setting tab
         - [x]  Better theme selection with text prediction and a small popup and stuff
     - [x] SFX tab / add paths
-- QOL
+    - [/] Redo the tabs with a parent Tab Class
+- [ ] QOL
     - [x] better checkboxes
     - [x] some styling (as far as tk allows)
     - [ ] more identifiable icons
-    - [ ] icons change color to text color to make sure contrast is kept
+    - [x] icons change color to text color to make sure contrast is kept
+
     
 ### Fixes
 - [x] App start crashes if paths.csv is empty  
@@ -22,10 +24,19 @@
 ### Other
 - [ ] Update Readme
 
+## 0.7
+### Features
+- [ ] Saving Themes
+  - [ ] Profiles (i.e. SciFi, Fantasy, Modern, etc.)
+  - [ ] Export and Import of Themes (to share and switch between PCs)
+- [ ] Toggling  
+  - [ ] Toggle individual themes
+  - [ ] Make individual SFX togglable so if you have many they don't clutter up the main tab
+
+## 0.8
+### Features
+- [ ] Better Customisation
+  - [ ] Multiple default themes
+  - [ ] Export and Import Stttings (Customisation Settings)
+
 ## Future
-- Profiles (i.e. SciFi, Fantasy, Modern, etc.)
-- Export and Import of Themes (to share and switch between PCs)
-- Export and Import Settings (Customisation Settings)
-- Make individual SFX togglable so if you have many they don't clutter up the main tab
-- Themes editor, being able to disable certain themes.
-- Toggle Themes on the main page

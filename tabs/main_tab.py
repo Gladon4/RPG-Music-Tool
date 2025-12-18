@@ -3,7 +3,7 @@ import time
 from tkinter import ttk
 from tkinter.ttk import Progressbar, Scale, Style
 
-from include.player import MusicPlayer
+from include.music_player import MusicPlayer
 from include.tab import Tab
 from managers.image_manager import ImageManager
 from managers.settings_manager import SetttingsManager
@@ -100,13 +100,15 @@ class MainTab(Tab):
         )
         self.song_progressbar.grid(row=1, column=3, padx=5)
 
+        self.__update_music_labels()
+
         self.volume_label = self.add_label(
             self.volume_frame,
             text=str(settings["volume"]),
             bg="sec_bg_color",
         )
         self.volume_label.config(width=3)
-        self.volume_label.grid(row=2, column=1)
+        self.volume_label.grid(row=2, column=1, sticky="s")
 
         self.stop_button = self.add_button(
             self.status_frame,
@@ -303,7 +305,7 @@ class MainTab(Tab):
         self.song_duration_label.after(100, self.__song_duration)
 
     def __update_music_labels(self):
-        if self.music_player.theme is None:
+        if not self.music_player.is_playing():
             self.current_theme_label.config(text="No Theme Selected")
             self.current_song_label.config(text="No Song Playing")
             self.current_song_path_label.config(text="No Song Playing")
@@ -325,7 +327,17 @@ class MainTab(Tab):
             if self.settings_manager.settings["full_paths_main"]:
                 path = self.music_player.song
 
-            self.current_theme_label.config(text=self.music_player.theme)
+            max_base_song_length = 30
+            max_song_length = (
+                max_base_song_length
+                * (self.settings_manager.settings["ui_scale"] / 100)
+                * (12 / self.settings_manager.settings["font_size"])
+            )
+            max_song_length = int(max_song_length)
+            if len(song) > max_song_length:
+                song = song[:max_song_length] + "..."
+
+            self.current_theme_label.config(text=str(self.music_player.theme))
             self.current_song_label.config(text=song)
             self.current_song_path_label.config(text=path)
 

@@ -21,6 +21,6 @@ class TabManager:
 
         for tab in self.tabs:
             try:
-                self.tabs[tab].update_elements()
-            except:
                 self.tabs[tab].update()
+            except:
+                self.tabs[tab].update_elements()

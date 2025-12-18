@@ -117,23 +117,26 @@ class SettingsTab(Tab):
             settings=settings,
         )
 
-        sfx_tab_text = {0: "Off", 1: "Themes", 2: "SFX"}
+        self.sfx_tab_text = {0: "Off", 1: "On Themes Tab", 2: "Separate Tab"}
         self.sfx_tab = self.__make_setting_slider(
             self.ui_setting_frame,
             row=4,
-            title="SFX Tab",
+            title="SFX Location",
             current_value=settings["sfx_tab"],
             min_value=0,
             max_value=2,
             command=self.__change_sfx_tab,
             settings=settings,
         )
-        self.sfx_tab.label.config(text=sfx_tab_text[settings["sfx_tab"]], width=7)
+        self.sfx_tab.scale.grid(row=4, column=1, columnspan=1, sticky="w")
+        self.sfx_tab.label.grid(row=4, column=2, columnspan=2, sticky="w")
+        self.sfx_tab.scale.config(length=settings["ui_scale"])
+        self.sfx_tab.label.config(text=self.sfx_tab_text[settings["sfx_tab"]])
 
         # --- Labels --- #
         self.full_path_on_main_label = self.add_label(
             self.ui_setting_frame,
-            text="Display Full Paths on Main Page",
+            text="Display Full Paths on Themes Tab",
             bg="sec_bg_color",
         )
         self.full_path_on_main_label.grid(row=5, column=0, sticky="w", pady=7)
@@ -147,9 +150,9 @@ class SettingsTab(Tab):
 
         # --- Inputs --- #
 
-        self.add_navigation_button(destination="themes", image="label")
-        self.add_navigation_button(destination="sfx_paths", image="list")
-        self.add_navigation_button(destination="song_paths", image="list")
+        self.add_navigation_button(destination="themes", image="tag")
+        self.add_navigation_button(destination="sfx_paths", image="folder_managed")
+        self.add_navigation_button(destination="song_paths", image="folder_managed")
         self.add_navigation_button(destination="main", image="back")
 
         self.full_path_on_main_check = self.add_label(
@@ -160,7 +163,7 @@ class SettingsTab(Tab):
             cursor="hand2",
         )
         self.full_path_on_main_check.bind("<Button-1>", self.__full_path_on_main)
-        self.full_path_on_main_check.grid(row=5, column=1, sticky="ns")
+        self.full_path_on_main_check.grid(row=5, column=1, sticky="wns")
         if settings["full_paths_main"]:
             self.full_path_on_main_check.config(
                 image=self.image_manager.images["check_on"]
@@ -176,7 +179,7 @@ class SettingsTab(Tab):
         self.full_path_in_settings_check.bind(
             "<Button-1>", self.__full_path_in_settings
         )
-        self.full_path_in_settings_check.grid(row=6, column=1, sticky="ns")
+        self.full_path_in_settings_check.grid(row=6, column=1, sticky="wns")
         if settings["full_paths_settings"]:
             self.full_path_in_settings_check.config(
                 image=self.image_manager.images["check_on"]
@@ -204,11 +207,11 @@ class SettingsTab(Tab):
             ]
         }
         colorNames = {
-            "bg_color": "Primary Background Colour",
-            "sec_bg_color": "Secondary Backgroud Colour",
-            "button_bg_color": "Primary Accent Colour",
-            "button_hov_color": "Secondary Accent Colour",
-            "txt_color": "Text Colour",
+            "bg_color": "Primary Background",
+            "sec_bg_color": "Secondary Backgroud",
+            "button_bg_color": "Primary Accent",
+            "button_hov_color": "Secondary Accent",
+            "txt_color": "Text",
         }
 
         self.color_labels = []
@@ -231,7 +234,7 @@ class SettingsTab(Tab):
             color_label = self.add_button(
                 frame,
                 image=image,
-                scale=2,
+                scale=1.75,
                 command=lambda i=i, name=colorNames[color]: self.__change_color(
                     i, name
                 ),
@@ -255,16 +258,15 @@ class SettingsTab(Tab):
             self.color_labels.append(color_label)
 
         # -- Reset Settings -- #
-        reset_button = Button(
+        self.reset_button = self.add_button(
             self.frame,
             text="Reset Settings",
             command=self.__reset_settings,
-            activebackground=settings["button_hov_color"],
-            bg=settings["button_bg_color"],
-            height=3,
-            width=12,
+            scale=0.6,
+            wraplength=60,
         )
-        reset_button.grid(row=5, column=0)
+        self.reset_button.config()
+        self.reset_button.grid(row=5, column=0)
 
     def __color_hover(self, e: Event, index: int, color: str):
         color_picker: Button = self.color_labels[index]
@@ -293,24 +295,23 @@ class SettingsTab(Tab):
             length=2 * settings["ui_scale"],
             style="Custom.Horizontal.TScale",
         )
-        scale.grid(row=row, column=1, sticky="ns", pady=7)
+        scale.grid(row=row, column=1, sticky="ns", pady=7, columnspan=2)
         self.widgets.append(scale)
 
         label = self.add_label(frame, text=current_value, bg="sec_bg_color")
-        label.grid(row=row, column=2, sticky="ns")
+        label.grid(row=row, column=3, sticky="ns", padx=3)
 
         return SettingSlider(title_label, scale, label)
 
     def __change_sfx_tab(self, pos):
         self.change = True
 
-        sfx_tab_text = {0: "Off", 1: "Themes", 2: "SFX"}
         new_value = int(float(pos))
 
         self.settings_manager.settings["sfx_tab"] = new_value
         self.settings_manager.store_settings()
 
-        self.sfx_tab.label.config(text=sfx_tab_text[new_value])
+        self.sfx_tab.label.config(text=self.sfx_tab_text[new_value])
         self.sfx_tab.scale.config(value=new_value)
 
     def __change_ui_scale(self, pos):

@@ -1,6 +1,6 @@
 from tkinter import Tk, ttk
 
-from include.player import MusicPlayer
+from include.music_player import MusicPlayer
 from managers.image_manager import ImageManager
 from managers.settings_manager import SetttingsManager
 from managers.sound_manager import SoundManager

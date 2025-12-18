@@ -30,8 +30,11 @@ class MusicPlayer:
         self.theme = theme
         self.play()
 
+    def is_playing(self):
+        return not self.paused and self.song != ""
+
     def play(self, song=None):
-        if song == None:
+        if song is None:
             song_id = randint(0, len(self.sound_manager.themes[self.theme]) - 1)
             song_path = self.sound_manager.themes[self.theme][song_id]
 

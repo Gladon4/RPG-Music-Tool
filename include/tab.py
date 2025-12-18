@@ -63,7 +63,7 @@ class Tab:
             height=int(settings["ui_scale"] * scale),
             width=int(settings["ui_scale"] * scale),
             command=command,
-            wraplength=wraplength,
+            wraplength=wraplength * int(settings["ui_scale"] / 100),
             highlightbackground=settings["button_hov_color"],
             font=("Helvetica", int(settings["font_size"] * font_size)),
         )

@@ -73,8 +73,9 @@ class ThemesTab:
             pady=5,
             bg=settings["sec_bg_color"],
             fg=settings["txt_color"],
+            width=50,
         )
-        self.label_current_directory.grid(row=1, column=0, columnspan=2)
+        self.label_current_directory.grid(row=0, column=1)
         self.objects["labels"].append(self.label_current_directory)
 
         # --- Inputs --- #
@@ -97,7 +98,7 @@ class ThemesTab:
             bg=settings["button_bg_color"],
             padx=10,
         )
-        self.previous_path_button.grid(row=0, column=0, sticky="e", padx=5, ipadx=30)
+        self.previous_path_button.grid(row=0, column=0, padx=5, ipadx=30)
         if self.current_path_index == 0:
             self.previous_path_button.config(state="disabled")
 
@@ -110,38 +111,40 @@ class ThemesTab:
             bg=settings["button_bg_color"],
             padx=10,
         )
-        self.next_path_button.grid(row=0, column=1, sticky="w", padx=5, ipadx=30)
+        self.next_path_button.grid(row=0, column=2, padx=5, ipadx=30)
         if len(self.paths) == 0 or (self.current_path_index + 1) == len(self.paths):
             self.next_path_button.config(state="disabled")
 
+        self.__create_list()
+
         self.previous_page_button = Button(
-            self.page_navigation_frame,
-            text="<",
+            self.list_frame,
+            text="/\\",
             command=self.__previous_page,
             borderwidth=0,
             activebackground=settings["button_hov_color"],
             bg=settings["button_bg_color"],
             padx=10,
         )
-        self.previous_page_button.grid(row=0, column=0, sticky="e", padx=5, ipadx=30)
+        self.previous_page_button.grid(row=0, column=3, sticky="e", padx=5)
         if self.page_number == 0:
             self.previous_page_button.config(state="disabled")
 
         self.next_page_button = Button(
-            self.page_navigation_frame,
-            text=">",
+            self.list_frame,
+            text="\\/",
             command=self.__next_page,
             borderwidth=0,
             activebackground=settings["button_hov_color"],
             bg=settings["button_bg_color"],
         )
-        self.next_page_button.grid(row=0, column=1, sticky="w", padx=5, ipadx=30)
+        self.next_page_button.grid(
+            row=self.songs_per_page - 1, column=3, sticky="w", padx=5
+        )
         if len(self.paths) == 0 or (self.page_number + 1) * self.songs_per_page >= len(
             list(self.sound_manager.songs[self.paths[self.current_path_index]].keys())
         ):
             self.next_page_button.config(state="disabled")
-
-        self.__create_list()
 
     def __create_list(self):
         if len(self.paths) == 0:
@@ -153,9 +156,9 @@ class ThemesTab:
         )
         per_page = self.songs_per_page
         page = self.page_number
-        self.play_buttons = [None for _ in range(per_page)]
-        self.theme_boxes = [None for _ in range(per_page)]
-        self.songs_labels = [None for _ in range(per_page)]
+        self.play_buttons: list[Button] = []
+        self.theme_boxes: list[PredictiveText] = []
+        self.songs_labels: list[Label] = []
 
         SONGS_IN_PATH = len(songs)
         REMAING_PATHS = SONGS_IN_PATH - per_page * page
@@ -175,10 +178,11 @@ class ThemesTab:
             song_label = Label(
                 self.list_frame,
                 text=song,
-                font=("Helvetica", 12),
+                font=("Helvetica", settings["font_size"]),
                 padx=5,
                 bg=settings["sec_bg_color"],
                 fg=settings["txt_color"],
+                width=30,
             )
             song_label.grid(row=i, column=1)
 
@@ -188,6 +192,7 @@ class ThemesTab:
                 "#",
                 width=45,
                 height=3,
+                bg=settings["bg_color"],
             )
             song_themes.myId = song
             song_themes.grid(row=i, column=2, padx=10)
@@ -204,9 +209,9 @@ class ThemesTab:
                 song_themes.insert(END, " #")
             song_themes.bind("<FocusOut>", self.__apply_added_themes_focus_out, add="+")
 
-            self.play_buttons[i] = song_play_button
-            self.theme_boxes[i] = song_themes
-            self.songs_labels[i] = song_label
+            self.play_buttons.append(song_play_button)
+            self.theme_boxes.append(song_themes)
+            self.songs_labels.append(song_label)
 
     def __apply_added_themes_focus_out(self, event):
         new_themes = event.widget.get_added_tags()
@@ -217,10 +222,7 @@ class ThemesTab:
         self.__apply_added_themes(path, song, new_themes, song_themes)
 
     def __apply_added_themes_page_change(self):
-        for i in range(self.songs_per_page):
-            if self.play_buttons[i] is None:
-                continue
-
+        for i in range(len(self.play_buttons)):
             current_focus = self.theme_boxes[i].focus_get()
             if current_focus == self.theme_boxes[i]:
                 path = self.paths[self.current_path_index]
@@ -244,10 +246,7 @@ class ThemesTab:
         self.sound_manager.store_themes()
 
     def __destroy_list(self):
-        for i in range(self.songs_per_page):
-            if self.play_buttons[i] is None:
-                continue
-
+        for i in range(len(self.play_buttons)):
             self.play_buttons[i].destroy()
             self.theme_boxes[i].destroy()
             self.songs_labels[i].destroy()

@@ -154,8 +154,9 @@ class PathsTab:
                 padx=5,
                 bg=settings["sec_bg_color"],
                 fg=settings["txt_color"],
+                wraplength=500,
             )
-            path_label.grid(row=i, column=1)
+            path_label.grid(row=i, column=1, sticky="w")
             self.paths[i] = [path_delete_button, path_label]
 
     def __next_page(self):

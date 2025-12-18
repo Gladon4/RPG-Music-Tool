@@ -15,11 +15,11 @@ class ImageManager:
 
         self.load_images()
 
-    def __color_image(self, image_name, color) -> Image.Image:
+    def __color_image(self, path, color) -> Image.Image:
         color = color.lstrip("#")
         color = tuple(int(color[i : i + 2], 16) for i in (0, 2, 4))
 
-        img = Image.open(os.path.join(self.path, image_name)).convert("RGBA")
+        img = Image.open(path).convert("RGBA")
 
         _, _, _, alpha = img.split()
         recolored_img = Image.new("RGBA", img.size, color + (255,))
@@ -39,59 +39,44 @@ class ImageManager:
 
         return f"#{r:02x}{g:02x}{b:02x}"
 
-    def load_images(self):
+    def __load_image(self, name, file_name=None, inverse=False, size=None):
+        if file_name is None:
+            file_name = name
         color = self.settings_manager.settings["txt_color"]
+        if inverse:
+            color = self.__invert_hex_color(color)
+
         scale = self.settings_manager.settings["ui_scale"] / 100
+
+        colored_image = self.__color_image(
+            os.path.join(self.path, f"{file_name}.png"), color
+        )
+
+        if size is not None:
+            colored_image = colored_image.resize(size)
+
+        self.images[name] = ImageTk.PhotoImage(self.__scale_image(colored_image, scale))
+
+    def load_images(self):
+        self.images["empty"] = PhotoImage(width=1, height=1)
 
         if getattr(sys, "frozen", False):
             assert False, "Still needs to be implemented"
         else:
-            self.images["stop"] = ImageTk.PhotoImage(
-                self.__scale_image(self.__color_image("stop_img.png", color), scale),
-            )
-            self.images["skip"] = ImageTk.PhotoImage(
-                self.__color_image("skip_img.png", color)
-            )
-            self.images["pause"] = ImageTk.PhotoImage(
-                self.__color_image("pause_img.png", color)
-            )
-            self.images["play"] = ImageTk.PhotoImage(
-                self.__color_image("play_img.png", color)
-            )
-            self.images["plus"] = ImageTk.PhotoImage(
-                self.__color_image("plus_img.png", color)
-            )
-            self.images["minus"] = ImageTk.PhotoImage(
-                self.__color_image("minus_img.png", color)
-            )
-            self.images["gear"] = ImageTk.PhotoImage(
-                self.__color_image("settings_img.png", color)
-            )
-            self.images["empty"] = PhotoImage(width=1, height=1)
-            self.images["back"] = ImageTk.PhotoImage(
-                self.__color_image("back_img.png", color)
-            )
-            self.images["delete"] = ImageTk.PhotoImage(
-                self.__color_image("delete_img.png", color)
-            )
-            self.images["check_on"] = ImageTk.PhotoImage(
-                self.__color_image("check_on.png", color).resize((32, 32))
-            )
-            self.images["check_off"] = ImageTk.PhotoImage(
-                self.__color_image("check_off.png", color).resize((32, 32))
-            )
-            self.images["eyedropper"] = ImageTk.PhotoImage(
-                self.__color_image("eyedropper.png", color)
-            )
-            self.images["eyedropper_inverse"] = ImageTk.PhotoImage(
-                self.__color_image("eyedropper.png", self.__invert_hex_color(color))
-            )
-            self.images["label"] = ImageTk.PhotoImage(
-                self.__color_image("label.png", color)
-            )
-            self.images["delete"] = ImageTk.PhotoImage(
-                self.__color_image("delete_img.png", color)
-            )
-            self.images["list"] = ImageTk.PhotoImage(
-                self.__color_image("list_img.png", color)
-            )
+            self.__load_image("stop", "stop_img")
+            self.__load_image("skip", "skip_img")
+            self.__load_image("pause", "pause_img")
+            self.__load_image("play", "play_img")
+            self.__load_image("plus", "plus_img")
+            self.__load_image("minus", "minus_img")
+            self.__load_image("gear", "settings_img")
+            self.__load_image("back", "back_img")
+            self.__load_image("delete", "delete_img")
+            self.__load_image("check_on", "check_on", size=(32, 32))
+            self.__load_image("check_off", "check_off", size=(32, 32))
+            self.__load_image("eyedropper")
+            self.__load_image("eyedropper_inverse", "eyedropper", inverse=True)
+            self.__load_image("label")
+            self.__load_image("list", "list_img")
+            self.__load_image("tag")
+            self.__load_image("folder_managed")

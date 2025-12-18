@@ -23,9 +23,7 @@ class SetttingsManager:
         self.load_settings()
         self.load_paths()
 
-    # --- Settings --- #
-
-    def load_settings(self):
+    def load_settings(self) -> None:
         if os.path.isfile(os.path.join(self.path, "config.ini")):
             config_file = self.path + "/config.ini"
             self.config.read(config_file)
@@ -49,7 +47,7 @@ class SetttingsManager:
             self.__write_default_settings()
             self.load_settings()
 
-    def store_settings(self):
+    def store_settings(self) -> None:
         for setting in self.config["app_settings"].keys():
             self.config["app_settings"][setting] = str(self.settings[setting])
 
@@ -59,7 +57,7 @@ class SetttingsManager:
         with open(self.path + "/config.ini", "w") as configfile:
             self.config.write(configfile)
 
-    def create_config_dir(self):
+    def create_config_dir(self) -> None:
         if sys.platform.startswith("linux"):
             try:
                 os.mkdir(self.path)
@@ -74,7 +72,7 @@ class SetttingsManager:
             except OSError:
                 pass
 
-    def reset_to_defaults(self):
+    def reset_to_defaults(self) -> None:
         self.__write_default_settings()
         self.load_settings()
 
@@ -85,13 +83,10 @@ class SetttingsManager:
         )
         self.load_settings()
 
-    # --- Paths --- #
-
     def load_paths(self):
         self.music_paths = []
         self.sfx_paths = []
 
-        # --- Music --- #
         if not os.path.isfile(self.path + "/paths.csv"):
             open(self.path + "/paths.csv", "a").close()
         with open(self.path + "/paths.csv", "r", encoding="utf-8-sig") as csv_file:
