@@ -16,11 +16,17 @@ class TabManager:
         sel = self.tabs[tab]
         self.notebook.select(sel.frame)
 
+    def update(self, tab):
+        if tab not in self.tabs:
+            return
+        self.tabs[tab].update()
+
     def update_all_tab_elements(self):
         self.image_manager.load_images()
 
         for tab in self.tabs:
             try:
                 self.tabs[tab].update()
-            except:
+            except AttributeError:
+                # Just temporary while I move the tabs to be tab inherented
                 self.tabs[tab].update_elements()

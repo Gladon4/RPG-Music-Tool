@@ -80,3 +80,5 @@ class ImageManager:
             self.__load_image("list", "list_img")
             self.__load_image("tag")
             self.__load_image("folder_managed")
+            self.__load_image("play_small", "play_img", size=(24, 24))
+            self.__load_image("stop_small", "stop_img", size=(24, 24))

@@ -28,7 +28,7 @@ class App:
 
         self.settings_manager = SetttingsManager()
         self.sound_manager = SoundManager(self.settings_manager)
-        self.player = MusicPlayer(self.settings_manager, self.sound_manager)
+        self.music_player = MusicPlayer(self.settings_manager, self.sound_manager)
         self.image_manager = ImageManager("img", self.settings_manager)
         self.tab_manager = TabManager(self.notebook, self.image_manager)
 
@@ -38,7 +38,7 @@ class App:
             self.image_manager,
             self.notebook,
             self.sound_manager,
-            self.player,
+            self.music_player,
         )
         self.settings_tab = SettingsTab(
             self.settings_manager, self.tab_manager, self.image_manager, self.notebook
@@ -51,10 +51,11 @@ class App:
         )
         self.themes_tab = ThemesTab(
             self.settings_manager,
-            self.sound_manager,
             self.tab_manager,
+            self.image_manager,
             self.notebook,
-            self.player,
+            self.sound_manager,
+            self.music_player,
         )
 
         self.notebook.add(self.main_tab.frame, text="Main")
@@ -67,7 +68,6 @@ class App:
         self.sfx_tab.create()
         self.notebook.add(self.sfx_tab.frame, text="SFX Paths")
 
-        self.themes_tab.create()
         self.notebook.add(self.themes_tab.frame, text="Themes")
 
         self.tab_manager.set_tabs(

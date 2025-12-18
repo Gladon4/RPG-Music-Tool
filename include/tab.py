@@ -75,10 +75,10 @@ class Tab:
         self,
         frame: Frame | LabelFrame,
         bg: str = "bg_color",
-    ) -> LabelFrame:
+    ) -> Frame:
         settings = self.settings_manager.settings
 
-        frame = LabelFrame(
+        frame = Frame(
             frame,
             padx=5,
             pady=5,
