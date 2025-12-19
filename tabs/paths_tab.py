@@ -283,7 +283,7 @@ class PathsTab:
 
     def __select_tab(self, tab):
         self.tab_manager.tabs["main"].update()
-        self.tab_manager.tabs["themes"].update_elements()
+        self.tab_manager.tabs["themes"].update()
         self.tab_manager.select(tab)
 
     def __destroy(self):

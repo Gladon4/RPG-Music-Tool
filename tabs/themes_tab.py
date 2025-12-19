@@ -31,6 +31,14 @@ class ThemesTab(Tab):
         self.create(new=True)
 
     def __select_tab(self, tab):
+        for predictive_text in self.theme_boxes:
+            if predictive_text.predict_label is not None:
+                predictive_text.predict_label.destroy()
+                predictive_text.predict_label = None
+            if predictive_text.predict_popup is not None:
+                predictive_text.predict_popup.destroy()
+                predictive_text.predict_popup = None
+
         self.__apply_added_themes_page_change()
         self.tab_manager.update("main")
         self.tab_manager.select(tab)
@@ -164,6 +172,7 @@ class ThemesTab(Tab):
                 width=45,
                 height=3,
                 bg=settings[color],
+                font=("Helvetica", settings["font_size"]),
             )
             self.widgets.append(song_themes)
             song_themes.myId = song

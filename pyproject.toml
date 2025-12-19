@@ -12,5 +12,6 @@ dependencies = [
 	"pygame-ce>=2.5.3",
 	"tkfilebrowser>=2.3.2",
 	"pillow>=12.0.0",
-	"appdirs>=1.4.4"
+	"appdirs>=1.4.4",
+	"requests"
 ]

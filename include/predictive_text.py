@@ -4,8 +4,10 @@ import tkinter as tk
 
 
 class PredictiveText(tk.Text):
-    def __init__(self, master=None, possible_tags=[], tag_denominator="#", **kw):
+    def __init__(self, master: tk.Misc, possible_tags=[], tag_denominator="#", **kw):
         self.popup_background = kw.pop("popup_background", None)
+        self.font = kw.pop("font", None)
+        kw["font"] = self.font
 
         super().__init__(master, kw)
         super().bind("<Return>", self.__return_add_tag_denominator)
@@ -20,8 +22,8 @@ class PredictiveText(tk.Text):
 
         super().insert("0.0", tag_denominator)
 
-        self.predict_popup = None
-        self.predict_label = None
+        self.predict_popup: tk.Toplevel | None = None
+        self.predict_label: tk.Label | None = None
 
         self.last_guess = ""
         self.myId = 0
@@ -229,6 +231,7 @@ class PredictiveText(tk.Text):
                     padx=5,
                     pady=5,
                     background=self.popup_background,
+                    font=self.font,
                 )
                 self.predict_label.pack()
 
