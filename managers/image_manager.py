@@ -27,9 +27,6 @@ class ImageManager:
 
         return recolored_img
 
-    def __scale_image(self, image: Image.Image, scale: float) -> Image.Image:
-        return image.resize((int(image.size[0] * scale), int(image.size[1] * scale)))
-
     def __invert_hex_color(self, hex_color):
         hex_color = hex_color.lstrip("#")
 
@@ -39,7 +36,7 @@ class ImageManager:
 
         return f"#{r:02x}{g:02x}{b:02x}"
 
-    def __load_image(self, name, file_name=None, inverse=False, size=None):
+    def __load_image(self, name, file_name=None, inverse=False, size=(32, 32)):
         if file_name is None:
             file_name = name
         color = self.settings_manager.settings["txt_color"]
@@ -52,10 +49,11 @@ class ImageManager:
             os.path.join(self.path, f"{file_name}.png"), color
         )
 
-        if size is not None:
-            colored_image = colored_image.resize(size)
+        new_size = (int(size[0] * scale), int(size[1] * scale))
 
-        self.images[name] = ImageTk.PhotoImage(self.__scale_image(colored_image, scale))
+        colored_image = colored_image.resize(new_size)
+
+        self.images[name] = ImageTk.PhotoImage(colored_image)
 
     def load_images(self):
         self.images["empty"] = PhotoImage(width=1, height=1)
@@ -63,14 +61,18 @@ class ImageManager:
         if getattr(sys, "frozen", False):
             assert False, "Still needs to be implemented"
         else:
-            self.__load_image("stop", "stop_img")
-            self.__load_image("skip", "skip_img")
-            self.__load_image("pause", "pause_img")
-            self.__load_image("play", "play_img")
+            self.__load_image("stop", size=(64, 64))
+            self.__load_image("skip", size=(64, 64))
+            self.__load_image("pause", size=(64, 64))
+            self.__load_image("play", size=(64, 64))
             self.__load_image("plus", "plus_img")
             self.__load_image("minus", "minus_img")
-            self.__load_image("gear", "settings_img")
+            self.__load_image("gear")
             self.__load_image("back", "back_img")
+            self.__load_image("left")
+            self.__load_image("right")
+            self.__load_image("up")
+            self.__load_image("down")
             self.__load_image("delete", "delete_img")
             self.__load_image("check_on", "check_on", size=(32, 32))
             self.__load_image("check_off", "check_off", size=(32, 32))
@@ -80,5 +82,5 @@ class ImageManager:
             self.__load_image("list", "list_img")
             self.__load_image("tag")
             self.__load_image("folder_managed")
-            self.__load_image("play_small", "play_img", size=(24, 24))
-            self.__load_image("stop_small", "stop_img", size=(24, 24))
+            self.__load_image("play_small", "play", size=(24, 24))
+            self.__load_image("stop_small", "stop", size=(24, 24))

@@ -10,10 +10,9 @@
 - [ ] QOL
     - [x] better checkboxes
     - [x] some styling (as far as tk allows)
-    - [ ] more identifiable icons
+    - [ ] better icons
     - [x] icons change color to text color to make sure contrast is kept
 
-    
 ### Fixes
 - [x] App start crashes if paths.csv is empty  
 - [x] App start crashes if path in paths.csv doesn't exist
@@ -22,16 +21,16 @@
   - [/] Font Size
 
 ### Other
-- [ ] Update Readme
+- [ ] Update README
 
 ## 0.7
 ### Features
 - [ ] Saving Themes
   - [ ] Profiles (i.e. SciFi, Fantasy, Modern, etc.)
   - [ ] Export and Import of Themes (to share and switch between PCs)
-- [ ] Toggling  
+- [ ] Toggling so if you have many they don't clutter up the main tab
   - [ ] Toggle individual themes
-  - [ ] Make individual SFX togglable so if you have many they don't clutter up the main tab
+  - [ ] Make individual SFX togglable 
 
 ## 0.8
 ### Features

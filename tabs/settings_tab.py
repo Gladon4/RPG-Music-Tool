@@ -268,6 +268,8 @@ class SettingsTab(Tab):
         self.reset_button.config()
         self.reset_button.grid(row=5, column=0)
 
+        self.navigation_buttons_frame.tkraise()
+
     def __color_hover(self, e: Event, index: int, color: str):
         color_picker: Button = self.color_labels[index]
 

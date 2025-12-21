@@ -58,7 +58,7 @@ class ThemesTab(Tab):
 
         self.current_path_index = 0
 
-        self.top_display_frame = self.add_frame(self.frame)
+        self.top_display_frame = self.add_frame(self.frame, bg="sec_bg_color")
         self.top_display_frame.grid(row=1, column=0)
 
         self.list_frame = self.add_frame(self.frame)
@@ -77,44 +77,50 @@ class ThemesTab(Tab):
 
         directory_label_string = self.__create_directory_label_string()
         self.label_current_directory = self.add_label(
-            self.top_display_frame, text=directory_label_string
+            self.top_display_frame, text=directory_label_string, bg="sec_bg_color"
         )
-        self.label_current_directory.config(width=int(0.5 * settings["ui_scale"]))
+        self.label_current_directory.config(width=int(0.4 * settings["ui_scale"]))
         self.label_current_directory.grid(row=0, column=1)
 
         self.add_navigation_button(destination="settings", image="back")
 
         self.previous_path_button = self.add_button(
             self.top_display_frame,
-            text="<",
+            image="left",
             command=self.__previous_path,
-            scale=0.25,
+            scale=0.35,
         )
-        self.previous_path_button.grid(row=0, column=0, padx=5, ipadx=30)
+        self.previous_path_button.grid(row=0, column=0, padx=5)
         if self.current_path_index == 0:
             self.previous_path_button.config(state="disabled")
 
         self.next_path_button = self.add_button(
             self.top_display_frame,
-            text=">",
+            image="right",
             command=self.__next_path,
-            scale=0.25,
+            scale=0.35,
         )
-        self.next_path_button.grid(row=0, column=2, padx=5, ipadx=30)
+        self.next_path_button.grid(row=0, column=2, padx=5)
         if len(self.paths) == 0 or (self.current_path_index + 1) == len(self.paths):
             self.next_path_button.config(state="disabled")
 
         self.__create_list()
 
         self.previous_page_button = self.add_button(
-            self.list_frame, text="/\\", command=self.__previous_page, scale=0.25
+            self.list_frame,
+            image="up",
+            command=self.__previous_page,
+            scale=0.35,
         )
         self.previous_page_button.grid(row=0, column=3, sticky="e", padx=5)
         if self.page_number == 0:
             self.previous_page_button.config(state="disabled")
 
         self.next_page_button = self.add_button(
-            self.list_frame, text="\\/", command=self.__next_page, scale=0.25
+            self.list_frame,
+            image="down",
+            command=self.__next_page,
+            scale=0.35,
         )
         self.next_page_button.grid(
             row=self.songs_per_page - 1, column=3, sticky="w", padx=5
@@ -162,15 +168,15 @@ class ThemesTab(Tab):
                 text=song,
                 bg=color,
             )
-            song_label.config(width=35)
+            song_label.config(width=int(0.35 * settings["ui_scale"]))
             song_label.grid(row=0, column=1)
 
             song_themes = PredictiveText(
                 entry_frame,
                 self.sound_manager.get_themes_list(),
                 "#",
-                width=45,
-                height=3,
+                width=int(settings["ui_scale"] * 0.4),
+                height=int(3 * settings["ui_scale"] / 100),
                 bg=settings[color],
                 font=("Helvetica", settings["font_size"]),
             )
