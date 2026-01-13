@@ -2,6 +2,8 @@ import webbrowser
 from tkinter import Button, Label, Tk
 
 import requests
+import sys
+import os
 
 
 class Updater:
@@ -11,7 +13,12 @@ class Updater:
         self.online_version = self.get_online_version()
 
     def get_local_version(self) -> list:
-        with open("./VERSION", "r") as v:
+        if getattr(sys, "frozen", False):
+            version_path = os.path.join(sys._MEIPASS, "resources/VERSION")
+        else:
+            version_path = "./resources/VERSION"
+
+        with open(version_path, "r") as v:
             local_verion = v.readline().strip().split(".")
 
         local_verion = list(map(int, local_verion))

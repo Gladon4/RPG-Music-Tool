@@ -4,3 +4,5 @@ mutagen>=1.47.0
 psutil>=7.0.0
 pygame-ce>=2.5.3
 tkfilebrowser>=2.3.2
+pillow>=12.0.0
+requests>=2.32.5

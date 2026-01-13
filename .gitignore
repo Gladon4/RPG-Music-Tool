@@ -17,3 +17,4 @@ uv.lock
 .zed
 .vscode
 .venv
+.build_venv

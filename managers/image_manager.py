@@ -13,6 +13,9 @@ class ImageManager:
         self.path = path
         self.settings_manager = settings_manager
 
+        if getattr(sys, "frozen", False):
+            self.path = os.path.join(sys._MEIPASS, self.path)
+
         self.load_images()
 
     def __color_image(self, path, color) -> Image.Image:
@@ -58,29 +61,26 @@ class ImageManager:
     def load_images(self):
         self.images["empty"] = PhotoImage(width=1, height=1)
 
-        if getattr(sys, "frozen", False):
-            assert False, "Still needs to be implemented"
-        else:
-            self.__load_image("stop", size=(64, 64))
-            self.__load_image("skip", size=(64, 64))
-            self.__load_image("pause", size=(64, 64))
-            self.__load_image("play", size=(64, 64))
-            self.__load_image("plus", "plus_img")
-            self.__load_image("minus", "minus_img")
-            self.__load_image("gear")
-            self.__load_image("back", "back_img")
-            self.__load_image("left")
-            self.__load_image("right")
-            self.__load_image("up")
-            self.__load_image("down")
-            self.__load_image("delete", "delete_img")
-            self.__load_image("check_on", "check_on", size=(32, 32))
-            self.__load_image("check_off", "check_off", size=(32, 32))
-            self.__load_image("eyedropper")
-            self.__load_image("eyedropper_inverse", "eyedropper", inverse=True)
-            self.__load_image("label")
-            self.__load_image("list", "list_img")
-            self.__load_image("tag")
-            self.__load_image("folder_managed")
-            self.__load_image("play_small", "play", size=(24, 24))
-            self.__load_image("stop_small", "stop", size=(24, 24))
+        self.__load_image("stop", size=(64, 64))
+        self.__load_image("skip", size=(64, 64))
+        self.__load_image("pause", size=(64, 64))
+        self.__load_image("play", size=(64, 64))
+        self.__load_image("plus", "plus_img")
+        self.__load_image("minus", "minus_img")
+        self.__load_image("gear")
+        self.__load_image("back", "back_img")
+        self.__load_image("left")
+        self.__load_image("right")
+        self.__load_image("up")
+        self.__load_image("down")
+        self.__load_image("delete", "delete_img")
+        self.__load_image("check_on", "check_on", size=(32, 32))
+        self.__load_image("check_off", "check_off", size=(32, 32))
+        self.__load_image("eyedropper")
+        self.__load_image("eyedropper_inverse", "eyedropper", inverse=True)
+        self.__load_image("label")
+        self.__load_image("list", "list_img")
+        self.__load_image("tag")
+        self.__load_image("folder_managed")
+        self.__load_image("play_small", "play", size=(24, 24))
+        self.__load_image("stop_small", "stop", size=(24, 24))

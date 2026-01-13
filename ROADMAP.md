@@ -10,7 +10,7 @@
 - [ ] QOL
     - [x] better checkboxes
     - [x] some styling (as far as tk allows)
-    - [ ] better icons
+    - [/] better icons
     - [x] icons change color to text color to make sure contrast is kept
 
 ### Fixes
@@ -19,6 +19,7 @@
 - [ ] UI Scaling
   - [/] UI Scaling for elemente
   - [/] Font Size
+- [x] TKFileBrowser crashes the App because of unknown image paths
 
 ### Other
 - [ ] Update README
@@ -26,7 +27,6 @@
 ## 0.7
 ### Features
 - [ ] Saving Themes
-  - [ ] Profiles (i.e. SciFi, Fantasy, Modern, etc.)
   - [ ] Export and Import of Themes (to share and switch between PCs)
 - [ ] Toggling so if you have many they don't clutter up the main tab
   - [ ] Toggle individual themes
@@ -39,3 +39,5 @@
   - [ ] Export and Import Stttings (Customisation Settings)
 
 ## Future
+### Features
+- [ ] Profiles (i.e. SciFi, Fantasy, Modern, etc.)

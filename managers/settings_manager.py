@@ -77,8 +77,12 @@ class SetttingsManager:
         self.load_settings()
 
     def __write_default_settings(self):
+        if getattr(sys, "frozen", False):
+            path = os.path.join(sys._MEIPASS, "resources/default_config.ini")
+        else:
+            path = "./resources/default_config.ini"
         shutil.copyfile(
-            os.path.join(os.getcwd(), "resources/default_config.ini"),
+            path,
             os.path.join(self.path, "config.ini"),
         )
         self.load_settings()
