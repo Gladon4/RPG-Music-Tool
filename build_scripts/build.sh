@@ -7,7 +7,7 @@ help_text() {
 
 install() {
     output=${OPTARG}
-    python3 -m venv .build_venv
+    python3.12 -m venv .build_venv
     source .build_venv/bin/activate
     pip install -r requirements_linux.txt
     pip install pyinstaller
