@@ -2,24 +2,25 @@
 
 ## 0.6
 ### Features
-- [ ] Rework of the app
+- [x] Rework of the app
     - [x] Theme setting tab
         - [x]  Better theme selection with text prediction and a small popup and stuff
     - [x] SFX tab / add paths
-    - [/] Redo the tabs with a parent Tab Class
-- [ ] QOL
+    - [x] Redo the tabs with a parent Tab Class
+- [x] QOL
     - [x] better checkboxes
     - [x] some styling (as far as tk allows)
-    - [/] better icons
+    - [x] better icons
     - [x] icons change color to text color to make sure contrast is kept
 
 ### Fixes
 - [x] App start crashes if paths.csv is empty  
 - [x] App start crashes if path in paths.csv doesn't exist
-- [ ] UI Scaling
-  - [/] UI Scaling for elemente
-  - [/] Font Size
+- [x] UI Scaling
+  - [x] UI Scaling for elemente
+  - [x] Font Size
 - [x] TKFileBrowser crashes the App because of unknown image paths
+- [ ] Final Bug Fixes
 
 ### Other
 - [ ] Update README

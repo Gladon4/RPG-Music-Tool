@@ -15,7 +15,7 @@ if sys.platform.startswith("win32"):
     import win32com
 
 
-class PathsTab(Tab):
+class SFXPathTab(Tab):
     def __init__(
         self,
         settings_manager: SetttingsManager,
@@ -32,7 +32,7 @@ class PathsTab(Tab):
         self.paths_per_page = self.settings_manager.settings["rows_per_page"]
         self.paths = {}
 
-        self.create(True)
+        self.create(new=True)
 
     def create(self, new=False):
         super().create(new)
@@ -49,18 +49,18 @@ class PathsTab(Tab):
 
         self.label_title_paths = self.add_label(
             self.frame,
-            text="Music Directories",
+            text="SFX Directories",
             font_size=2,
         )
         self.label_title_paths.grid(row=0, column=0, pady=5)
 
-        self.add_navigation_button(destination="sfx_paths", image="note1")
+        self.add_navigation_button(destination="song_paths", image="note2")
         self.add_navigation_button(destination="settings", image="back")
 
         self.add_path_button = self.add_button(
             self.page_navigation_frame,
-            text="Add Music Directory",
-            command=self.__music_path_picker,
+            text="Add SFX Directory",
+            command=self.__sfx_path_picker,
             wraplength=100,
         )
         self.add_path_button.config(width=100, height=50)
@@ -84,7 +84,7 @@ class PathsTab(Tab):
         )
         self.next_page_button.grid(row=0, column=2)
         if (self.page_number + 1) * self.paths_per_page >= len(
-            self.settings_manager.music_paths
+            self.settings_manager.sfx_paths
         ):
             self.next_page_button.config(state="disabled")
 
@@ -95,10 +95,10 @@ class PathsTab(Tab):
         per_page = self.paths_per_page
         page = self.page_number
 
-        rmaining_paths = len(self.settings_manager.music_paths) - per_page * page
+        rmaining_paths = len(self.settings_manager.sfx_paths) - per_page * page
         for i in range(min(per_page, rmaining_paths)):
             index_with_offset = per_page * page + i
-            path = self.settings_manager.music_paths[index_with_offset]
+            path = self.settings_manager.sfx_paths[index_with_offset]
 
             color = "bg_color" if i % 2 == 1 else "sec_bg_color"
 
@@ -132,39 +132,52 @@ class PathsTab(Tab):
             self.paths[i] = [entry_frame, path_delete_button, path_label]
 
     def __next_page(self):
-        self.__destroy_list()
+        for path in self.paths:
+            self.paths[path][0].destroy()
+            self.paths[path][1].destroy()
 
         self.page_number += 1
+        self.paths = {}
         self.__create_list()
 
         if (self.page_number + 1) * self.paths_per_page >= len(
-            self.settings_manager.music_paths
+            self.settings_manager.sfx_paths
         ):
             self.next_page_button.config(state="disabled")
         if not self.page_number == 0:
             self.previous_page_button.config(state="active")
 
     def __previous_page(self):
-        self.__destroy_list()
+        for path in self.paths:
+            self.paths[path][0].destroy()
+            self.paths[path][1].destroy()
 
         self.page_number -= 1
+        self.paths = {}
         self.__create_list()
 
         if self.page_number == 0:
             self.previous_page_button.config(state="disabled")
         if not (self.page_number + 1) * self.paths_per_page >= len(
-            self.settings_manager.music_paths
+            self.settings_manager.sfx_paths
         ):
             self.next_page_button.config(state="active")
 
-    def __music_path_picker(self):
+    def __sfx_path_picker(self):
+        initialdir = ""
+        if sys.platform.startswith("linux"):
+            initialdir = "/home/"
+
+        elif sys.platform.startswith("win32"):
+            initialdir = "C://"
+
         dirs = tkfilebrowser.askopendirnames(
-            title="Select your Music Directories",
-            initialdir=os.path.expanduser("~"),
+            title="Select your SFX Directories",
+            initialdir=initialdir,
             okbuttontext="Select",
         )
 
-        self.settings_manager.music_paths += [
+        self.settings_manager.sfx_paths += [
             dir + "/" if sys.platform.startswith("linux") else dir + "\\"
             for dir in dirs
         ]
@@ -173,24 +186,28 @@ class PathsTab(Tab):
         self.__create_list()
 
         self.settings_manager.store_paths()
-        self.sound_manager.load_themes()
+        self.sound_manager.load_sfx()
+
+        self.tab_manager.update("main")
 
     def __delete(self, index):
-        self.settings_manager.music_paths = (
-            self.settings_manager.music_paths[:index]
-            + self.settings_manager.music_paths[index + 1 :]
+        self.settings_manager.sfx_paths = (
+            self.settings_manager.sfx_paths[:index]
+            + self.settings_manager.sfx_paths[index + 1 :]
         )
 
         self.__destroy_list()
         self.__create_list()
 
         self.settings_manager.store_paths()
-        self.sound_manager.load_themes()
+        self.sound_manager.load_sfx()
 
         if (self.page_number + 1) * self.paths_per_page >= len(
-            self.settings_manager.music_paths
+            self.settings_manager.sfx_paths
         ):
             self.next_page_button.config(state="disabled")
+
+        self.tab_manager.update("main")
 
     def __destroy_list(self):
         for path in self.paths:

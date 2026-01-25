@@ -25,7 +25,7 @@ class ThemesTab(Tab):
         self.music_player = music_player
 
         self.page_number = 0
-        self.songs_per_page = 12
+        self.songs_per_page = self.settings_manager.settings["rows_per_page"]
         self.current_song_playing = None
 
         self.create(new=True)
@@ -151,7 +151,7 @@ class ThemesTab(Tab):
             index_with_offset = per_page * page + i
             song = songs[index_with_offset]
 
-            color = "bg_color" if i % 2 == 0 else "sec_bg_color"
+            color = "bg_color" if i % 2 == 1 else "sec_bg_color"
 
             entry_frame = self.add_frame(self.list_frame, bg=color)
 
@@ -357,3 +357,7 @@ class ThemesTab(Tab):
         self.__stop()
         self.__destroy_list()
         self.__create_list()
+
+    def update(self):
+        super().update()
+        self.songs_per_page = self.settings_manager.settings["rows_per_page"]

@@ -25,8 +25,4 @@ class TabManager:
         self.image_manager.load_images()
 
         for tab in self.tabs:
-            try:
-                self.tabs[tab].update()
-            except AttributeError:
-                # Just temporary while I move the tabs to be tab inherented
-                self.tabs[tab].update_elements()
+            self.tabs[tab].update()

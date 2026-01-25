@@ -124,7 +124,7 @@ class SettingsTab(Tab):
             title="SFX Location",
             current_value=settings["sfx_tab"],
             min_value=0,
-            max_value=2,
+            max_value=1,
             command=self.__change_sfx_tab,
             settings=settings,
         )
@@ -151,7 +151,6 @@ class SettingsTab(Tab):
         # --- Inputs --- #
 
         self.add_navigation_button(destination="themes", image="tag")
-        self.add_navigation_button(destination="sfx_paths", image="folder_managed")
         self.add_navigation_button(destination="song_paths", image="folder_managed")
         self.add_navigation_button(destination="main", image="back")
 
@@ -184,6 +183,17 @@ class SettingsTab(Tab):
             self.full_path_in_settings_check.config(
                 image=self.image_manager.images["check_on"]
             )
+
+        self.row_count = self.__make_setting_slider(
+            self.ui_setting_frame,
+            row=7,
+            title="Row Count in Settings",
+            current_value=settings["rows_per_page"],
+            min_value=4,
+            max_value=24,
+            command=self.__change_row_count,
+            settings=settings,
+        )
 
         # -- Color Settings -- #
         self.label_title_color_settings = self.add_label(
@@ -358,6 +368,16 @@ class SettingsTab(Tab):
 
         self.font_size.label.config(text=new_size)
         self.font_size.scale.config(value=new_size)
+
+    def __change_row_count(self, pos):
+        self.change = True
+
+        new_count = int(float(pos))
+        self.settings_manager.settings["rows_per_page"] = new_count
+        self.settings_manager.store_settings()
+
+        self.row_count.label.config(text=new_count)
+        self.row_count.scale.config(value=new_count)
 
     def __full_path_on_main(self, _):
         self.change = True

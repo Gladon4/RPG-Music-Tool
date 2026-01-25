@@ -8,7 +8,7 @@ from managers.tab_manager import TabManager
 from tabs.main_tab import MainTab
 from tabs.paths_tab import PathsTab
 from tabs.settings_tab import SettingsTab
-from tabs.sfx_tab import SFXTab
+from tabs.sfx_paths_tab import SFXPathTab
 from tabs.themes_tab import ThemesTab
 
 
@@ -50,8 +50,12 @@ class App:
             self.notebook,
             self.sound_manager,
         )
-        self.sfx_tab = SFXTab(
-            self.settings_manager, self.tab_manager, self.notebook, self.sound_manager
+        self.sfx_tab = SFXPathTab(
+            self.settings_manager,
+            self.tab_manager,
+            self.image_manager,
+            self.notebook,
+            self.sound_manager,
         )
         self.themes_tab = ThemesTab(
             self.settings_manager,
@@ -65,10 +69,7 @@ class App:
         self.notebook.add(self.main_tab.frame, text="Main")
         self.notebook.add(self.settings_tab.frame, text="Settings")
         self.notebook.add(self.paths_tab.frame, text="Song Paths")
-
-        self.sfx_tab.create()
         self.notebook.add(self.sfx_tab.frame, text="SFX Paths")
-
         self.notebook.add(self.themes_tab.frame, text="Themes")
 
         self.tab_manager.set_tabs(
