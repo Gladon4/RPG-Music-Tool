@@ -10,3 +10,7 @@ img/rainy_img.png
 img/thunderstorm_img.png
 build.sh
 *.AppImage
+Pipfile
+uv.lock
+.build_venv
+.venv
