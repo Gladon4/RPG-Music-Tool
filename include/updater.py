@@ -1,9 +1,9 @@
+import os
+import sys
 import webbrowser
 from tkinter import Button, Label, Tk
 
 import requests
-import sys
-import os
 
 
 class Updater:
@@ -29,7 +29,7 @@ class Updater:
         try:
             online_version = (
                 requests.get(
-                    "https://raw.githubusercontent.com/Gladon4/RPG-Music-Tool/refs/heads/main/VERSION"
+                    "https://raw.githubusercontent.com/Gladon4/RPG-Music-Tool/refs/heads/main/resources/VERSION"
                 )
                 .content.decode()
                 .strip()

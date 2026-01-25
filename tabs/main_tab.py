@@ -124,6 +124,8 @@ class MainTab(Tab):
             image="pause",
             scale=0.7,
         )
+        root = self.pause_button.winfo_toplevel()
+        root.bind("<space>", self.__pause)
         self.pause_button.grid(row=0, column=1, rowspan=3)
 
         self.skip_button = self.add_button(
@@ -268,7 +270,7 @@ class MainTab(Tab):
         self.music_player.skip()
         self.__update_music_labels()
 
-    def __pause(self):
+    def __pause(self, space_key=None):
         if self.music_player.paused:
             self.pause_button.config(image=self.image_manager.images["pause"])
         else:

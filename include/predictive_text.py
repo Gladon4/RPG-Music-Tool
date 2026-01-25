@@ -1,5 +1,3 @@
-#!/bin/python3
-
 import tkinter as tk
 
 
@@ -93,8 +91,9 @@ class PredictiveText(tk.Text):
             self.predict_popup.destroy()
             self.predict_popup = None
 
-            self.predict_label.destroy()
-            self.predict_label = None
+            if self.predict_label is not None:
+                self.predict_label.destroy()
+                self.predict_label = None
 
     def __guess_theme(self, word: str) -> str:
         best_guess = ""
@@ -235,12 +234,15 @@ class PredictiveText(tk.Text):
                 )
                 self.predict_label.pack()
 
-            else:
+            elif self.predict_label is not None:
                 self.predict_popup.geometry(f"+{abs_x}+{abs_y}")
                 self.predict_label.config(text=str(self.last_guess))
+            else:
+                raise RuntimeError("predict_label of PredictiveText is None!")
 
     def destroy(self):
         if self.predict_popup is not None:
             self.predict_popup.destroy()
+        if self.predict_label is not None:
             self.predict_label.destroy()
         super().destroy()

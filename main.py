@@ -1,11 +1,7 @@
-#!/bin/python3
-
-from tkinter import Tk
-
 from include.app import App
 from include.updater import Updater
 
-VERSION = "060_dev"
+VERSION = "0.6.0.dev"
 APP_NAME = f"RPG Music Tool v{VERSION}"
 START_SIZE = "800x1000"
 
