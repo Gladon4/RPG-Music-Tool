@@ -44,7 +44,11 @@ class App:
             self.settings_manager, self.tab_manager, self.image_manager, self.notebook
         )
         self.paths_tab = PathsTab(
-            self.settings_manager, self.tab_manager, self.notebook, self.sound_manager
+            self.settings_manager,
+            self.tab_manager,
+            self.image_manager,
+            self.notebook,
+            self.sound_manager,
         )
         self.sfx_tab = SFXTab(
             self.settings_manager, self.tab_manager, self.notebook, self.sound_manager
@@ -59,10 +63,7 @@ class App:
         )
 
         self.notebook.add(self.main_tab.frame, text="Main")
-
         self.notebook.add(self.settings_tab.frame, text="Settings")
-
-        self.paths_tab.create()
         self.notebook.add(self.paths_tab.frame, text="Song Paths")
 
         self.sfx_tab.create()
