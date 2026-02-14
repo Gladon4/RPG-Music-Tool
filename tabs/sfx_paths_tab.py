@@ -36,6 +36,7 @@ class SFXPathTab(Tab):
 
     def create(self, new=False):
         super().create(new)
+        ui_scale = self.settings_manager.settings["ui_scale"]
 
         self.list_frame = self.add_frame(self.frame)
         self.list_frame.config(width=1000)
@@ -63,7 +64,7 @@ class SFXPathTab(Tab):
             command=self.__sfx_path_picker,
             wraplength=100,
         )
-        self.add_path_button.config(width=100, height=50)
+        self.add_path_button.config(width=1 * ui_scale, height=0.5 * ui_scale)
         self.add_path_button.grid(row=0, column=1)
 
         self.previous_page_button = self.add_button(
@@ -95,6 +96,8 @@ class SFXPathTab(Tab):
         per_page = self.paths_per_page
         page = self.page_number
 
+        requested_widths = []
+
         rmaining_paths = len(self.settings_manager.sfx_paths) - per_page * page
         for i in range(min(per_page, rmaining_paths)):
             index_with_offset = per_page * page + i
@@ -125,11 +128,21 @@ class SFXPathTab(Tab):
             path_label = self.add_label(
                 entry_frame, text=path_text, bg=color, wraplength=500
             )
-            path_label.config(width=50, anchor="w")
+            requested_widths.append(path_label.winfo_reqwidth())
             path_label.grid(row=0, column=1, padx=5)
 
             entry_frame.grid(row=i, column=0)
             self.paths[i] = [entry_frame, path_delete_button, path_label]
+
+        base_max_width = 5 * settings["ui_scale"]
+        # If you set the width of the label, the requested width in pixels is ~1.35 the font size
+        # I have no idea why, but we use the convertion factor, 1/1.35 ~ 0.75
+        max_width = min(base_max_width, max(requested_widths)) / (
+            0.75 * settings["font_size"]
+        )
+        max_width = int(max_width) + 1  # +1 to prevent weird cutoff with the wrapping
+        for path in self.paths:
+            self.paths[path][2].config(width=max_width)
 
     def __next_page(self):
         for path in self.paths:
