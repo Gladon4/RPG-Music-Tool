@@ -21,6 +21,7 @@
   - [x] Font Size
 - [x] TKFileBrowser crashes the App because of unknown image paths
 - [ ] Final Bug Fixes
+  - [ ] Main Page directory text overflowing
 
 ### Other
 - [ ] Update README

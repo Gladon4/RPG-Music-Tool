@@ -221,7 +221,7 @@ class SettingsTab(Tab):
             "sec_bg_color": "Secondary Backgroud",
             "button_bg_color": "Primary Accent",
             "button_hov_color": "Secondary Accent",
-            "txt_color": "Text",
+            "txt_color": "Text / Icons",
         }
 
         self.color_labels = []
