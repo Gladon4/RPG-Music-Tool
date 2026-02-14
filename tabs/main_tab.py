@@ -339,6 +339,16 @@ class MainTab(Tab):
             if len(song) > max_song_length:
                 song = song[:max_song_length] + "..."
 
+            max_base_path_length = 45
+            max_path_length = (
+                max_base_path_length
+                * (self.settings_manager.settings["ui_scale"] / 100)
+                * (12 / self.settings_manager.settings["font_size"])
+            )
+            max_path_length = int(max_path_length)
+            if len(path) > max_path_length:
+                path = path[:max_path_length] + "..."
+
             self.current_theme_label.config(text=str(self.music_player.theme))
             self.current_song_label.config(text=song)
             self.current_song_path_label.config(text=path)
