@@ -25,7 +25,7 @@
   - [x] Weird scaling and overflow issues in the path tabs, when chainging ui scale and font size
 
 ### Other
-- [ ] Update README
+- [x] Update README
 
 ## 0.7
 ### Features

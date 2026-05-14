@@ -1,7 +1,9 @@
+from sys import exit
+
 from include.app import App
 from include.updater import Updater
 
-VERSION = "0.6.0.dev"
+VERSION = "0.6.0"
 APP_NAME = f"RPG Music Tool v{VERSION}"
 START_SIZE = "800x1000"
 

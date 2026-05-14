@@ -1,122 +1,177 @@
-# RPG-Music-Tool (ver. 0.6.dev)
+# RPG Music Tool
 
-==DEV BRANCH==
-Not fully working!
+**Version: 0.6.0**
 
-- **[Installation](#installation)**
-  - [Windows and Linux](#windows-and-linux)
-  - [Mac (not supported for now)](#mac)
-  - [General](#general)
-- **[Setup](#setup)**
-  - [1. Paths](#1-paths)
-  - [2. Themes](#2-themes)
-  - [3. Start using](#3-start-using)
-- **[Settings and Customisation](#settings-and-customisation)**
-- **[Roadmap](ROADMAP.md)**
+A desktop music and sound effects player for TableTop RPGs. \
+Organize your local MP3 library into themes, queue up sound effects on demand, and keep the atmosphere alive during your sessions. \
+Designed for offline use.
+
+[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
+
+![Screenshot](docs/img/main_tab.png)
 
 
-A small music tool for TTRPGs.
+## Features
 
-This Tool allows you to play music based on the current theme or setting for your TableTop RolePlayingGames. \
-This Program uses local music files, instead of for example a Spotify Playlist. So you can always use it as long as you have your music with you.
+- **Theme-based music playback** — Categorize your MP3 files into themes (e.g. "Combat", "Travel", "Tavern") and play random tracks from the selected theme.
+- **Sound effects (SFX) support** — Assign directories for sound effects and play them instantly from the main tab.
+- **Customizable UI** — Adjust UI scale, font size, button sizes, row counts, and color scheme to match your preference.
+- **Cross-platform** — Works on Windows and Linux. Standalone executables are provided alongside the source code.
+- **Version updater** — Built-in update checker notifies you when a new version is available.
+
+## Table of Contents
+
+- [Installation](#installation)
+  - [Standalone Executable](#standalone-executable)
+  - [From Source](#from-source)
+- [Quick Start](#quick-start)
+- [Tabs Overview](#tabs-overview)
+  - [Main](#main)
+  - [Song Paths](#song-paths)
+  - [SFX Paths](#sfx-paths)
+  - [Themes](#themes)
+  - [Settings](#settings)
+- [Configuration](#configuration)
+- [Building from Source](#building-from-source)
+- [Roadmap](ROADMAP.md)
 
 ## Installation
 
-### Windows and Linux
+### Standalone Executable
 
-**Use the Executable**
-Download the executable for your system from the Release section. \
-(Windows executables are only put up with "major" versions.)
+Download the latest release for your platform from the [Releases](https://github.com/anomalyco/opencode/releases) section.
 
-### Mac
+- **Windows** — Use the `.exe` file.
+- **Linux** — Use the compiled binary (make sure it has execute permissions: `chmod +x <filename>`).
 
-**Mac is not officially supported**
+> **Note:** Mac is not officially supported at this time, but you should be able to install it from source.
 
-### General
+### From Source
 
-You can always download the repo and execute the python file.
-
-## Setup
-
-After downloading the application open it. It only takes a few steps to get ready. Have some music and sound effects ready you want to use. This app only works with mp3 files at the moment, so make sure your files are in mp3 format.\
-(If at any point something doesn't appear to work, restart the app, that fixes most things)
-
-### 1 Paths
-
-In the App open the "Paths" Tab and your directory paths. \
-Simply separate multiple paths with a line break. Your sound effect (SFX) will be displayed with their title, so make sure to name the files are named a way you know what they are about. \
-
-For Linux they should look something like:
-
-```
-/home/[username]/Music/D&D-Combat/
-/home/[username]/Music/D&D-Travel/
-```
-
-And for Windows:
-
-```
-C:\Users\[Username]\Music\D&D-Combat\
-C:\Users\[Username]\Music\D&D-Travel\
-```
-
-If something is wrong with your path, it will be highlighted red.\
-The app will also create a file in the selected directories called "songs.csv". This keeps track of the songs in said directory and the set themes (See next section) will be saved there. That also means you can easily transfer songs with their themes from one computer to another, by copying the directories.
-
-### 2 Themes
-
-After adding the paths, open the "Song Themes" Tab.\
-There all the paths you added should be listed (If not a restart should fix that). There you can go through all songs and categorize them in themes according to your tastes.\
-A single song can be assign multiple themes, just separate them with a semicolon (";"). You can play the song in this tab, with the little play icon next to the song.\
-If you later select a theme to be played, the app will select songs assigned to this theme by random.
-
-### 3 Start using
-
-Go back to the main tab and start using the app.
-![Screenshot from 2022-12-07 23-24-33](https://user-images.githubusercontent.com/58821835/206310072-63aadbe7-1e9e-4bd2-9f9f-a94319011e1e.png)
-
-## Settings and Customisation
-
-You can change a few things about the app in the "Settings" Tab\
-![Screenshot from 2022-12-07 23-25-00](https://user-images.githubusercontent.com/58821835/206310022-97a702fd-ec88-4230-8bab-e6c4f6909336.png)
-
-## Building yourself
-
-Should you want to build the app yourself or want to run the python file directly, you need to install the dependencies first:
-Linux:
+Requires **Python 3.12**.
 
 ```sh
-pip install -r requirements_linux.txt
+pip install -r requirements_linux.txt   # Linux
+pip install -r requirements_win.txt     # Windows
 ```
 
-Windows:
-
-```sh
-pip install -r requirements_win.txt
-```
-
-(An additial package specific to Windows is included)
-Also make sure you have tkinter installed. This should usually be bundled into your python distribution, but if not, just search the web for a solution.
-
-After the dependencies are installed, you can start the app by running:
+Then run:
 
 ```sh
 python main.py
 ```
 
-To make it an executable yourself, you can run the build script:
-Linux:
+## Quick Start
+
+1. **Add directories** — Go to the **Song Paths** tab and add your music folders using the file picker. Repeat in the **SFX Paths** tab for sound effects.
+2. **Categorize songs** — Open the **Themes** tab and assign themes to each track. A single song can belong to multiple themes.
+3. **Play** — Head back to the **Main** tab, pick a theme, and hit play.
+
+## Tabs Overview
+
+### Main
+
+The default view. Select a music theme to play, control playback (play, pause, stop, skip), adjust volume, and trigger sound effects.
+
+**Controls:**
+
+| Control       | Action                                    |
+|---------------|-------------------------------------------|
+| Theme Button  | Start / switch music theme (random order) |
+| Play / Pause  | Toggle playback (also `Space` key)        |
+| Stop          | Stop playback                             |
+| Skip          | Skip to next track                        |
+| Volume Adjustment | Adjust volume                     |
+| SFX Buttons   | Play individual sound effects             |
+
+![Screenshot](docs/img/controlls.png)
+
+### Song Paths
+
+Add, remove, and manage your music directories. Invalid paths are highlighted in red. The app creates a `songs.csv` file in each directory to track songs and their assigned themes.
+
+- Add directories via the **Add Music Directory** button.
+- Delete directories using the trash icon.
+- Navigate between pages of directories using the arrow buttons.
+
+### SFX Paths
+
+Same as Song Paths but for your sound effect MP3s. SFX files are listed with their full filename and can be triggered from the Main tab.
+
+### Themes
+
+Browse songs within each music directory and assign themes. Features:
+
+- **Predictive text input** — Start typing a theme name and get suggestions from your existing themes.
+- **Inline playback** — Click the play icon next to any song to preview it.
+- **Multi-theme assignment** — A song can belong to multiple themes.
+
+![Screenshot](docs/img/themes.png)
+
+### Settings
+
+Customize the application:
+
+**UI Settings:**
+
+| Setting               | Range    | Description                          |
+|-----------------------|----------|--------------------------------------|
+| UI Scale              | 100–300% | Overall interface scaling            |
+| Theme Button Scale    | 1–6      | Size of theme buttons on Main tab    |
+| Theme Buttons per Row | 3–10     | Number of theme buttons per row      |
+| Font Size             | 8–30 pt  | Application font size                |
+| Row Count             | 4–24     | Number of rows shown per page        |
+| SFX Location          | 0–1      | Show SFX on Themes tab or main tab   |
+
+**Display Options:**
+
+- **Display Full Paths on Themes Tab** — Show full file paths in the Main tab.
+- **Display Full Paths in Settings** — Show full file paths in path management tabs.
+
+**Color Settings:**
+
+Customize the color palette with an eyedropper color picker:
+
+- Primary Background
+- Secondary Background
+- Primary Accent (button background)
+- Secondary Accent (button hover)
+- Text / Icons
+
+**Reset Settings** — Restore all settings to their default values with a single click.
+
+## Configuration
+
+All configuration is stored in a user config directory managed by `appdirs`:
+
+| File                  | Purpose                              |
+|-----------------------|--------------------------------------|
+| `config.ini`          | Application settings and color scheme |
+| `paths.csv`           | Saved music directory paths           |
+| `sfx-paths.csv`       | Saved SFX directory paths            |
+| `songs.csv` (per dir) | Song-to-theme mappings for that dir   |
+| `sfx.csv` (per dir)   | SFX file list for that dir           |
+
+## Building from Source
+
+Build a standalone executable with the included build scripts:
+
+**Linux:**
 
 ```sh
-./build.sh -o <filename>
+./build_scripts/build.sh -o <filename>
 ```
 
-Windows:
+**Windows:**
 
 ```sh
-build.bat -o <filename>
+build_scripts\build.bat -o <filename>
 ```
 
-The script runs the appropriate `pyinstaller` command (which is automatically installed, if missing).
-The executable will then compile for the platform you run the command on. You will find it in the "dist" directory.
-You can also just run `pyinstaller` by yourself, for more info on that just visit its [documentation](https://pyinstaller.org/).
+This installs `pyinstaller` if missing and compiles the app for your current platform. The executable will be in the `dist/` directory.
+
+You can also run `pyinstaller` directly — see the [PyInstaller documentation](https://pyinstaller.org/) for more details.
+
+## Roadmap
+
+See [ROADMAP](docs/ROADMAP.md) for planned features and upcoming changes.
