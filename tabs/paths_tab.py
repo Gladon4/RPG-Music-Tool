@@ -197,7 +197,6 @@ class PathsTab(Tab):
             self.settings_manager.music_paths[:index]
             + self.settings_manager.music_paths[index + 1 :]
         )
-
         self.__destroy_list()
         self.__create_list()
 
@@ -208,6 +207,9 @@ class PathsTab(Tab):
             self.settings_manager.music_paths
         ):
             self.next_page_button.config(state="disabled")
+
+        self.tab_manager.update("main")
+        self.tab_manager.update("themes")
 
     def __destroy_list(self):
         for path in self.paths:
