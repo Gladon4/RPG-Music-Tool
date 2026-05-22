@@ -5,7 +5,8 @@ from include.updater import Updater
 
 VERSION = "0.6.0"
 APP_NAME = f"RPG Music Tool v{VERSION}"
-START_SIZE = "800x1000"
+# This size doesn't really get respected under linux
+START_SIZE = "1000x1000"
 
 if __name__ == "__main__":
     updater = Updater()

@@ -5,3 +5,5 @@ psutil>=7.0.0
 pygame-ce>=2.5.3
 tkfilebrowser>=2.3.2
 pywin32>=310
+pillow>=12.0.0
+requests>=2.32.5

@@ -96,7 +96,7 @@ class SFXPathTab(Tab):
         per_page = self.paths_per_page
         page = self.page_number
 
-        requested_widths = []
+        requested_widths = [1]  # Just so its never empty
 
         rmaining_paths = len(self.settings_manager.sfx_paths) - per_page * page
         for i in range(min(per_page, rmaining_paths)):
@@ -197,6 +197,8 @@ class SFXPathTab(Tab):
 
         self.__destroy_list()
         self.__create_list()
+
+        self.tab_manager.update("main")
 
         self.settings_manager.store_paths()
         self.sound_manager.load_sfx()
