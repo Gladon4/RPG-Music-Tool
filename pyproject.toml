@@ -1,0 +1,17 @@
+[project]
+name = "RPG-Music-Tool"
+version = "0.6.0"
+description = "A small tool to play music and sound effects during TTRPGs"
+readme = "README.md"
+requires-python = "==3.12.*"
+dependencies = [
+	"appdirs>=1.4.4",
+	"babel>=2.17.0",
+	"mutagen>=1.47.0",
+	"psutil>=7.0.0",
+	"pygame-ce>=2.5.3",
+	"tkfilebrowser>=2.3.2",
+	"pillow>=12.0.0",
+	"appdirs>=1.4.4",
+	"requests>=2.32.5"
+]
