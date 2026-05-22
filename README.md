@@ -175,3 +175,7 @@ You can also run `pyinstaller` directly — see the [PyInstaller documentation](
 ## Roadmap
 
 See [ROADMAP](docs/ROADMAP.md) for planned features and upcoming changes.
+
+## Issues
+
+If you find any issues or bugs, you can create an issure here on GitHub or directly create a pull request.
